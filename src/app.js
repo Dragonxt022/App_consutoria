@@ -74,10 +74,12 @@ const PORT = process.env.PORT || 3000;
 
 async function startServer() {
   try {
-    await sequelize.sync({ alter: true });
+    await sequelize.sync({ force: false });
     console.log('Database synchronized');
     
     await cleanupUnconfirmed();
+    // Run cleanup every hour
+    setInterval(cleanupUnconfirmed, 60 * 60 * 1000);
     
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
