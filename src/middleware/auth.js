@@ -11,6 +11,7 @@ const authMiddleware = (requiredRole = null) => {
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       req.user = decoded;
+      res.locals.user = decoded;
 
       if (requiredRole && decoded.role !== requiredRole) {
         return res.status(403).json({ error: 'Acesso negado' });

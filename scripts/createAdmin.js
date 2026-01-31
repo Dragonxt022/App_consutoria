@@ -16,7 +16,8 @@ async function createAdmin() {
         name: 'Administrador',
         email: 'admin@consultoria.com',
         password: 'admin123',
-        role: 'admin'
+        role: 'admin',
+        active: true
       });
       console.log('Admin user created successfully');
       console.log('Email: admin@consultoria.com');

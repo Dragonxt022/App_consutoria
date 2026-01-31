@@ -1,22 +1,43 @@
+const { Course, User, Enrollment } = require('../models');
+
 class HomeController {
   async index(req, res) {
-    res.render('public/home', { 
+    res.render('public/home', {
       title: 'Página Inicial',
       user: req.user
     });
   }
 
   async adminDashboard(req, res) {
-    res.render('admin/dashboard', { 
+    const courseCount = await Course.count();
+    const studentCount = await User.count({ where: { role: 'aluno' } });
+    const enrollmentCount = await Enrollment.count({ where: { status: 'pendente' } });
+    
+    res.render('admin/dashboard', {
       title: 'Dashboard Administrativo',
-      user: req.user
+      user: req.user,
+      stats: {
+        courses: courseCount,
+        students: studentCount,
+        enrollments: enrollmentCount
+      },
+      layout: 'admin/layout'
     });
   }
 
   async alunoDashboard(req, res) {
-    res.render('aluno/dashboard', { 
+    const enrollments = await Enrollment.findAll({
+      where: { userId: req.user.id },
+      include: [{ model: Course }]
+    });
+
+    const certificateCount = enrollments.filter(e => e.status === 'completo').length;
+
+    res.render('aluno/dashboard', {
       title: 'Dashboard Aluno',
-      user: req.user
+      user: req.user,
+      enrollments,
+      certificateCount
     });
   }
 }

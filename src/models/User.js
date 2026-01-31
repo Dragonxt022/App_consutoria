@@ -31,7 +31,15 @@ const User = sequelize.define('User', {
   },
   active: {
     type: DataTypes.BOOLEAN,
-    defaultValue: true
+    defaultValue: false // Accounts are inactive by default until confirmed
+  },
+  confirmationToken: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  confirmationExpires: {
+    type: DataTypes.DATE,
+    allowNull: true
   }
 }, {
   hooks: {

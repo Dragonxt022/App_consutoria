@@ -1,0 +1,100 @@
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white shadow-xl rounded-2xl overflow-hidden">
+        <div class="bg-slate-50 p-6 border-b border-slate-100">
+            <h2 class="text-xl font-bold text-slate-800">Novo Cadastro de Curso</h2>
+            <p class="text-slate-500 text-sm">Preencha todos os detalhes técnicos do treinamento presencial.</p>
+        </div>
+
+        <form action="/admin/cursos/criar" method="POST" enctype="multipart/form-data" class="p-8 space-y-8">
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Informações Básicas -->
+                <div class="space-y-6">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Nome do Curso</label>
+                        <input type="text" name="title" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" placeholder="Ex: Gestão Estratégica 4.0">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Descrição Curta</label>
+                        <textarea name="description" rows="4" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" placeholder="Resumo do que será abordado no curso..."></textarea>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Investimento (R$)</label>
+                            <input type="text" name="price" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" placeholder="R$ 1.200,00">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Vagas Disponíveis</label>
+                            <input type="number" name="spots" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" placeholder="20">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Logística e Detalhes -->
+                <div class="space-y-6">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Local do Treinamento</label>
+                        <input type="text" name="location" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" placeholder="Ex: Hotel Hilton, São Paulo - SP">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Data de Início</label>
+                            <input type="date" name="startDate" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Carga Horária</label>
+                            <input type="text" name="workload" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" placeholder="Ex: 40 horas">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">O que está incluso?</label>
+                        <div class="space-y-3 mt-4">
+                            <label class="flex items-center space-x-3 text-sm text-slate-600 cursor-pointer">
+                                <input type="checkbox" name="includes_material" checked class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500">
+                                <span>Material didático completo</span>
+                            </label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-600 cursor-pointer">
+                                <input type="checkbox" name="includes_coffee" checked class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500">
+                                <span>Coffee break premium</span>
+                            </label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-600 cursor-pointer">
+                                <input type="checkbox" name="includes_cert" checked class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500">
+                                <span>Certificado impresso</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Uploads -->
+            <div class="pt-8 border-t border-slate-100 flex flex-col md:flex-row gap-8">
+                <div class="flex-1">
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Imagem de Capa</label>
+                    <div class="relative border-2 border-dashed border-slate-200 rounded-2xl p-6 text-center hover:border-indigo-400 transition-all">
+                        <input type="file" name="image" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                        <svg class="w-10 h-10 text-slate-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        <p class="text-xs text-slate-500">Arraste ou clique para selecionar (JPG, PNG)</p>
+                    </div>
+                </div>
+                <div class="flex-1">
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Proposta do Curso (PDF)</label>
+                    <div class="relative border-2 border-dashed border-slate-200 rounded-2xl p-6 text-center hover:border-indigo-400 transition-all">
+                        <input type="file" name="proposalDoc" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                        <svg class="w-10 h-10 text-slate-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                        <p class="text-xs text-slate-500">Selecione o documento da proposta</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end space-x-4 pt-4">
+                <a href="/admin/cursos" class="px-6 py-3 text-slate-600 font-bold text-sm">Cancelar</a>
+                <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-10 py-3 rounded-xl text-sm font-bold shadow-lg shadow-indigo-100 transform active:scale-95 transition-all">
+                    Publicar Curso
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

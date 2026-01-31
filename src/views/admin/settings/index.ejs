@@ -1,0 +1,114 @@
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white shadow-xl rounded-2xl overflow-hidden">
+        <div class="bg-slate-50 p-6 border-b border-slate-100">
+            <h2 class="text-xl font-bold text-slate-800">Configurações de Cabeçalho e Rodapé</h2>
+            <p class="text-slate-500 text-sm">Gerencie a identidade visual e as informações de contato do site.</p>
+        </div>
+
+        <form action="/admin/configuracoes" method="POST" enctype="multipart/form-data" class="p-8 space-y-10">
+            
+            <!-- Identidade Visual -->
+            <section class="space-y-6">
+                <h3 class="text-sm font-bold text-indigo-600 uppercase tracking-wider">Identidade Visual</h3>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="space-y-4">
+                        <label class="block text-xs font-bold text-slate-500 uppercase">Nome do Site</label>
+                        <input type="text" name="site_name" value="<%= settings.site_name %>" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all">
+                    </div>
+
+                    <div class="space-y-4">
+                        <label class="block text-xs font-bold text-slate-500 uppercase">Logotipo</label>
+                        <div class="flex items-center space-x-4">
+                            <% if (settings.logo_url) { %>
+                                <img src="<%= settings.logo_url %>" class="h-12 w-12 object-contain bg-slate-100 rounded">
+                            <% } %>
+                            <input type="file" name="logo" class="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
+                    <div>
+                        <span class="block font-bold text-slate-700">Modo de Exibição do Logo</span>
+                        <span class="text-xs text-slate-500">Escolha entre exibir apenas o nome textual ou apenas a imagem do logo.</span>
+                    </div>
+                    
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="hidden" name="use_logo" value="false">
+                        <input type="checkbox" name="use_logo" value="true" <%= settings.use_logo === 'true' ? 'checked' : '' %> class="sr-only peer">
+                        <div class="w-14 h-7 bg-slate-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-indigo-600"></div>
+                        <span class="ml-3 text-sm font-medium text-slate-900"><%= settings.use_logo === 'true' ? 'Somente Logo' : 'Somente Nome' %></span>
+                    </label>
+                </div>
+            </section>
+
+            <hr class="border-slate-100">
+
+            <!-- Informações do Rodapé -->
+            <section class="space-y-6">
+                <h3 class="text-sm font-bold text-indigo-600 uppercase tracking-wider">Informações do Rodapé</h3>
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">E-mail de Contato</label>
+                        <input type="email" name="footer_email" value="<%= settings.footer_email %>" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Telefone</label>
+                        <input type="text" name="footer_phone" value="<%= settings.footer_phone %>" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Endereço</label>
+                    <input type="text" name="footer_address" value="<%= settings.footer_address %>" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Direitos Autorais (Copyright)</label>
+                    <input type="text" name="footer_copyright" value="<%= settings.footer_copyright %>" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all">
+                </div>
+            </section>
+
+            <!-- Configurações de E-mail -->
+            <section class="space-y-6">
+                <h3 class="text-sm font-bold text-indigo-600 uppercase tracking-wider">Configuração de E-mail (SMTP)</h3>
+                <p class="text-xs text-slate-500">Dados do servidor para envio de notificações e confirmação de conta.</p>
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Servidor SMTP</label>
+                        <input type="text" name="smtp_host" value="<%= settings.smtp_host %>" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" placeholder="smtp.exemplo.com">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Porta</label>
+                        <input type="text" name="smtp_port" value="<%= settings.smtp_port %>" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" placeholder="587">
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Usuário / E-mail</label>
+                        <input type="text" name="smtp_user" value="<%= settings.smtp_user %>" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Senha</label>
+                        <input type="password" name="smtp_pass" value="<%= settings.smtp_pass %>" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">E-mail de Remetente (From)</label>
+                    <input type="email" name="smtp_from" value="<%= settings.smtp_from %>" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" placeholder="no-reply@empresa.com.br">
+                </div>
+            </section>
+
+            <div class="flex justify-end pt-4">
+                <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-10 py-4 rounded-xl text-sm font-bold shadow-lg shadow-indigo-100 transform active:scale-95 transition-all">
+                    Salvar Alterações
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

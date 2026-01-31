@@ -1,0 +1,54 @@
+<div class="space-y-8">
+    <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+        <h2 class="text-xl font-bold text-slate-800">Emissão de Certificados</h2>
+        <p class="text-slate-500 text-sm">Gere os dados dos alunos que completaram todos os dias do curso em formato JSON.</p>
+    </div>
+
+    <div class="grid gap-6 md:grid-cols-2">
+        <% courses.forEach(course => { %>
+            <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex flex-col">
+                <div class="p-6 flex-grow">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="px-3 py-1 bg-indigo-50 text-indigo-700 text-[10px] font-bold uppercase rounded-full border border-indigo-100">
+                            Carga: <%= course.workload %>
+                        </span>
+                        <div class="flex -space-x-2 overflow-hidden">
+                            <% course.Enrollments.slice(0, 3).forEach(e => { %>
+                                <img class="inline-block h-6 w-6 rounded-full ring-2 ring-white" src="https://ui-avatars.com/api/?name=<%= e.studentName %>&background=random" alt="<%= e.studentName %>">
+                            <% }) %>
+                            <% if(course.Enrollments.length > 3) { %>
+                                <div class="inline-block h-6 w-6 rounded-full ring-2 ring-white bg-slate-100 flex items-center justify-center text-[8px] font-bold text-slate-500">+<%= course.Enrollments.length - 3 %></div>
+                            <% } %>
+                        </div>
+                    </div>
+                    
+                    <h3 class="text-lg font-bold text-slate-900 mb-2"><%= course.title %></h3>
+                    <p class="text-sm text-slate-500 mb-4 flex items-center">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
+                        <%= course.location %>
+                    </p>
+
+                    <div class="p-4 bg-slate-50 rounded-xl flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-600">Alunos Aptos:</span>
+                        <span class="text-lg font-black text-indigo-600"><%= course.Enrollments.length %></span>
+                    </div>
+                </div>
+
+                <div class="p-6 pt-0 mt-auto">
+                    <% if(course.Enrollments.length > 0) { %>
+                        <div class="space-y-3">
+                            <a href="/admin/certificados/json/<%= course.id %>" class="w-full flex items-center justify-center bg-indigo-600 text-white py-3 rounded-xl text-sm font-bold shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                Baixar JSON para Certificados
+                            </a>
+                        </div>
+                    <% } else { %>
+                        <button disabled class="w-full bg-slate-100 text-slate-400 py-3 rounded-xl text-sm font-bold cursor-not-allowed">
+                            Nenhum Aluno Completo
+                        </button>
+                    <% } %>
+                </div>
+            </div>
+        <% }) %>
+    </div>
+</div>

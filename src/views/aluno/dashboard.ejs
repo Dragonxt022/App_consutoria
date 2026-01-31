@@ -1,47 +1,125 @@
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h4>Dashboard do Aluno</h4>
-            </div>
-            <div class="card-body">
-                <h5>Bem-vindo, <%= user.name %>!</h5>
-                <p>Você está acessando como <span class="badge bg-success">Aluno</span></p>
-                
-                <div class="row mt-4">
-                    <div class="col-md-4">
-                        <div class="card bg-primary text-white">
-                            <div class="card-body">
-                                <h5>Meus Cursos</h5>
-                                <h2>0</h2>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card bg-success text-white">
-                            <div class="card-body">
-                                <h5>Progresso</h5>
-                                <h2>0%</h2>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card bg-warning text-white">
-                            <div class="card-body">
-                                <h5>Certificados</h5>
-                                <h2>0</h2>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="mt-4">
-                    <h6>Próximas Atividades</h6>
-                    <div class="alert alert-info">
-                        Nenhuma atividade pendente no momento.
-                    </div>
+<div class="space-y-6">
+    <!-- Header Aluno -->
+    <div class="bg-white shadow-xl rounded-2xl overflow-hidden">
+        <div class="p-8 flex items-center justify-between bg-gradient-to-r from-emerald-500 to-teal-600 text-white">
+            <div class="flex items-center space-x-6">
+                <img class="h-20 w-20 rounded-full border-4 border-white/30 shadow-2xl" src="https://ui-avatars.com/api/?name=<%= user.name %>&background=fff&color=059669" alt="Avatar">
+                <div>
+                    <h2 class="text-3xl font-extrabold">Olá, <%= user.name %>!</h2>
+                    <p class="text-emerald-100 font-medium">Bem-vindo à sua central de consultoria e treinamentos.</p>
                 </div>
             </div>
+            <div class="hidden lg:flex flex-col items-end space-y-2">
+                <span class="text-xs font-bold uppercase tracking-widest text-emerald-200">Tipo de Perfil</span>
+                <p class="text-xl font-black">ALUNO VIP</p>
+                <div class="flex space-x-3 mt-4">
+                    <a href="/" class="text-xs font-bold bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg transition-all">Ver Site</a>
+                    <a href="/logout" class="text-xs font-bold bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg transition-all shadow-lg">Sair</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+            <div class="flex items-center space-x-4">
+                <div class="bg-blue-50 p-3 rounded-xl text-blue-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                </div>
+                <div>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-tighter">Meus Cursos</p>
+                    <h3 class="text-2xl font-black text-slate-800"><%= enrollments.length %></h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+            <div class="flex items-center space-x-4">
+                <div class="bg-amber-50 p-3 rounded-xl text-amber-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                </div>
+                <div>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-tighter">Em Andamento</p>
+                    <h3 class="text-2xl font-black text-slate-800"><%= enrollments.filter(e => e.status !== 'completo').length %></h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+            <div class="flex items-center space-x-4">
+                <div class="bg-emerald-50 p-3 rounded-xl text-emerald-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+                <div>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-tighter">Certificados</p>
+                    <h3 class="text-2xl font-black text-slate-800"><%= certificateCount %></h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cursos List -->
+    <div class="bg-white shadow-xl rounded-2xl overflow-hidden border border-slate-100">
+        <div class="p-6 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
+            <h3 class="font-black text-slate-800 uppercase tracking-tighter flex items-center">
+                <svg class="w-5 h-5 mr-2 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                Minha Trilhas de Conhecimento
+            </h3>
+        </div>
+        
+        <div class="grid grid-cols-1 divide-y divide-slate-100">
+            <% enrollments.forEach(enroll => { %>
+                <div class="p-6 hover:bg-slate-50/80 transition-all flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div class="flex items-center space-x-6">
+                        <div class="h-16 w-24 bg-slate-200 rounded-xl overflow-hidden flex-shrink-0 shadow-sm">
+                            <% if(enroll.Course.image) { %>
+                                <img src="<%= enroll.Course.image %>" class="h-full w-full object-cover">
+                            <% } %>
+                        </div>
+                        <div>
+                            <h4 class="text-lg font-bold text-slate-900"><%= enroll.Course.title %></h4>
+                            <div class="flex items-center text-xs text-slate-500 mt-1 uppercase font-bold tracking-tighter">
+                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
+                                <%= enroll.Course.location %>
+                                <span class="mx-2">•</span>
+                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <%= enroll.Course.workload %>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-4">
+                        <% if(enroll.status === 'completo') { %>
+                            <a href="/meu-certificado/<%= enroll.id %>" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-full text-xs font-black shadow-lg shadow-emerald-100 flex items-center transition-all uppercase">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                Baixar Certificado
+                            </a>
+                        <% } else { %>
+                            <div class="flex items-center space-x-2">
+                                <% 
+                                    let statusColor = 'bg-amber-100 text-amber-700';
+                                    if(enroll.status === 'confirmado') statusColor = 'bg-blue-100 text-blue-700';
+                                %>
+                                <span class="<%= statusColor %> px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-current opacity-70">
+                                    <%= enroll.status %>
+                                </span>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            <% }) %>
+
+            <% if(enrollments.length === 0) { %>
+                <div class="p-12 text-center">
+                    <div class="bg-slate-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-10 h-10 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+                    </div>
+                    <h4 class="text-slate-400 font-bold">Você ainda não se inscreveu em nenhum curso.</h4>
+                    <p class="text-slate-400 text-sm mt-1">Navegue pelo site e encontre o treinamento ideal para você!</p>
+                    <a href="/" class="inline-block mt-6 text-indigo-600 font-black uppercase text-xs hover:underline tracking-widest">Explorar Cursos →</a>
+                </div>
+            <% } %>
         </div>
     </div>
 </div>

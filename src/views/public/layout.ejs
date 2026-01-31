@@ -1,38 +1,138 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-br" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= title %></title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Favicon placeholder or site generic icon -->
+    <link rel="stylesheet" href="/css/output.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
 </head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="/">Consultoria</a>
-            <div class="navbar-nav ms-auto">
-                <% if (user) { %>
-                    <span class="navbar-text me-3">Olá, <%= user.name %></span>
-                    <a class="nav-link" href="/logout">Sair</a>
-                <% } else { %>
-                    <a class="nav-link" href="/admin/login">Login Admin</a>
-                    <a class="nav-link" href="/aluno/login">Login Aluno</a>
-                <% } %>
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
+    <!-- Navigation -->
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-200">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <div class="flex-shrink-0">
+                    <a href="/" class="flex items-center group">
+                        <% if (siteSettings.use_logo === 'true' && siteSettings.logo_url) { %>
+                            <img src="<%= siteSettings.logo_url %>" alt="<%= siteSettings.site_name %>" class="h-10 w-auto transform transition group-hover:scale-110">
+                        <% } else { %>
+                            <div class="bg-indigo-600 p-2 rounded-lg transform transition group-hover:rotate-12">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                </svg>
+                            </div>
+                            <span class="ml-3 text-2xl font-extrabold tracking-tight text-slate-900"><%= siteSettings.site_name.toUpperCase() %></span>
+                        <% } %>
+                    </a>
+                </div>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="/" class="text-slate-600 hover:text-indigo-600 font-medium transition-colors">Início</a>
+                    <a href="/#cursos" class="text-slate-600 hover:text-indigo-600 font-medium transition-colors">Cursos</a>
+                    <a href="/#contato" class="text-slate-600 hover:text-indigo-600 font-medium transition-colors">Sobre Nós</a>
+                    
+                    <div class="h-6 w-px bg-slate-200"></div>
+                    
+                    <% if (typeof user !== 'undefined' && user) { %>
+                        <div class="flex items-center space-x-4">
+                            <span class="text-slate-600 text-sm">Olá, <strong class="text-slate-900"><%= user.name %></strong></span>
+                            <a href="/logout" class="bg-slate-900 text-white px-5 py-2.5 rounded-full text-sm font-bold hover:bg-slate-800 transition-all shadow-md">Sair</a>
+                        </div>
+                    <% } else { %>
+                        <a href="/login" class="bg-indigo-600 text-white px-6 py-2.5 rounded-full text-sm font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 transform hover:-translate-y-0.5">Área do Aluno</a>
+                    <% } %>
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="md:hidden">
+                    <button type="button" class="text-slate-500 hover:text-slate-600 focus:outline-none">
+                        <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow">
+        <% if (typeof error !== 'undefined' && error) { %>
+            <div class="max-w-7xl mx-auto px-4 mt-6">
+                <div class="bg-red-50 border-l-4 border-red-500 p-4 shadow-sm animate-bounce">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-red-700 font-medium"><%= error %></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+        <% if (typeof success !== 'undefined' && success) { %>
+            <div class="max-w-7xl mx-auto px-4 mt-6">
+                <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 shadow-sm">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-emerald-700 font-medium"><%= success %></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+
+        <%- typeof body !== 'undefined' ? body : (typeof content !== 'undefined' ? content : '') %>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-white py-12 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-12">
+                <div class="col-span-2">
+                    <span class="text-2xl font-extrabold tracking-tight">
+                        <% if (siteSettings.use_logo === 'true' && siteSettings.logo_url) { %>
+                            <img src="<%= siteSettings.logo_url %>" alt="<%= siteSettings.site_name %>" class="h-8 w-auto">
+                        <% } else { %>
+                            <%= siteSettings.site_name.toUpperCase() %>
+                        <% } %>
+                    </span>
+                    <p class="mt-4 text-slate-400 max-w-sm">
+                        Líder em consultoria empresarial e treinamentos corporativos. Nossa missão é elevar o patamar técnico de empresas em todo o Brasil.
+                    </p>
+                </div>
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-wider text-slate-500 mb-4">Contato</h3>
+                    <ul class="space-y-2 text-slate-400 text-sm">
+                        <li>📧 <%= siteSettings.footer_email %></li>
+                        <li>📞 <%= siteSettings.footer_phone %></li>
+                        <li>📍 <%= siteSettings.footer_address %></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-wider text-slate-500 mb-4">Links</h3>
+                    <ul class="space-y-2 text-slate-400 text-sm">
+                        <li><a href="/login" class="hover:text-white transition-colors">Painel do Aluno</a></li>
+                        <li><a href="<%= siteSettings.link_cursos %>" class="hover:text-white transition-colors">Próximos Cursos</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Políticas de Privacidade</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-slate-800 mt-12 pt-8 text-center text-slate-500 text-xs">
+                &copy; <%= siteSettings.footer_copyright %>
             </div>
         </div>
-    </nav>
-    
-    <div class="container mt-4">
-        <% if (error) { %>
-            <div class="alert alert-danger"><%= error %></div>
-        <% } %>
-        <% if (success) { %>
-            <div class="alert alert-success"><%= success %></div>
-        <% } %>
-        
-        <%- body %>
-    </div>
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    </footer>
 </body>
 </html>
