@@ -489,6 +489,9 @@
   .h-full {
     height: 100%;
   }
+  .min-h-\[60vh\] {
+    min-height: 60vh;
+  }
   .min-h-screen {
     min-height: 100vh;
   }
@@ -1053,6 +1056,9 @@
   .p-8 {
     padding: calc(var(--spacing) * 8);
   }
+  .p-10 {
+    padding: calc(var(--spacing) * 10);
+  }
   .p-12 {
     padding: calc(var(--spacing) * 12);
   }
@@ -1351,6 +1357,14 @@
     }
     &::placeholder {
       color: var(--color-gray-500);
+    }
+  }
+  .placeholder-slate-400 {
+    &::-moz-placeholder {
+      color: var(--color-slate-400);
+    }
+    &::placeholder {
+      color: var(--color-slate-400);
     }
   }
   .opacity-0 {

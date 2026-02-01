@@ -34,6 +34,59 @@ class AuthController {
     }
   }
 
+  async showConfirmAccount(req, res) {
+    const { token } = req.params;
+    const { Op } = require('sequelize');
+    const user = await User.findOne({ 
+      where: { 
+        confirmationToken: token,
+        confirmationExpires: { [Op.gt]: new Date() }
+      } 
+    });
+
+    if (!user) {
+      return res.redirect('/login?error=Link de confirmação inválido ou expirado.');
+    }
+
+    res.render('auth/confirm', {
+      title: 'Confirmar Conta',
+      token,
+      email: user.email,
+      layout: 'public/layout'
+    });
+  }
+
+  async handleConfirmAccount(req, res) {
+    try {
+      const { token, password } = req.body;
+      const { Op } = require('sequelize');
+      const user = await User.findOne({ 
+        where: { 
+          confirmationToken: token,
+          confirmationExpires: { [Op.gt]: new Date() }
+        } 
+      });
+
+      if (!user) {
+        return res.redirect('/login?error=Link de confirmação inválido ou expirado.');
+      }
+
+      user.password = password;
+      user.active = true;
+      user.confirmationToken = null;
+      user.confirmationExpires = null;
+      await user.save();
+
+      const tokenJwt = generateToken(user);
+      req.session.token = tokenJwt;
+
+      res.redirect('/aluno/dashboard?success=Conta ativada com sucesso! Bem-vindo.');
+    } catch (error) {
+      console.error(error);
+      res.redirect('/login?error=Erro ao ativar conta.');
+    }
+  }
+
   async logout(req, res) {
     req.session.destroy();
     res.redirect('/?success=Logout realizado com sucesso');
