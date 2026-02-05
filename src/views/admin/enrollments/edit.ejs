@@ -1,0 +1,122 @@
+<div class="bg-white shadow-xl rounded-2xl overflow-hidden max-w-4xl mx-auto">
+    <div class="p-6 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
+        <h2 class="text-xl font-bold text-gray-800">Editar Inscrição #<%= enrollment.id %></h2>
+        <a href="/admin/inscricoes" class="text-gray-500 hover:text-gray-700 text-sm font-medium">Voltar para a lista</a>
+    </div>
+
+    <form action="/admin/inscricoes/<%= enrollment.id %>/edit" method="POST" class="p-6 space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Dados do Aluno -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-gray-700 border-b pb-2">Dados do Aluno</h3>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Nome Completo</label>
+                    <input type="text" name="studentName" value="<%= enrollment.studentName %>" required class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
+                    <input type="email" name="studentEmail" value="<%= enrollment.studentEmail %>" required class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
+                    <input type="text" name="studentPhone" value="<%= enrollment.studentPhone %>" required class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Empresa</label>
+                    <input type="text" name="company" value="<%= enrollment.company %>" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                </div>
+            </div>
+
+            <!-- Dados do Curso e Financeiro -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-gray-700 border-b pb-2">Curso e Valores</h3>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Curso</label>
+                    <select name="courseId" id="courseSelect" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                        <% courses.forEach(course => { %>
+                            <option value="<%= course.id %>" data-price="<%= course.price %>" <%= enrollment.courseId === course.id ? 'selected' : '' %>>
+                                <%= course.title %>
+                            </option>
+                        <% }) %>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                    <select name="status" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                        <option value="pendente" <%= enrollment.status === 'pendente' ? 'selected' : '' %>>Pendente</option>
+                        <option value="confirmado" <%= enrollment.status === 'confirmado' ? 'selected' : '' %>>Confirmado</option>
+                        <option value="completo" <%= enrollment.status === 'completo' ? 'selected' : '' %>>Completo</option>
+                        <option value="cancelado" <%= enrollment.status === 'cancelado' ? 'selected' : '' %>>Cancelado</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Valor do Curso (R$)</label>
+                        <input type="number" step="0.01" name="coursePrice" id="coursePrice" value="<%= enrollment.coursePrice || 0 %>" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Desconto (R$)</label>
+                        <input type="number" step="0.01" name="discount" id="discount" value="<%= enrollment.discount || 0 %>" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 p-4 rounded-lg flex justify-between items-center">
+                    <span class="font-bold text-gray-600">Valor Final:</span>
+                    <span class="text-xl font-bold text-green-600" id="finalPriceDisplay">R$ <%= (enrollment.finalPrice || 0).toFixed(2) %></span>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Observações</label>
+            <textarea name="observations" rows="3" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none"><%= enrollment.observations %></textarea>
+        </div>
+
+        <div class="pt-4 border-t border-gray-100 flex justify-end gap-3">
+            <a href="/admin/inscricoes" class="px-6 py-2 border border-gray-300 rounded-lg text-gray-600 font-bold hover:bg-gray-50 transition-all">Cancelar</a>
+            <button type="submit" class="px-6 py-2 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200">
+                Salvar Alterações
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    const courseSelect = document.getElementById('courseSelect');
+    const coursePriceInput = document.getElementById('coursePrice');
+    const discountInput = document.getElementById('discount');
+    const finalPriceDisplay = document.getElementById('finalPriceDisplay');
+
+    function updateFinalPrice() {
+        const price = parseFloat(coursePriceInput.value) || 0;
+        const discount = parseFloat(discountInput.value) || 0;
+        const final = Math.max(0, price - discount);
+        finalPriceDisplay.textContent = 'R$ ' + final.toFixed(2);
+    }
+
+    courseSelect.addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        const priceString = selectedOption.getAttribute('data-price');
+        
+        // Basic parsing assuming "R$ 100,00" format or similar
+        // Ideally pass raw number from backend but this works for simple strings
+        let price = 0;
+        if(priceString) {
+             const cleanPrice = priceString.toString().replace(/[^\d,]/g, '').replace(',', '.');
+             price = parseFloat(cleanPrice) || 0;
+        }
+        
+        coursePriceInput.value = price;
+        updateFinalPrice();
+    });
+
+    coursePriceInput.addEventListener('input', updateFinalPrice);
+    discountInput.addEventListener('input', updateFinalPrice);
+</script>

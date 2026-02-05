@@ -31,9 +31,29 @@ const Enrollment = sequelize.define('Enrollment', {
     type: DataTypes.ENUM('pendente', 'confirmado', 'completo', 'cancelado'),
     defaultValue: 'pendente'
   },
+  coursePrice: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: true,
+    defaultValue: 0.00
+  },
+  discount: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: true,
+    defaultValue: 0.00
+  },
+  finalPrice: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: true,
+    defaultValue: 0.00
+  },
   certificateJson: {
     type: DataTypes.JSON,
     allowNull: true
+  },
+  certificateCode: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    unique: true
   }
 });
 

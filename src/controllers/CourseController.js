@@ -108,6 +108,20 @@ class CourseController {
         }
       }
       
+      // Fetch course to get price
+      const course = await Course.findByPk(courseId);
+      if (!course) {
+        return res.redirect('/?error=Curso não encontrado');
+      }
+
+      // Parse price logic: assuming price is string like "R$ 100,00" or simple number
+      let priceValue = 0;
+      if (course.price) {
+        // Remove 'R$', dots, replace comma with dot
+        const cleanPrice = course.price.toString().replace(/[^\d,]/g, '').replace(',', '.');
+        priceValue = parseFloat(cleanPrice) || 0;
+      }
+
       await Enrollment.create({
         studentName: name,
         studentEmail: email,
@@ -116,7 +130,10 @@ class CourseController {
         observations,
         courseId,
         userId: currentUser.id,
-        status: 'pendente'
+        status: 'pendente',
+        coursePrice: priceValue,
+        discount: 0,
+        finalPrice: priceValue
       });
 
       res.redirect('/obrigado');

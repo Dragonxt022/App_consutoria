@@ -1,0 +1,68 @@
+<div class="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
+    <div class="max-w-md w-full bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div class="bg-slate-900 p-8 text-center">
+            <h1 class="text-2xl font-bold text-white mb-2">Validar Certificado</h1>
+            <p class="text-indigo-200 text-sm">Verifique a autenticidade de um certificado emitido por nós.</p>
+        </div>
+        
+        <div class="p-8">
+            <form action="/validar-certificado" method="POST" class="space-y-6">
+                <div>
+                    <label for="code" class="block text-sm font-medium text-gray-700 mb-1">Código do Certificado</label>
+                    <input type="text" name="code" id="code" value="<%= searchCode || '' %>" placeholder="Ex: A1B2-C3D4..." required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all uppercase text-center font-mono tracking-widest">
+                </div>
+                
+                <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-200">
+                    Verificar Autenticidade
+                </button>
+            </form>
+
+            <% if (result) { %>
+                <div class="mt-8 pt-8 border-t border-gray-100 animate-fade-in">
+                    <% if (result.valid) { %>
+                        <div class="text-center">
+                            <div class="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                                <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            </div>
+                            <h3 class="text-lg font-bold text-green-700 mb-1">Certificado Válido</h3>
+                            <p class="text-xs text-gray-500 mb-4">Este documento é autêntico.</p>
+                            
+                            <div class="bg-gray-50 rounded-lg p-4 text-left space-y-3">
+                                <div>
+                                    <span class="text-xs text-gray-500 uppercase font-bold">Aluno</span>
+                                    <p class="text-gray-800 font-medium"><%= result.studentName %></p>
+                                </div>
+                                <div>
+                                    <span class="text-xs text-gray-500 uppercase font-bold">Curso</span>
+                                    <p class="text-gray-800 font-medium"><%= result.courseTitle %></p>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <span class="text-xs text-gray-500 uppercase font-bold">Conclusão</span>
+                                        <p class="text-gray-800 font-medium"><%= new Date(result.completionDate).toLocaleDateString('pt-BR') %></p>
+                                    </div>
+                                    <div>
+                                        <span class="text-xs text-gray-500 uppercase font-bold">Carga Horária</span>
+                                        <p class="text-gray-800 font-medium"><%= result.workload %>h</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <% } else { %>
+                        <div class="text-center">
+                            <div class="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
+                                <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            </div>
+                            <h3 class="text-lg font-bold text-red-700 mb-1">Certificado Não Encontrado</h3>
+                            <p class="text-sm text-gray-600">O código informado não corresponde a nenhum registro em nosso sistema.</p>
+                        </div>
+                    <% } %>
+                </div>
+            <% } %>
+        </div>
+        
+        <div class="bg-gray-50 p-4 text-center border-t border-gray-100">
+            <a href="/" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">Voltar para o site</a>
+        </div>
+    </div>
+</div>

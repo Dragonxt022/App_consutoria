@@ -37,9 +37,9 @@
                 <div class="p-6 pt-0 mt-auto">
                     <% if(course.Enrollments.length > 0) { %>
                         <div class="space-y-3">
-                            <a href="/admin/certificados/json/<%= course.id %>" class="w-full flex items-center justify-center bg-indigo-600 text-white py-3 rounded-xl text-sm font-bold shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                                Baixar JSON para Certificados
+                            <a href="/admin/inscricoes?courseId=<%= course.id %>&status=completo" class="w-full flex items-center justify-center bg-indigo-600 text-white py-3 rounded-xl text-sm font-bold shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                                Ver Alunos Certificados
                             </a>
                         </div>
                     <% } else { %>

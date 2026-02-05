@@ -1,5 +1,6 @@
 const { Enrollment, Course, User } = require('../models');
 const { Op } = require('sequelize');
+const crypto = require('crypto');
 
 class EnrollmentController {
   async adminList(req, res) {
@@ -18,6 +19,9 @@ class EnrollmentController {
       }
       if (courseId) {
         where.courseId = courseId;
+      }
+      if (req.query.status) {
+        where.status = req.query.status;
       }
 
       const { count, rows: enrollments } = await Enrollment.findAndCountAll({
@@ -40,7 +44,7 @@ class EnrollmentController {
           totalPages,
           totalItems: count
         },
-        filters: { search, courseId },
+        filters: { search, courseId, status: req.query.status },
         user: req.user,
         layout: 'admin/layout'
       });
@@ -69,8 +73,9 @@ class EnrollmentController {
           studentName: enrollment.studentName,
           courseTitle: course.title,
           workload: course.workload,
+          workload: course.workload,
           completionDate: new Date().toLocaleDateString('pt-BR'),
-          verificationCode: Math.random().toString(36).substring(2, 10).toUpperCase()
+          verificationCode: crypto.randomBytes(4).toString('hex').toUpperCase()
         };
       }
 
@@ -126,20 +131,123 @@ class EnrollmentController {
     }
   }
 
-  async generateIndividualJson(req, res) {
+  async viewStudentCertificate(req, res) {
     try {
       const { id } = req.params;
-      const enrollment = await Enrollment.findByPk(id);
-      if (!enrollment || enrollment.status !== 'completo') {
-        return res.status(404).json({ error: 'Certificado não disponível' });
+      
+      const where = { id };
+      // Se não for admin, restringe ao próprio usuário
+      if (req.user.role !== 'admin') {
+        where.userId = req.user.id;
       }
 
-      res.header("Content-Type", "application/json");
-      res.attachment(`certificado-${enrollment.studentName}-${id}.json`);
-      res.send(JSON.stringify(enrollment.certificateJson, null, 2));
+      const enrollment = await Enrollment.findOne({ where });
+
+      if (!enrollment || enrollment.status !== 'completo') {
+        const redirectUrl = req.user.role === 'admin' ? '/admin/inscricoes' : '/aluno/dashboard';
+        return res.redirect(`${redirectUrl}?error=Certificado não disponível`);
+      }
+
+      // Se não tiver código, gera agora (Self-healing)
+      if (!enrollment.certificateCode) {
+         enrollment.certificateCode = crypto.randomBytes(4).toString('hex').toUpperCase().match(/.{1,4}/g).join('-');
+         
+         // Garante também o JSON se faltar
+         if (!enrollment.certificateJson) {
+             const course = await enrollment.getCourse();
+             enrollment.certificateJson = {
+                 studentName: enrollment.studentName,
+                 courseTitle: course.title,
+                 workload: course.workload,
+                 completionDate: new Date().toLocaleDateString('pt-BR'),
+                 verificationCode: enrollment.certificateCode
+             };
+         }
+         await enrollment.save();
+      }
+
+      res.redirect(`/certificado/${enrollment.certificateCode}`);
     } catch (error) {
       console.error(error);
-      res.redirect('/admin/inscricoes?error=Erro ao gerar JSON');
+      const redirectUrl = req.user.role === 'admin' ? '/admin/inscricoes' : '/aluno/dashboard';
+      res.redirect(`${redirectUrl}?error=Erro ao visualizar certificado`);
+    }
+  }
+  async edit(req, res) {
+    try {
+      const { id } = req.params;
+      const enrollment = await Enrollment.findByPk(id, {
+        include: [{ model: Course }]
+      });
+      
+      if (!enrollment) {
+        return res.redirect('/admin/inscricoes?error=Inscrição não encontrada');
+      }
+
+      const courses = await Course.findAll({ attributes: ['id', 'title', 'price'] });
+
+      res.render('admin/enrollments/edit', {
+        title: 'Editar Inscrição',
+        enrollment,
+        courses,
+        user: req.user,
+        layout: 'admin/layout'
+      });
+    } catch (error) {
+      console.error(error);
+      res.redirect('/admin/inscricoes?error=Erro ao carregar edição');
+    }
+  }
+
+  async update(req, res) {
+    try {
+      const { id } = req.params;
+      const { studentName, studentEmail, studentPhone, company, observations, courseId, coursePrice, discount, status } = req.body;
+
+      const enrollment = await Enrollment.findByPk(id);
+      if (!enrollment) {
+        return res.redirect('/admin/inscricoes?error=Inscrição não encontrada');
+      }
+
+      // Calculate final price
+      const price = parseFloat(coursePrice) || 0;
+      const disc = parseFloat(discount) || 0;
+      const final = price - disc;
+
+      enrollment.studentName = studentName;
+      enrollment.studentEmail = studentEmail;
+      enrollment.studentPhone = studentPhone;
+      enrollment.company = company;
+      enrollment.observations = observations;
+      enrollment.courseId = courseId;
+      enrollment.coursePrice = price;
+      enrollment.discount = disc;
+      enrollment.finalPrice = final;
+      enrollment.status = status;
+
+      // Check if status changed to complete to generate certificate data
+      if (status === 'completo') {
+         if (!enrollment.certificateJson) {
+             const course = await Course.findByPk(courseId);
+             enrollment.certificateJson = {
+                 studentName: enrollment.studentName,
+                 courseName: course.title,
+                 date: new Date(),
+                 workload: course.workload
+             };
+         }
+         
+         if (!enrollment.certificateCode) {
+             enrollment.certificateCode = crypto.randomBytes(4).toString('hex').toUpperCase().match(/.{1,4}/g).join('-');
+         }
+      }
+
+      await enrollment.save();
+
+      res.redirect('/admin/inscricoes?success=Inscrição atualizada com sucesso');
+    } catch (error) {
+      console.error(error);
+      res.redirect(`/admin/inscricoes/${req.params.id}/editar?error=Erro ao atualizar inscrição`);
     }
   }
 }

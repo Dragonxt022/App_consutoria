@@ -4,6 +4,8 @@ const HomeController = require('../controllers/HomeController');
 const CourseController = require('../controllers/CourseController');
 const SettingController = require('../controllers/SettingController');
 const EnrollmentController = require('../controllers/EnrollmentController');
+const SalesController = require('../controllers/SalesController');
+const CertificateController = require('../controllers/CertificateController');
 const { authMiddleware, guestMiddleware, publicMiddleware } = require('../middleware/auth'); // Adicione publicMiddleware
 const upload = require('../config/multer');
 
@@ -17,17 +19,29 @@ router.get('/inscrever/:id', publicMiddleware, (req, res) => CourseController.en
 router.post('/inscrever', publicMiddleware, (req, res) => CourseController.submitEnrollment(req, res));
 router.get('/obrigado', publicMiddleware, (req, res) => CourseController.thankYou(req, res));
 
+// Rotas de Certificado Público
+router.get('/certificado/:code', publicMiddleware, (req, res) => CertificateController.view(req, res));
+router.get('/validar-certificado', publicMiddleware, (req, res) => CertificateController.validate(req, res));
+router.post('/validar-certificado', publicMiddleware, (req, res) => CertificateController.check(req, res));
+
 // Rota para certificado individual (requer autenticação)
-router.get('/meu-certificado/:id', authMiddleware('aluno'), (req, res) => EnrollmentController.generateIndividualJson(req, res));
+router.get('/meu-certificado/:id', authMiddleware('aluno'), (req, res) => EnrollmentController.viewStudentCertificate(req, res));
 
 // Admin Enrollment Routes
 router.get('/admin/inscricoes', authMiddleware('admin'), (req, res) => EnrollmentController.adminList(req, res));
 router.post('/admin/inscricoes/:id/status', authMiddleware('admin'), (req, res) => EnrollmentController.updateStatus(req, res));
-router.get('/admin/inscricoes/:id/json', authMiddleware('admin'), (req, res) => EnrollmentController.generateIndividualJson(req, res));
+router.get('/admin/inscricoes/:id/json', authMiddleware('admin'), (req, res) => EnrollmentController.viewStudentCertificate(req, res));
 
 // Admin Certificate Routes
 router.get('/admin/certificados', authMiddleware('admin'), (req, res) => EnrollmentController.adminCertificates(req, res));
 router.get('/admin/certificados/json/:courseId', authMiddleware('admin'), (req, res) => EnrollmentController.generateJson(req, res));
+
+// Admin Enrollment Edit Routes
+router.get('/admin/inscricoes/:id/editar', authMiddleware('admin'), (req, res) => EnrollmentController.edit(req, res));
+router.post('/admin/inscricoes/:id/edit', authMiddleware('admin'), (req, res) => EnrollmentController.update(req, res));
+
+// Admin Sales Routes
+router.get('/admin/vendas', authMiddleware('admin'), (req, res) => SalesController.index(req, res));
 
 // Admin Settings Routes
 router.get('/admin/configuracoes', authMiddleware('admin'), (req, res) => SettingController.index(req, res));

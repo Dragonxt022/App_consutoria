@@ -1,0 +1,136 @@
+<div class="space-y-6">
+    <div class="flex justify-between items-center flex-wrap gap-4">
+        <div>
+            <h2 class="text-2xl font-bold text-gray-800">Dashboard de Vendas</h2>
+            <div class="text-sm text-gray-500">
+                Visão Geral de Receita
+            </div>
+        </div>
+        
+        <form action="/admin/vendas" method="GET" class="flex items-center space-x-2 bg-white p-2 rounded-lg shadow-sm border border-gray-100">
+            <select name="month" class="text-sm border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-gray-700 bg-gray-50">
+                <% const months = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']; %>
+                <option value="">Todas as Datas</option>
+                <% months.forEach((m, index) => { %>
+                    <option value="<%= index + 1 %>" <%= filters.month == (index + 1) ? 'selected' : '' %>><%= m %></option>
+                <% }) %>
+            </select>
+            
+            <select name="year" class="text-sm border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-gray-700 bg-gray-50">
+                <% filters.years.forEach(y => { %>
+                    <option value="<%= y %>" <%= filters.year == y ? 'selected' : '' %>><%= y %></option>
+                <% }) %>
+            </select>
+            
+            <button type="submit" class="p-2 text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
+            </button>
+        </form>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center space-x-4">
+            <div class="p-3 bg-green-100 rounded-full text-green-600">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+            <div>
+                <p class="text-sm text-gray-500 font-medium">Receita Total</p>
+                <p class="text-2xl font-bold text-gray-800">R$ <%= stats.totalRevenue ? stats.totalRevenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) : '0,00' %></p>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center space-x-4">
+            <div class="p-3 bg-blue-100 rounded-full text-blue-600">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+            </div>
+            <div>
+                <p class="text-sm text-gray-500 font-medium">Vendas Confirmadas</p>
+                <p class="text-2xl font-bold text-gray-800"><%= stats.totalSales %></p>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center space-x-4">
+            <div class="p-3 bg-purple-100 rounded-full text-purple-600">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+            </div>
+            <div>
+                <p class="text-sm text-gray-500 font-medium">Ticket Médio</p>
+                <p class="text-2xl font-bold text-gray-800">R$ <%= stats.averageTicket ? stats.averageTicket.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) : '0,00' %></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Top Courses -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="p-6 border-b border-gray-50">
+                <h3 class="text-lg font-bold text-gray-800">Desempenho por Curso</h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead class="bg-gray-50 text-gray-400 text-xs uppercase font-bold">
+                        <tr>
+                            <th class="px-6 py-3">Curso</th>
+                            <th class="px-6 py-3 text-center">Vendas</th>
+                            <th class="px-6 py-3 text-right">Receita</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        <% if(salesByCourse.length > 0) { %>
+                            <% salesByCourse.forEach(item => { %>
+                                <tr class="hover:bg-gray-50/50 transition-colors">
+                                    <td class="px-6 py-4 font-medium text-gray-700"><%= item.title %></td>
+                                    <td class="px-6 py-4 text-center text-gray-600"><%= item.count %></td>
+                                    <td class="px-6 py-4 text-right font-bold text-green-600">R$ <%= item.revenue ? item.revenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) : '0,00' %></td>
+                                </tr>
+                            <% }) %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="3" class="px-6 py-8 text-center text-gray-500 italic">Sem dados de vendas ainda.</td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Recent Sales -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="p-6 border-b border-gray-50 flex justify-between items-center">
+                <h3 class="text-lg font-bold text-gray-800">Vendas Recentes</h3>
+                <a href="/admin/inscricoes" class="text-sm text-indigo-600 font-medium hover:underline">Ver todas</a>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead class="bg-gray-50 text-gray-400 text-xs uppercase font-bold">
+                        <tr>
+                            <th class="px-6 py-3">Aluno / Curso</th>
+                            <th class="px-6 py-3 text-right">Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        <% if(recentSales.length > 0) { %>
+                            <% recentSales.forEach(sale => { %>
+                                <tr class="hover:bg-gray-50/50 transition-colors">
+                                    <td class="px-6 py-4">
+                                        <div class="font-medium text-gray-800"><%= sale.studentName %></div>
+                                        <div class="text-xs text-gray-500 truncate max-w-[200px]"><%= sale.Course ? sale.Course.title : 'Curso não encontrado' %></div>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <div class="font-bold text-green-600">R$ <%= sale.finalPrice ? sale.finalPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) : '0,00' %></div>
+                                        <div class="text-[10px] text-gray-400"><%= new Date(sale.createdAt).toLocaleDateString('pt-BR') %></div>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="2" class="px-6 py-8 text-center text-gray-500 italic">Nenhuma venda recente.</td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

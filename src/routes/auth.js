@@ -11,4 +11,10 @@ router.get('/logout', AuthController.logout);
 router.get('/confirmar-conta/:token', AuthController.showConfirmAccount);
 router.post('/confirmar-conta', AuthController.handleConfirmAccount);
 
+router.get('/esqueci-senha', AuthController.showForgotPassword);
+router.post('/esqueci-senha', AuthController.handleForgotPassword);
+
+router.get('/redefinir-senha/:token', AuthController.showResetPassword);
+router.post('/redefinir-senha', AuthController.handleResetPassword);
+
 module.exports = router;
