@@ -6,7 +6,44 @@
     <title><%= title %> | Painel Administrativo</title>
     <link rel="stylesheet" href="/css/output.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>body { font-family: 'Inter', sans-serif; }</style>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .sidebar-group-title {
+            color: #94a3b8;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+        .sidebar-link-active {
+            background-color: #1e293b;
+            color: white;
+        }
+        .sidebar-link-active svg {
+            color: #6366f1;
+        }
+        .submenu-enter {
+            max-height: 0;
+            overflow: hidden;
+        }
+        .submenu-enter-active {
+            transition: max-height 0.3s ease-out;
+            max-height: 200px;
+        }
+        .submenu-leave {
+            max-height: 200px;
+        }
+        .submenu-leave-active {
+            transition: max-height 0.3s ease-in;
+            max-height: 0;
+        }
+    </style>
 </head>
 <body class="bg-slate-100 min-h-screen">
     <div class="flex">
@@ -22,47 +59,71 @@
             </div>
 
             <nav class="mt-6 px-4">
-                <div class="space-y-1">
-                    <a href="/admin/dashboard" class="group flex items-center px-3 py-3 text-sm font-medium rounded-lg hover:bg-slate-800 hover:text-white transition-colors">
-                        <svg class="mr-3 h-6 w-6 text-slate-400 group-hover:text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <!-- Grupo: Início -->
+                <p class="sidebar-group-title">Início</p>
+                <div class="space-y-1 mb-4">
+                    <a href="/admin/dashboard" class="group flex items-center px-3 py-3 text-sm font-medium rounded-lg hover:bg-slate-800 hover:text-white transition-colors <%= title === 'Dashboard' ? 'sidebar-link-active' : '' %>">
+                        <svg class="mr-3 h-6 w-6 <%= title === 'Dashboard' ? 'text-indigo-500' : 'text-slate-400 group-hover:text-indigo-500' %>" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                         </svg>
                         Dashboard
                     </a>
+                </div>
 
-                    <!-- Cursos with Submenu -->
-                    <div x-data="{ open: true }" class="space-y-1">
-                        <button class="w-full flex items-center px-3 py-3 text-sm font-medium rounded-lg hover:bg-slate-800 hover:text-white transition-colors justify-between">
-                            <div class="flex items-center">
-                                <svg class="mr-3 h-6 w-6 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                                </svg>
-                                <span>Cursos</span>
-                            </div>
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
-                        </button>
-                        <div class="pl-12 space-y-1">
-                            <a href="/admin/cursos" class="block py-2 text-sm hover:text-indigo-400 transition-colors">Listar</a>
-                            <a href="/admin/cursos/criar" class="block py-2 text-sm hover:text-indigo-400 transition-colors">Cadastrar</a>
-                        </div>
-                    </div>
-
-                    <a href="/admin/inscricoes" class="group flex items-center px-3 py-3 text-sm font-medium rounded-lg hover:bg-slate-800 hover:text-white transition-colors <%= title === 'Gestão de Inscrições' ? 'bg-slate-800 text-white' : '' %>">
-                        <svg class="mr-3 h-6 w-6 text-slate-400 group-hover:text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <!-- Grupo: Gestão -->
+                <p class="sidebar-group-title">Gestão</p>
+                <div class="space-y-1 mb-4">
+                    <a href="/admin/inscricoes" class="group flex items-center px-3 py-3 text-sm font-medium rounded-lg hover:bg-slate-800 hover:text-white transition-colors <%= title === 'Gestão de Inscrições' ? 'sidebar-link-active' : '' %>">
+                        <svg class="mr-3 h-6 w-6 <%= title === 'Gestão de Inscrições' ? 'text-indigo-500' : 'text-slate-400 group-hover:text-indigo-500' %>" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                         </svg>
                         Inscrições
                     </a>
 
-                    <a href="/admin/certificados" class="group flex items-center px-3 py-3 text-sm font-medium rounded-lg hover:bg-slate-800 hover:text-white transition-colors <%= title === 'Gerador de Certificados' ? 'bg-slate-800 text-white' : '' %>">
-                        <svg class="mr-3 h-6 w-6 text-slate-400 group-hover:text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <!-- Submenu de Cursos -->
+                    <div x-data="{ 
+                        open: <%= ['Listar Cursos', 'Cadastrar Curso'].includes(title) ? 'true' : 'false' %>, 
+                        toggle() { this.open = !this.open }
+                    }">
+                        <button @click="toggle()" class="w-full flex items-center px-3 py-3 text-sm font-medium rounded-lg hover:bg-slate-800 hover:text-white transition-colors justify-between <%= ['Listar Cursos', 'Cadastrar Curso'].includes(title) ? 'sidebar-link-active' : '' %>">
+                            <div class="flex items-center">
+                                <svg class="mr-3 h-6 w-6 <%= ['Listar Cursos', 'Cadastrar Curso'].includes(title) ? 'text-indigo-500' : 'text-slate-400 group-hover:text-indigo-500' %>" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                </svg>
+                                <span>Cursos</span>
+                            </div>
+                            <svg :class="open ? 'transform rotate-180' : ''" class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        
+                        <div x-show="open" x-collapse class="pl-12 space-y-1 mt-1" style="display: none;">
+                            <a href="/admin/cursos" class="block py-2 text-sm hover:text-indigo-400 transition-colors <%= title === 'Listar Cursos' ? 'text-indigo-400 font-medium' : '' %>">
+                                Listar
+                            </a>
+                            <a href="/admin/cursos/criar" class="block py-2 text-sm hover:text-indigo-400 transition-colors <%= title === 'Cadastrar Curso' ? 'text-indigo-400 font-medium' : '' %>">
+                                Cadastrar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grupo: Ferramentas -->
+                <p class="sidebar-group-title">Ferramentas</p>
+                <div class="space-y-1 mb-4">
+                    <a href="/admin/certificados" class="group flex items-center px-3 py-3 text-sm font-medium rounded-lg hover:bg-slate-800 hover:text-white transition-colors <%= title === 'Gerador de Certificados' ? 'sidebar-link-active' : '' %>">
+                        <svg class="mr-3 h-6 w-6 <%= title === 'Gerador de Certificados' ? 'text-indigo-500' : 'text-slate-400 group-hover:text-indigo-500' %>" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                         Certificados
                     </a>
+                </div>
 
-                    <a href="/admin/configuracoes" class="group flex items-center px-3 py-3 text-sm font-medium rounded-lg hover:bg-slate-800 hover:text-white transition-colors <%= title === 'Configurações do Site' ? 'bg-slate-800 text-white' : '' %>">
-                        <svg class="mr-3 h-6 w-6 text-slate-400 group-hover:text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <!-- Grupo: Sistema -->
+                <p class="sidebar-group-title">Sistema</p>
+                <div class="space-y-1">
+                    <a href="/admin/configuracoes" class="group flex items-center px-3 py-3 text-sm font-medium rounded-lg hover:bg-slate-800 hover:text-white transition-colors <%= title === 'Configurações do Site' ? 'sidebar-link-active' : '' %>">
+                        <svg class="mr-3 h-6 w-6 <%= title === 'Configurações do Site' ? 'text-indigo-500' : 'text-slate-400 group-hover:text-indigo-500' %>" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                         </svg>
                         Configurações

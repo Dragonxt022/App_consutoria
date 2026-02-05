@@ -1,0 +1,116 @@
+<div class="bg-slate-50 min-h-screen py-16 px-4">
+    <div class="max-w-4xl mx-auto">
+        <div class="bg-white rounded-3xl shadow-xl shadow-slate-200/50 overflow-hidden border border-slate-100">
+            <!-- Header -->
+            <div class="bg-indigo-600 p-12 text-center relative overflow-hidden">
+                <div class="absolute inset-0 opacity-10">
+                    <svg class="w-full h-full" fill="none" viewBox="0 0 100 100" preserveAspectRatio="none">
+                        <path d="M0 100 C 20 0 50 0 100 100 Z" fill="white"></path>
+                    </svg>
+                </div>
+                <div class="relative z-10">
+                    <h1 class="text-3xl md:text-4xl font-black text-white uppercase tracking-tighter mb-4">Política de Privacidade</h1>
+                    <p class="text-indigo-100 text-sm font-medium uppercase tracking-widest">Tratamento de Dados conforme a <span class="text-white font-bold">LGPD</span></p>
+                </div>
+            </div>
+
+            <div class="p-8 md:p-12 prose prose-slate max-w-none">
+                <div class="flex items-center space-x-2 text-xs font-bold text-slate-400 uppercase mb-12 border-b border-slate-50 pb-4">
+                    <span>Última atualização:</span>
+                    <span class="text-slate-900"><%= new Date().toLocaleDateString('pt-BR') %></span>
+                </div>
+
+                <div class="space-y-12">
+                    <section>
+                        <h2 class="text-xl font-black text-slate-800 uppercase tracking-tight flex items-center">
+                            <span class="w-8 h-8 bg-indigo-50 text-indigo-600 rounded-lg flex items-center justify-center mr-3 text-sm italic">01</span>
+                            Introdução
+                        </h2>
+                        <p class="text-slate-600 leading-relaxed mt-4">
+                            A presente Política de Privacidade tem por objetivo informar como a <strong><%= siteSettings.site_name %></strong> realiza o tratamento de seus dados pessoais em conformidade com a <strong>Lei Geral de Proteção de Dados (Lei nº 13.709/2018 - LGPD)</strong>. Valorizamos a transparência e a segurança de suas informações em todos os nossos processos.
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2 class="text-xl font-black text-slate-800 uppercase tracking-tight flex items-center">
+                            <span class="w-8 h-8 bg-emerald-50 text-emerald-600 rounded-lg flex items-center justify-center mr-3 text-sm italic">02</span>
+                            Quais dados coletamos?
+                        </h2>
+                        <ul class="mt-4 space-y-3 text-slate-600">
+                            <li class="flex items-start">
+                                <span class="text-emerald-500 mr-2">✔</span>
+                                <div><strong>Dados de Identificação:</strong> Nome completo e CPF (para emissão de certificados e notas fiscais).</div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-emerald-500 mr-2">✔</span>
+                                <div><strong>Dados de Contato:</strong> E-mail e número de telefone/WhatsApp.</div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-emerald-500 mr-2">✔</span>
+                                <div><strong>Dados Profissionais:</strong> Empresa vinculada e cargo (para customização de treinamentos).</div>
+                            </li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h2 class="text-xl font-black text-slate-800 uppercase tracking-tight flex items-center">
+                            <span class="w-8 h-8 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center mr-3 text-sm italic">03</span>
+                            Finalidade do Tratamento
+                        </h2>
+                        <p class="text-slate-600 leading-relaxed mt-4">
+                            Seus dados são utilizados exclusivamente para as seguintes finalidades:
+                        </p>
+                        <div class="grid md:grid-cols-2 gap-4 mt-6">
+                            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                                <h4 class="font-bold text-slate-900 mb-2">Inscrição em Cursos</h4>
+                                <p class="text-xs text-slate-500">Garantir sua vaga e gerenciar a logística do treinamento presencial.</p>
+                            </div>
+                            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                                <h4 class="font-bold text-slate-900 mb-2">Certificação Digital</h4>
+                                <p class="text-xs text-slate-500">Processamento e emissão de certificados válidos de conclusão.</p>
+                            </div>
+                            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                                <h4 class="font-bold text-slate-900 mb-2">Comunicação e Suporte</h4>
+                                <p class="text-xs text-slate-500">Envio de confirmações, lembretes de aula e informativos sobre novos cursos.</p>
+                            </div>
+                            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                                <h4 class="font-bold text-slate-900 mb-2">Obrigações Legais</h4>
+                                <p class="text-xs text-slate-500">Atendimento às exigências fiscais e contábeis brasileiras.</p>
+                            </div>
+                        </div>
+                    </section> section>
+
+                    <section>
+                        <h2 class="text-xl font-black text-slate-800 uppercase tracking-tight flex items-center">
+                            <span class="w-8 h-8 bg-amber-50 text-amber-600 rounded-lg flex items-center justify-center mr-3 text-sm italic">04</span>
+                            Seus Direitos (LGPD)
+                        </h2>
+                        <p class="text-slate-600 leading-relaxed mt-4">
+                            A LGPD garante a você diversos direitos sobre seus dados. Você pode solicitar à nossa equipe:
+                        </p>
+                        <div class="mt-4 p-6 bg-amber-50 rounded-3xl border border-amber-100 text-amber-900 text-sm space-y-2">
+                            <p>• Confirmação da existência de tratamento;</p>
+                            <p>• Acesso e correção de dados incompletos ou inexatos;</p>
+                            <p>• Exclusão de dados tratados com seu consentimento (observadas as exceções legais);</p>
+                            <p>• Revogação do consentimento a qualquer momento.</p>
+                        </div>
+                    </section>
+
+                    <section>
+                        <h2 class="text-xl font-black text-slate-800 uppercase tracking-tight flex items-center">
+                            <span class="w-8 h-8 bg-slate-900 text-slate-50 rounded-lg flex items-center justify-center mr-3 text-sm italic">05</span>
+                            Segurança
+                        </h2>
+                        <p class="text-slate-600 leading-relaxed mt-4">
+                            Implementamos medidas técnicas e organizativas adequadas para proteger seus dados contra acessos não autorizados e situações acidentais ou ilícitas de destruição, perda ou alteração.
+                        </p> section>
+
+                    <div class="mt-16 pt-8 border-t border-slate-100 text-center">
+                        <p class="text-sm text-slate-400 mb-4">Para dúvidas ou solicitações sobre seus dados, fale com nosso DPO (Encarregado):</p>
+                        <a href="mailto:<%= siteSettings.footer_email %>" class="text-indigo-600 font-black hover:underline tracking-tight"><%= siteSettings.footer_email %></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

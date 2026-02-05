@@ -30,17 +30,38 @@ const guestMiddleware = (req, res, next) => {
   if (token) {
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      if (decoded.role === 'admin') {
-        return res.redirect('/admin/dashboard');
-      } else {
-        return res.redirect('/aluno/dashboard');
+      // Somente redireciona se tentar acessar páginas de login/registro
+      // Permite que usuários autenticados acessem o site institucional
+      if (req.path === '/login' || req.path === '/register') {
+        if (decoded.role === 'admin') {
+          return res.redirect('/admin/dashboard');
+        } else {
+          return res.redirect('/aluno/dashboard');
+        }
       }
     } catch (error) {
-      next();
+      // Token inválido - continua como guest
     }
   }
   
   next();
 };
 
-module.exports = { authMiddleware, guestMiddleware };
+// Middleware para site institucional (público)
+const publicMiddleware = (req, res, next) => {
+  const token = req.session.token;
+  
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      req.user = decoded;
+      res.locals.user = decoded;
+    } catch (error) {
+      // Token inválido - não define user
+    }
+  }
+  
+  next();
+};
+
+module.exports = { authMiddleware, guestMiddleware, publicMiddleware };

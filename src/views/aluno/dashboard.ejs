@@ -1,28 +1,43 @@
 <div class="space-y-6">
     <!-- Header Aluno -->
     <div class="bg-white shadow-xl rounded-2xl overflow-hidden">
-        <div class="p-8 flex items-center justify-between bg-gradient-to-r from-emerald-500 to-teal-600 text-white">
-            <div class="flex items-center space-x-6">
-                <img class="h-20 w-20 rounded-full border-4 border-white/30 shadow-2xl" src="https://ui-avatars.com/api/?name=<%= user.name %>&background=fff&color=059669" alt="Avatar">
+        <div class="p-6 md:p-8 flex flex-col md:flex-row items-center justify-between bg-gradient-to-r from-emerald-500 to-teal-600 text-white">
+            <div class="flex items-center space-x-4 md:space-x-6 mb-4 md:mb-0">
+                <div class="relative">
+                    <img class="h-16 w-16 md:h-20 md:w-20 rounded-full border-4 border-white/30 shadow-2xl" 
+                         src="https://ui-avatars.com/api/?name=<%= user.name %>&background=fff&color=059669" 
+                         alt="<%= user.name %>">
+                    <div class="absolute -bottom-1 -right-1 h-5 w-5 bg-emerald-400 rounded-full border-2 border-white"></div>
+                </div>
                 <div>
-                    <h2 class="text-3xl font-extrabold">Olá, <%= user.name %>!</h2>
-                    <p class="text-emerald-100 font-medium">Bem-vindo à sua central de consultoria e treinamentos.</p>
+                    <h2 class="text-2xl md:text-3xl font-extrabold">Olá, <%= user.name.split(' ')[0] %>!</h2>
+                    <p class="text-emerald-100 font-medium text-sm md:text-base">Bem-vindo à sua central de consultoria e treinamentos.</p>
                 </div>
             </div>
-            <div class="hidden lg:flex flex-col items-end space-y-2">
+            <div class="flex flex-col items-start md:items-end space-y-2">
                 <span class="text-xs font-bold uppercase tracking-widest text-emerald-200">Tipo de Perfil</span>
                 <p class="text-xl font-black">ALUNO VIP</p>
-                <div class="flex space-x-3 mt-4">
-                    <a href="/" class="text-xs font-bold bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg transition-all">Ver Site</a>
-                    <a href="/logout" class="text-xs font-bold bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg transition-all shadow-lg">Sair</a>
+                <div class="flex space-x-2 md:space-x-3 mt-2 md:mt-4">
+                    <a href="/" class="text-xs font-bold bg-white/10 hover:bg-white/20 px-3 py-2 rounded-lg transition-all flex items-center">
+                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                        </svg>
+                        Ver Site
+                    </a>
+                    <a href="/logout" class="text-xs font-bold bg-red-500 hover:bg-red-600 px-3 py-2 rounded-lg transition-all shadow-lg flex items-center">
+                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                        Sair
+                    </a>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Stats Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+        <div class="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
             <div class="flex items-center space-x-4">
                 <div class="bg-blue-50 p-3 rounded-xl text-blue-600">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
@@ -34,7 +49,7 @@
             </div>
         </div>
 
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+        <div class="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
             <div class="flex items-center space-x-4">
                 <div class="bg-amber-50 p-3 rounded-xl text-amber-600">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
@@ -46,7 +61,7 @@
             </div>
         </div>
 
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+        <div class="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
             <div class="flex items-center space-x-4">
                 <div class="bg-emerald-50 p-3 rounded-xl text-emerald-600">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -61,65 +76,324 @@
 
     <!-- Cursos List -->
     <div class="bg-white shadow-xl rounded-2xl overflow-hidden border border-slate-100">
-        <div class="p-6 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
-            <h3 class="font-black text-slate-800 uppercase tracking-tighter flex items-center">
+        <div class="p-5 md:p-6 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
+            <h3 class="font-black text-slate-800 uppercase tracking-tighter flex items-center text-lg md:text-xl">
                 <svg class="w-5 h-5 mr-2 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                Minha Trilhas de Conhecimento
+                Minhas Trilhas de Conhecimento
             </h3>
+            <span class="text-xs font-bold text-slate-500 bg-slate-100 px-3 py-1 rounded-full">
+                <%= enrollments.length %> curso(s)
+            </span>
         </div>
         
-        <div class="grid grid-cols-1 divide-y divide-slate-100">
-            <% enrollments.forEach(enroll => { %>
-                <div class="p-6 hover:bg-slate-50/80 transition-all flex flex-col md:flex-row md:items-center justify-between gap-6">
-                    <div class="flex items-center space-x-6">
-                        <div class="h-16 w-24 bg-slate-200 rounded-xl overflow-hidden flex-shrink-0 shadow-sm">
-                            <% if(enroll.Course.image) { %>
-                                <img src="<%= enroll.Course.image %>" class="h-full w-full object-cover">
-                            <% } %>
-                        </div>
-                        <div>
-                            <h4 class="text-lg font-bold text-slate-900"><%= enroll.Course.title %></h4>
-                            <div class="flex items-center text-xs text-slate-500 mt-1 uppercase font-bold tracking-tighter">
-                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
-                                <%= enroll.Course.location %>
-                                <span class="mx-2">•</span>
-                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                <%= enroll.Course.workload %>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center space-x-4">
-                        <% if(enroll.status === 'completo') { %>
-                            <a href="/meu-certificado/<%= enroll.id %>" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-full text-xs font-black shadow-lg shadow-emerald-100 flex items-center transition-all uppercase">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                                Baixar Certificado
-                            </a>
-                        <% } else { %>
-                            <div class="flex items-center space-x-2">
-                                <% 
-                                    let statusColor = 'bg-amber-100 text-amber-700';
-                                    if(enroll.status === 'confirmado') statusColor = 'bg-blue-100 text-blue-700';
-                                %>
-                                <span class="<%= statusColor %> px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-current opacity-70">
-                                    <%= enroll.status %>
-                                </span>
-                            </div>
-                        <% } %>
-                    </div>
-                </div>
-            <% }) %>
-
-            <% if(enrollments.length === 0) { %>
-                <div class="p-12 text-center">
-                    <div class="bg-slate-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-10 h-10 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+        <div class="divide-y divide-slate-100">
+            <% if (enrollments.length === 0) { %>
+                <div class="p-8 md:p-12 text-center">
+                    <div class="bg-slate-50 w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 md:w-10 md:h-10 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
                     </div>
                     <h4 class="text-slate-400 font-bold">Você ainda não se inscreveu em nenhum curso.</h4>
                     <p class="text-slate-400 text-sm mt-1">Navegue pelo site e encontre o treinamento ideal para você!</p>
-                    <a href="/" class="inline-block mt-6 text-indigo-600 font-black uppercase text-xs hover:underline tracking-widest">Explorar Cursos →</a>
+                    <a href="/cursos" class="inline-block mt-6 bg-indigo-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-indigo-700 transition-colors">
+                        Explorar Cursos
+                    </a>
                 </div>
+            <% } else { %>
+                <% enrollments.forEach(enroll => { %>
+                    <div class="p-5 md:p-6 hover:bg-slate-50/80 transition-all">
+                        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 md:gap-6">
+                            <!-- Informações do Curso -->
+                            <div class="flex flex-col md:flex-row md:items-center gap-4 md:gap-6 flex-1">
+                                <div class="h-20 w-28 md:h-16 md:w-24 bg-slate-200 rounded-xl overflow-hidden flex-shrink-0 shadow-sm">
+                                    <% if(enroll.Course.image) { %>
+                                        <img src="<%= enroll.Course.image %>" class="h-full w-full object-cover" alt="<%= enroll.Course.title %>">
+                                    <% } else { %>
+                                        <div class="h-full w-full bg-gradient-to-br from-slate-300 to-slate-400 flex items-center justify-center">
+                                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                            </svg>
+                                        </div>
+                                    <% } %>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="text-lg font-bold text-slate-900 mb-1"><%= enroll.Course.title %></h4>
+                                    <div class="flex flex-wrap items-center text-xs text-slate-500 mb-2 gap-2">
+                                        <span class="flex items-center bg-slate-100 px-2 py-1 rounded">
+                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                            </svg>
+                                            <%= enroll.Course.location %>
+                                        </span>
+                                        <span class="flex items-center bg-slate-100 px-2 py-1 rounded">
+                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            <%= enroll.Course.workload %>
+                                        </span>
+                                        <span class="flex items-center bg-slate-100 px-2 py-1 rounded">
+                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                            </svg>
+                                            <%= new Date(enroll.Course.startDate).toLocaleDateString('pt-BR') %>
+                                        </span>
+                                    </div>
+                                    
+                                    <!-- Recursos do Curso -->
+                                    <div class="flex flex-wrap gap-2 mt-3">
+                                        <% if(enroll.Course.includes_material) { %>
+                                            <span class="text-xs text-emerald-600 bg-emerald-50 px-2 py-1 rounded flex items-center">
+                                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                                Material didático
+                                            </span>
+                                        <% } %>
+                                        <% if(enroll.Course.includes_coffee) { %>
+                                            <span class="text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded flex items-center">
+                                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                                                </svg>
+                                                Coffee break
+                                            </span>
+                                        <% } %>
+                                        <% if(enroll.Course.includes_cert) { %>
+                                            <span class="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded flex items-center">
+                                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                                Certificado
+                                            </span>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Ações -->
+                            <div class="flex flex-col sm:flex-row lg:flex-col xl:flex-row gap-3">
+                                <!-- Status da Inscrição -->
+                                <div class="flex-shrink-0">
+                                    <% if(enroll.status === 'completo') { %>
+                                        <span class="inline-block bg-emerald-100 text-emerald-700 px-3 py-2 rounded-lg text-xs font-black uppercase tracking-widest border border-emerald-200">
+                                            Concluído
+                                        </span>
+                                    <% } else if (!enroll.Course.active) { %>
+                                        <span class="inline-block bg-red-100 text-red-700 px-3 py-2 rounded-lg text-xs font-black uppercase tracking-widest border border-red-200">
+                                            Cancelado
+                                        </span>
+                                    <% } else { %>
+                                        <% 
+                                            let statusColor = 'bg-amber-100 text-amber-700 border-amber-200';
+                                            let statusText = enroll.status;
+                                            if(enroll.status === 'confirmado') {
+                                                statusColor = 'bg-blue-100 text-blue-700 border-blue-200';
+                                            } else if(enroll.status === 'pendente') {
+                                                statusColor = 'bg-slate-100 text-slate-700 border-slate-200';
+                                            }
+                                        %>
+                                        <span class="inline-block <%= statusColor %> px-3 py-2 rounded-lg text-xs font-black uppercase tracking-widest border">
+                                            <%= statusText %>
+                                        </span>
+                                    <% } %>
+                                </div>
+
+                                <!-- Botões de Ação -->
+                                <div class="flex gap-2">
+                                    <!-- Botão de Material do Curso -->
+                                    <% if(enroll.Course.proposalDoc) { %>
+                                        <a href="<%= enroll.Course.proposalDoc %>" 
+                                           download
+                                           target="_blank"
+                                           class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center whitespace-nowrap">
+                                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                            </svg>
+                                            Material
+                                        </a>
+                                    <% } %>
+
+                                    <!-- Botão de Certificado -->
+                                    <% if(enroll.status === 'completo') { %>
+                                        <a href="/meu-certificado/<%= enroll.id %>" 
+                                           class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-xs font-bold shadow-lg shadow-emerald-100 transition-all flex items-center whitespace-nowrap">
+                                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 01118 0z" />
+                                            </svg>
+                                            Certificado
+                                        </a>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Informações Adicionais -->
+                        <div class="mt-4 pt-4 border-t border-slate-100">
+                            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                <div class="text-sm text-slate-600">
+                                    <p class="font-medium mb-1">Informações da sua inscrição:</p>
+                                    <div class="flex flex-wrap gap-4">
+                                        <span class="flex items-center">
+                                            <svg class="w-4 h-4 mr-1 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                            </svg>
+                                            Inscrito em: <%= new Date(enroll.createdAt).toLocaleDateString('pt-BR') %>
+                                        </span>
+                                        <span class="flex items-center">
+                                            <svg class="w-4 h-4 mr-1 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            Investimento: <%= enroll.Course.price %>
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Ações secundárias -->
+                                <div class="flex gap-2">
+                                    <% if(enroll.Course.proposalDoc) { %>
+                                        <a href="<%= enroll.Course.proposalDoc %>" 
+                                           download
+                                           target="_blank"
+                                           class="text-xs text-slate-600 hover:text-indigo-600 flex items-center">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                            </svg>
+                                            Baixar material novamente
+                                        </a>
+                                    <% } %>
+                                    <a href="/curso/<%= enroll.Course.id %>" 
+                                       class="text-xs text-slate-600 hover:text-indigo-600 flex items-center">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        Ver detalhes do curso
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
             <% } %>
         </div>
     </div>
+
+    <!-- Instruções de Download -->
+    <% if (enrollments.length > 0 && enrollments.some(e => e.Course.proposalDoc)) { %>
+        <div class="bg-blue-50 border border-blue-200 rounded-2xl p-5 md:p-6">
+            <div class="flex items-start space-x-4">
+                <div class="bg-blue-100 p-3 rounded-xl text-blue-600 flex-shrink-0">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold text-blue-900 mb-2">Material dos Cursos</h4>
+                    <p class="text-blue-800 mb-3">
+                        Você pode baixar o material dos cursos quantas vezes precisar. Os arquivos ficam disponíveis permanentemente em sua conta.
+                    </p>
+                    <div class="text-sm text-blue-700 space-y-1">
+                        <p class="flex items-center">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Baixe o material para estudar offline quando quiser
+                        </p>
+                        <p class="flex items-center">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Faça quantos downloads forem necessários - sem limites
+                        </p>
+                        <p class="flex items-center">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Acesso vitalício ao material dos cursos concluídos
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <% } %>
 </div>
+
+<style>
+    /* Estilos para melhorar a experiência mobile */
+    @media (max-width: 768px) {
+        .btn-mobile {
+            padding: 10px 16px;
+            font-size: 14px;
+        }
+    }
+    
+    /* Animações suaves */
+    .transition-all {
+        transition: all 0.2s ease-in-out;
+    }
+    
+    .hover-lift:hover {
+        transform: translateY(-2px);
+    }
+    
+    /* Melhorar a legibilidade dos textos */
+    .text-shadow-sm {
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<script>
+    // Adicionar feedback visual ao baixar material
+    document.addEventListener('DOMContentLoaded', function() {
+        const downloadButtons = document.querySelectorAll('a[download]');
+        
+        downloadButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                // Adicionar animação de clique
+                this.classList.add('scale-95');
+                setTimeout(() => {
+                    this.classList.remove('scale-95');
+                }, 200);
+                
+                // Mostrar toast de download (opcional)
+                const courseTitle = this.closest('[class*="p-"]').querySelector('h4')?.textContent || 'Material do curso';
+                
+                // Criar toast de sucesso
+                const toast = document.createElement('div');
+                toast.className = 'fixed bottom-4 right-4 bg-emerald-600 text-white px-4 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300';
+                toast.innerHTML = `
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>Baixando material de <strong>${courseTitle.substring(0, 30)}...</strong></span>
+                    </div>
+                `;
+                
+                document.body.appendChild(toast);
+                
+                // Animar entrada
+                setTimeout(() => {
+                    toast.classList.remove('translate-x-full');
+                    toast.classList.add('translate-x-0');
+                }, 10);
+                
+                // Remover após 3 segundos
+                setTimeout(() => {
+                    toast.classList.remove('translate-x-0');
+                    toast.classList.add('translate-x-full');
+                    setTimeout(() => {
+                        document.body.removeChild(toast);
+                    }, 300);
+                }, 3000);
+            });
+        });
+        
+        // Melhorar a experiência em dispositivos móveis
+        if (window.innerWidth <= 768) {
+            // Ajustar tamanho dos botões para touch
+            document.querySelectorAll('a, button').forEach(el => {
+                if (el.offsetHeight < 44 || el.offsetWidth < 44) {
+                    el.classList.add('min-h-[44px]', 'min-w-[44px]', 'flex', 'items-center', 'justify-center');
+                }
+            });
+        }
+    });
+</script>

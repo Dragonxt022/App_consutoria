@@ -24,6 +24,26 @@ class CourseController {
     });
   }
 
+  async publicList(req, res) {
+    const courses = await Course.findAll({
+      where: { active: true },
+      order: [['startDate', 'ASC']]
+    });
+
+    const now = new Date();
+    const formattedCourses = courses.map(course => {
+      const data = course.toJSON();
+      data.isExpired = new Date(data.startDate) < now;
+      return data;
+    });
+
+    res.render('public/courses', {
+      title: 'Todos os Cursos | Consultoria',
+      courses: formattedCourses,
+      layout: 'public/layout'
+    });
+  }
+
   async details(req, res) {
     const course = await Course.findOne({ where: { id: req.params.id, active: true } });
     if (!course) {
@@ -187,6 +207,109 @@ class CourseController {
     } catch (error) {
       console.error(error);
       res.redirect('/admin/cursos/criar?error=Erro ao salvar o curso');
+    }
+  }
+
+  async adminEditForm(req, res) {
+    try {
+      const course = await Course.findByPk(req.params.id);
+      if (!course) {
+        return res.redirect('/admin/cursos?error=Curso não encontrado');
+      }
+
+      res.render('admin/courses/edit', {
+        title: `Editar Curso: ${course.title}`,
+        course,
+        user: req.user,
+        layout: 'admin/layout'
+      });
+    } catch (error) {
+      console.error(error);
+      res.redirect('/admin/cursos?error=Erro ao carregar o curso');
+    }
+  }
+
+  async adminUpdate(req, res) {
+    try {
+      const { title, description, location, workload, price, startDate, spots, includes_material, includes_coffee, includes_cert, active } = req.body;
+      const course = await Course.findByPk(req.params.id);
+
+      if (!course) {
+        return res.redirect('/admin/cursos?error=Curso não encontrado');
+      }
+
+      const slug = slugify(title, { lower: true, strict: true });
+      
+      const itemsIncluded = [];
+      if (includes_material) itemsIncluded.push('Material didático completo');
+      if (includes_coffee) itemsIncluded.push('Coffee break premium');
+      if (includes_cert) itemsIncluded.push('Certificado impresso');
+
+      const updateData = {
+        title,
+        slug,
+        description,
+        location,
+        workload,
+        price,
+        startDate,
+        spots,
+        itemsIncluded,
+        active: active === 'on' || active === true
+      };
+
+      if (req.files['image']) {
+        updateData.image = `/uploads/courses/images/${req.files['image'][0].filename}`;
+      }
+      if (req.files['proposalDoc']) {
+        updateData.proposalDoc = `/uploads/courses/documents/${req.files['proposalDoc'][0].filename}`;
+      }
+
+      await course.update(updateData);
+
+      res.redirect('/admin/cursos?success=Curso atualizado com sucesso!');
+    } catch (error) {
+      console.error(error);
+      res.redirect(`/admin/cursos/${req.params.id}/editar?error=Erro ao atualizar o curso`);
+    }
+  }
+
+  async adminToggleStatus(req, res) {
+    try {
+      const course = await Course.findByPk(req.params.id);
+      if (!course) {
+        return res.status(404).json({ success: false, message: 'Curso não encontrado' });
+      }
+
+      await course.update({ active: !course.active });
+      res.redirect('/admin/cursos?success=Status do curso atualizado!');
+    } catch (error) {
+      console.error(error);
+      res.redirect('/admin/cursos?error=Erro ao atualizar status');
+    }
+  }
+
+  async adminDelete(req, res) {
+    try {
+      const course = await Course.findByPk(req.params.id);
+      if (!course) {
+        return res.redirect('/admin/cursos?error=Curso não encontrado');
+      }
+
+      // Instead of hard delete, maybe just deactivate if there are enrollments?
+      // For now, let's follow the user's request to "delete" which might mean deactivation.
+      // But they also said "mudar o status do curso para desativado caso eu cansele ou delete".
+      // Let's implement actual delete but with a confirmation on UI. 
+      // Or just a soft delete by deactivating.
+      
+      // The user said: "mudar o status do curso para desativado caso eu cansele ou delete"
+      // This suggests they want a button that "deactivates" but might be labeled "cancelar" or "deletar".
+      
+      await course.update({ active: false });
+      res.redirect('/admin/cursos?success=Curso desativado com sucesso!');
+    } catch (error) {
+      console.error(error);
+      res.redirect('/admin/cursos?error=Erro ao desativar curso');
     }
   }
 }

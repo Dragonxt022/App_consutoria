@@ -4,14 +4,20 @@ const HomeController = require('../controllers/HomeController');
 const CourseController = require('../controllers/CourseController');
 const SettingController = require('../controllers/SettingController');
 const EnrollmentController = require('../controllers/EnrollmentController');
-const { authMiddleware, guestMiddleware } = require('../middleware/auth');
+const { authMiddleware, guestMiddleware, publicMiddleware } = require('../middleware/auth'); // Adicione publicMiddleware
 const upload = require('../config/multer');
 
-router.get('/', guestMiddleware, (req, res) => CourseController.index(req, res));
-router.get('/curso/:id', guestMiddleware, (req, res) => CourseController.details(req, res));
-router.get('/inscrever/:id', guestMiddleware, (req, res) => CourseController.enrollForm(req, res));
-router.post('/inscrever', guestMiddleware, (req, res) => CourseController.submitEnrollment(req, res));
-router.get('/obrigado', guestMiddleware, (req, res) => CourseController.thankYou(req, res));
+// Rotas públicas do site institucional - use publicMiddleware
+router.get('/', publicMiddleware, (req, res) => CourseController.index(req, res));
+router.get('/cursos', publicMiddleware, (req, res) => CourseController.publicList(req, res));
+router.get('/contato', publicMiddleware, (req, res) => HomeController.contact(req, res));
+router.get('/politica-de-privacidade', publicMiddleware, (req, res) => HomeController.privacyPolicy(req, res));
+router.get('/curso/:id', publicMiddleware, (req, res) => CourseController.details(req, res));
+router.get('/inscrever/:id', publicMiddleware, (req, res) => CourseController.enrollForm(req, res));
+router.post('/inscrever', publicMiddleware, (req, res) => CourseController.submitEnrollment(req, res));
+router.get('/obrigado', publicMiddleware, (req, res) => CourseController.thankYou(req, res));
+
+// Rota para certificado individual (requer autenticação)
 router.get('/meu-certificado/:id', authMiddleware('aluno'), (req, res) => EnrollmentController.generateIndividualJson(req, res));
 
 // Admin Enrollment Routes
@@ -34,8 +40,26 @@ router.post('/admin/cursos/criar', authMiddleware('admin'), upload.fields([
   { name: 'image', maxCount: 1 },
   { name: 'proposalDoc', maxCount: 1 }
 ]), (req, res) => CourseController.adminStore(req, res));
+router.get('/admin/cursos/:id/editar', authMiddleware('admin'), (req, res) => CourseController.adminEditForm(req, res));
+router.post('/admin/cursos/:id/editar', authMiddleware('admin'), upload.fields([
+  { name: 'image', maxCount: 1 },
+  { name: 'proposalDoc', maxCount: 1 }
+]), (req, res) => CourseController.adminUpdate(req, res));
+router.post('/admin/cursos/:id/status', authMiddleware('admin'), (req, res) => CourseController.adminToggleStatus(req, res));
+router.post('/admin/cursos/:id/deletar', authMiddleware('admin'), (req, res) => CourseController.adminDelete(req, res));
 
+// Dashboard Routes
 router.get('/admin/dashboard', authMiddleware('admin'), (req, res) => HomeController.adminDashboard(req, res));
 router.get('/aluno/dashboard', authMiddleware('aluno'), (req, res) => HomeController.alunoDashboard(req, res));
+
+// Adicione também as rotas de login/registro
+router.get('/login', guestMiddleware, (req, res) => {
+  // Verifica se já existe um layout de login, senão use o padrão
+  res.render('login', { title: 'Login' });
+});
+
+router.get('/register', guestMiddleware, (req, res) => {
+  res.render('register', { title: 'Registro' });
+});
 
 module.exports = router;

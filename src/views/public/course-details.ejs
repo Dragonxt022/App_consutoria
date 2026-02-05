@@ -1,6 +1,6 @@
 <div class="max-w-4xl mx-auto bg-white shadow-2xl rounded-2xl overflow-hidden mt-8">
     <div class="relative h-64 md:h-96">
-        <img src="<%= course.image || 'https://images.unsplash.com/photo-1454165833767-02a0ef84c330?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80' %>" alt="<%= course.title %>" class="w-full h-full object-cover">
+        <%- imgTag(course.image, course.title, 'w-full h-full object-cover', 'course') %>
         
         <% if (course.isExpired) { %>
             <div class="absolute top-6 right-6 bg-red-600 text-white px-6 py-2 rounded-full font-bold shadow-xl flex items-center animate-pulse">

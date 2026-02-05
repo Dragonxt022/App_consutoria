@@ -14,6 +14,17 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(expressLayouts);
 app.set('layout', 'layout'); // default layout at src/views/layout.ejs
+const { getSafeImage, imgTag, bgImage } = require('./utils/imageHelper.js'); 
+
+// Disponibiliza os helpers em todas as views
+app.locals.getSafeImage = getSafeImage;
+app.locals.imgTag = imgTag;
+app.locals.bgImage = bgImage;
+
+// Helper específico para cursos (atalho)
+app.locals.courseImage = (imagePath) => getSafeImage(imagePath, 'course');
+app.locals.courseImgTag = (imagePath, alt = '', className = '') => 
+  imgTag(imagePath, alt, className, 'course');
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());

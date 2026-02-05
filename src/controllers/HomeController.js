@@ -40,6 +40,20 @@ class HomeController {
       certificateCount
     });
   }
+
+  async contact(req, res) {
+    res.render('public/contact', {
+      title: 'Fale Conosco',
+      layout: 'public/layout'
+    });
+  }
+
+  async privacyPolicy(req, res) {
+    res.render('public/privacy', {
+      title: 'Política de Privacidade e LGPD',
+      layout: 'public/layout'
+    });
+  }
 }
 
 module.exports = new HomeController();
