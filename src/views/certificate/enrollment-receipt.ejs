@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprovante de Inscrição - <%= enrollment.studentName %></title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @media print {
+            body {
+                margin: 0;
+                padding: 0;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .container {
+                max-width: 100%;
+                margin: 0;
+                box-shadow: none;
+            }
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 20px auto;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            page-break-after: always;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #4f46e5 0%, #312e81 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+            border-bottom: 5px solid #f59e0b;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.95;
+        }
+
+        .header-divider {
+            width: 100px;
+            height: 3px;
+            background: #f59e0b;
+            margin: 20px auto 0;
+        }
+
+        /* Main Content */
+        .content {
+            padding: 40px 30px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #4f46e5;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-item label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+
+        .info-item p {
+            font-size: 14px;
+            color: #1f2937;
+            font-weight: 500;
+        }
+
+        .info-full {
+            grid-column: 1 / -1;
+        }
+
+        /* Status Badge */
+        .status-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 20px;
+        }
+
+        .status-pendente {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-confirmado {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-completo {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-cancelado {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Observation */
+        .observations-box {
+            background: #f3f4f6;
+            padding: 15px;
+            border-left: 4px solid #4f46e5;
+            border-radius: 4px;
+            margin-top: 15px;
+        }
+
+        .observations-box p {
+            font-size: 13px;
+            color: #374151;
+            font-style: italic;
+        }
+
+        /* Receipt Number */
+        .receipt-number {
+            text-align: center;
+            margin: 30px 0;
+            padding: 20px;
+            background: #f0f9ff;
+            border: 2px dashed #4f46e5;
+            border-radius: 8px;
+        }
+
+        .receipt-number p {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+
+        .receipt-number code {
+            font-size: 18px;
+            font-weight: bold;
+            color: #4f46e5;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 2px;
+        }
+
+        /* Footer */
+        .footer {
+            background: #f3f4f6;
+            padding: 30px;
+            text-align: center;
+            border-top: 2px solid #e5e7eb;
+            color: #6b7280;
+            font-size: 11px;
+        }
+
+        .footer p {
+            margin: 8px 0;
+        }
+
+        .footer-divider {
+            width: 100px;
+            height: 1px;
+            background: #d1d5db;
+            margin: 15px auto;
+        }
+
+        /* Print Button */
+        .print-section {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .print-btn {
+            background: #4f46e5;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-right: 10px;
+        }
+
+        .print-btn:hover {
+            background: #312e81;
+        }
+
+        .back-btn {
+            background: #6b7280;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: background 0.3s;
+        }
+
+        .back-btn:hover {
+            background: #4b5563;
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            .container {
+                max-width: 100%;
+                margin: 0;
+                box-shadow: none;
+                padding: 0;
+            }
+            .print-section {
+                display: none;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            .header h1 {
+                font-size: 20px;
+            }
+            .container {
+                margin: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="print-section no-print">
+        <button class="print-btn" onclick="window.print()">🖨️ Imprimir / Salvar como PDF</button>
+        <% if(typeof back_url !== 'undefined') { %>
+            <a href="<%= back_url %>" class="back-btn">← Voltar</a>
+        <% } %>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Comprovante de Inscrição</h1>
+            <p>Documento oficial de inscrição no curso</p>
+            <div class="header-divider"></div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Status -->
+            <!-- <div class="status-badge status-<%= enrollment.status %>">
+                <%= enrollment.status %>
+            </div> -->
+
+            <!-- Dados do Aluno -->
+            <div class="section">
+                <h2 class="section-title">📋 Dados do Aluno</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <label>Nome Completo</label>
+                        <p><%= enrollment.studentName %></p>
+                    </div>
+                    <div class="info-item">
+                        <label>E-mail</label>
+                        <p><%= enrollment.studentEmail %></p>
+                    </div>
+                    <div class="info-item">
+                        <label>Telefone / WhatsApp</label>
+                        <p><%= enrollment.studentPhone %></p>
+                    </div>
+                    <div class="info-item">
+                        <label>CPF ou CNPJ</label>
+                        <p><%= enrollment.cpfCnpj || 'Não fornecido' %></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dados da Inscrição -->
+            <div class="section">
+                <h2 class="section-title">🎓 Dados da Inscrição</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <label>Curso</label>
+                        <p><strong><%= course.title %></strong></p>
+                    </div>
+                    <div class="info-item">
+                        <label>Data de Inscrição</label>
+                        <p><%= new Date(enrollment.createdAt).toLocaleDateString('pt-BR') %></p>
+                    </div>
+                    <div class="info-item">
+                        <label>Carga Horária</label>
+                        <p><%= course.workload ? course.workload + ' horas' : 'Não especificado' %></p>
+                    </div>
+                    <div class="info-item">
+                        <label>Local</label>
+                        <p><%= course.location || 'A definir' %></p>
+                    </div>
+                    <div class="info-item">
+                        <label>Data do Curso</label>
+                        <p><%= new Date(course.startDate).toLocaleDateString('pt-BR') %></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dados Corporativos -->
+            <div class="section">
+                <h2 class="section-title">💼 Dados Corporativos</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <label>Empresa / Organização</label>
+                        <p><%= enrollment.company || 'Não fornecido' %></p>
+                    </div>
+                    <div class="info-item">
+                        <label>Tipo de Organização</label>
+                        <p><%= enrollment.entePublico ? 'Ente Público' : 'Setor Privado' %></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dados de Endereço -->
+            <div class="section">
+                <h2 class="section-title">📍 Dados de Endereço</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <label>País</label>
+                        <p><%= enrollment.pais || 'Não fornecido' %></p>
+                    </div>
+                    <div class="info-item">
+                        <label>CEP</label>
+                        <p><%= enrollment.cep || 'Não fornecido' %></p>
+                    </div>
+                    <div class="info-item info-full">
+                        <label>Endereço Completo</label>
+                        <p><%= enrollment.endereco || 'Não fornecido' %></p>
+                    </div>
+                    <div class="info-item">
+                        <label>Cidade</label>
+                        <p><%= enrollment.cidade || 'Não fornecido' %></p>
+                    </div>
+                    <div class="info-item">
+                        <label>Estado</label>
+                        <p><%= enrollment.estado || 'Não fornecido' %></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Valor da Inscrição -->
+            <div class="section">
+                <h2 class="section-title">💰 Valor da Inscrição</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <label>Valor do Curso</label>
+                        <p><%= formatCurrency(enrollment.coursePrice || 0) %></p>
+                    </div>
+                    <div class="info-item">
+                        <label>Desconto</label>
+                        <p><%= formatCurrency(enrollment.discount || 0) %></p>
+                    </div>
+                    <div class="info-item">
+                        <label>Valor Final</label>
+                        <p><strong><%= formatCurrency(enrollment.finalPrice || 0) %></strong></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Observações -->
+            <% if(enrollment.observations) { %>
+                <div class="section">
+                    <h2 class="section-title">📝 Observações</h2>
+                    <div class="observations-box">
+                        <p><%= enrollment.observations %></p>
+                    </div>
+                </div>
+            <% } %>
+
+            <!-- Número do Comprovante -->
+            <div class="receipt-number">
+                <p>Número do Comprovante de Inscrição</p>
+                <code><%= String(enrollment.id).padStart(6, '0') %></code>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>Consultoria Profissional</strong></p>
+            <div class="footer-divider"></div>
+            <p>Este é um comprovante oficial de inscrição no curso.</p>
+            <p>Gerado em <%= new Date().toLocaleDateString('pt-BR') %> às <%= new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) %></p>
+            <p>Mantenha este documento para referência futura.</p>
+            <div class="footer-divider"></div>
+            <p style="margin-top: 15px;">www.consultoriaprofissional.com.br</p>
+        </div>
+    </div>
+
+    <script>
+        function formatCurrency(value) {
+            value = parseFloat(value) || 0;
+            return 'R$ ' + value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        // Exibir valores formatados
+        document.addEventListener('DOMContentLoaded', function() {
+            // Já vêm formatados do template, mas adiciona este script para segurança
+        });
+    </script>
+</body>
+</html>

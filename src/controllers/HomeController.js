@@ -1,4 +1,5 @@
 const { Course, User, Enrollment } = require('../models');
+const { formatCurrency } = require('../utils/currencyFormatter');
 
 class HomeController {
   async index(req, res) {
@@ -37,7 +38,8 @@ class HomeController {
       title: 'Dashboard Aluno',
       user: req.user,
       enrollments,
-      certificateCount
+      certificateCount,
+      formatCurrency
     });
   }
 

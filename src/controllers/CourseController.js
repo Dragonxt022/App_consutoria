@@ -75,7 +75,7 @@ class CourseController {
 
   async submitEnrollment(req, res) {
     try {
-      const { name, email, phone, company, observations, courseId, create_account } = req.body;
+      const { name, email, phone, company, observations, courseId, create_account, cpfCnpj, entePublico, pais, endereco, cidade, estado, cep } = req.body;
       const cryptoRandomString = (await import('crypto-random-string')).default;
       const EmailService = require('../services/EmailService');
 
@@ -127,6 +127,13 @@ class CourseController {
         studentEmail: email,
         studentPhone: phone,
         company,
+        cpfCnpj,
+        entePublico: entePublico === '1' ? true : false,
+        pais,
+        endereco,
+        cidade,
+        estado,
+        cep,
         observations,
         courseId,
         userId: currentUser.id,

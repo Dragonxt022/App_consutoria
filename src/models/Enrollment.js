@@ -23,6 +23,35 @@ const Enrollment = sequelize.define('Enrollment', {
     type: DataTypes.STRING,
     allowNull: true
   },
+  cpfCnpj: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  entePublico: {
+    type: DataTypes.BOOLEAN,
+    allowNull: true,
+    defaultValue: false
+  },
+  pais: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  endereco: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  cidade: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  estado: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  cep: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
   observations: {
     type: DataTypes.TEXT,
     allowNull: true

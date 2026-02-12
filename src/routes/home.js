@@ -26,6 +26,7 @@ router.post('/validar-certificado', publicMiddleware, (req, res) => CertificateC
 
 // Rota para certificado individual (requer autenticação)
 router.get('/meu-certificado/:id', authMiddleware('aluno'), (req, res) => EnrollmentController.viewStudentCertificate(req, res));
+router.get('/meu-comprovante/:id', authMiddleware('aluno'), (req, res) => EnrollmentController.viewMyReceipt(req, res));
 
 // Admin Enrollment Routes
 router.get('/admin/inscricoes', authMiddleware('admin'), (req, res) => EnrollmentController.adminList(req, res));
@@ -39,6 +40,7 @@ router.get('/admin/certificados/json/:courseId', authMiddleware('admin'), (req, 
 // Admin Enrollment Edit Routes
 router.get('/admin/inscricoes/:id/editar', authMiddleware('admin'), (req, res) => EnrollmentController.edit(req, res));
 router.post('/admin/inscricoes/:id/edit', authMiddleware('admin'), (req, res) => EnrollmentController.update(req, res));
+router.get('/admin/inscricoes/:id/comprovante', authMiddleware('admin'), (req, res) => EnrollmentController.viewReceipt(req, res));
 
 // Admin Sales Routes
 router.get('/admin/vendas', authMiddleware('admin'), (req, res) => SalesController.index(req, res));

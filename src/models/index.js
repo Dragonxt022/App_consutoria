@@ -30,10 +30,7 @@ Object.keys(models).forEach(key => {
 // 🔹 Sync centralizado
 const syncDatabase = async () => {
   try {
-    // Disable foreign keys for sync (required for SQLite alter to work with relationships)
-    await sequelize.query('PRAGMA foreign_keys = OFF');
-    await sequelize.sync({ alter: true });
-    await sequelize.query('PRAGMA foreign_keys = ON');
+    await sequelize.sync();
     console.log('Banco de dados sincronizado');
   } catch (error) {
     console.error('Erro na sincronização:', error);

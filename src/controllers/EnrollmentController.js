@@ -1,6 +1,7 @@
 const { Enrollment, Course, User } = require('../models');
 const { Op } = require('sequelize');
 const crypto = require('crypto');
+const { formatCurrency } = require('../utils/currencyFormatter');
 
 class EnrollmentController {
   async adminList(req, res) {
@@ -202,7 +203,7 @@ class EnrollmentController {
   async update(req, res) {
     try {
       const { id } = req.params;
-      const { studentName, studentEmail, studentPhone, company, observations, courseId, coursePrice, discount, status } = req.body;
+      const { studentName, studentEmail, studentPhone, company, observations, courseId, coursePrice, discount, status, cpfCnpj, entePublico, pais, endereco, cidade, estado, cep } = req.body;
 
       const enrollment = await Enrollment.findByPk(id);
       if (!enrollment) {
@@ -218,6 +219,13 @@ class EnrollmentController {
       enrollment.studentEmail = studentEmail;
       enrollment.studentPhone = studentPhone;
       enrollment.company = company;
+      enrollment.cpfCnpj = cpfCnpj;
+      enrollment.entePublico = entePublico === '1' ? true : false;
+      enrollment.pais = pais;
+      enrollment.endereco = endereco;
+      enrollment.cidade = cidade;
+      enrollment.estado = estado;
+      enrollment.cep = cep;
       enrollment.observations = observations;
       enrollment.courseId = courseId;
       enrollment.coursePrice = price;
@@ -248,6 +256,80 @@ class EnrollmentController {
     } catch (error) {
       console.error(error);
       res.redirect(`/admin/inscricoes/${req.params.id}/editar?error=Erro ao atualizar inscrição`);
+    }
+  }
+
+  async viewReceipt(req, res) {
+    try {
+      const { id } = req.params;
+      
+      const enrollment = await Enrollment.findByPk(id, {
+        include: [{ model: Course }]
+      });
+
+      if (!enrollment) {
+        return res.status(404).render('error', { 
+          title: 'Comprovante não encontrado',
+          layout: false 
+        });
+      }
+
+      // Se não for admin, restringe ao próprio usuário
+      if (req.user.role !== 'admin' && enrollment.userId !== req.user.id) {
+        return res.status(403).render('error', { 
+          title: 'Acesso negado',
+          layout: false 
+        });
+      }
+
+      res.render('certificate/enrollment-receipt', {
+        title: 'Comprovante de Inscrição',
+        enrollment,
+        course: enrollment.Course,
+        back_url: req.user.role === 'admin' ? '/admin/inscricoes' : '/aluno/dashboard',
+        formatCurrency,
+        layout: false
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).render('error', { 
+        title: 'Erro ao gerar comprovante',
+        layout: false 
+      });
+    }
+  }
+
+  async viewMyReceipt(req, res) {
+    try {
+      const { id } = req.params;
+      const userId = req.user.id;
+
+      const enrollment = await Enrollment.findOne({
+        where: { id, userId },
+        include: [{ model: Course }]
+      });
+
+      if (!enrollment) {
+        return res.status(404).render('error', { 
+          title: 'Comprovante não encontrado',
+          layout: false 
+        });
+      }
+
+      res.render('certificate/enrollment-receipt', {
+        title: 'Meu Comprovante de Inscrição',
+        enrollment,
+        course: enrollment.Course,
+        back_url: '/aluno/dashboard',
+        formatCurrency,
+        layout: false
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).render('error', { 
+        title: 'Erro ao gerar comprovante',
+        layout: false 
+      });
     }
   }
 }
