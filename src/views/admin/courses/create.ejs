@@ -62,22 +62,22 @@
                             <!-- itens iniciais -->
                             <li class="flex items-center justify-between bg-slate-50 p-2 rounded-lg">
                                 <div class="flex items-center gap-3">
-                                    <input type="checkbox" name="itemsIncluded[]" value="Material didático completo" checked class="w-4 h-4 text-indigo-600">
-                                    <span class="text-sm text-slate-700">Material didático completo</span>
+                                    <input type="checkbox" name="itemsIncluded[]" value="COPO E CANETA." checked class="w-4 h-4 text-indigo-600">
+                                    <span class="text-sm text-slate-700">COPO E CANETA.</span>
                                 </div>
                                 <button type="button" class="removeInclude text-red-500 hover:text-red-600">Remover</button>
                             </li>
                             <li class="flex items-center justify-between bg-slate-50 p-2 rounded-lg">
                                 <div class="flex items-center gap-3">
-                                    <input type="checkbox" name="itemsIncluded[]" value="Coffee break premium" checked class="w-4 h-4 text-indigo-600">
-                                    <span class="text-sm text-slate-700">Coffee break premium</span>
+                                    <input type="checkbox" name="itemsIncluded[]" value="COFFEE-BREAK." checked class="w-4 h-4 text-indigo-600">
+                                    <span class="text-sm text-slate-700">COFFEE-BREAK.</span>
                                 </div>
                                 <button type="button" class="removeInclude text-red-500 hover:text-red-600">Remover</button>
                             </li>
                             <li class="flex items-center justify-between bg-slate-50 p-2 rounded-lg">
                                 <div class="flex items-center gap-3">
-                                    <input type="checkbox" name="itemsIncluded[]" value="Certificado impresso" checked class="w-4 h-4 text-indigo-600">
-                                    <span class="text-sm text-slate-700">Certificado impresso</span>
+                                    <input type="checkbox" name="itemsIncluded[]" value="CERTIFICADO DE PARTICIPAÇÃO." checked class="w-4 h-4 text-indigo-600">
+                                    <span class="text-sm text-slate-700">CERTIFICADO DE PARTICIPAÇÃO.</span>
                                 </div>
                                 <button type="button" class="removeInclude text-red-500 hover:text-red-600">Remover</button>
                             </li>
@@ -389,6 +389,13 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             addIncludeFromInput();
         }
+    });
+    // attach remove handlers to any pre-existing remove buttons
+    document.querySelectorAll('.removeInclude').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const li = btn.closest('li');
+            if (li) li.remove();
+        });
     });
 });
 </script>
