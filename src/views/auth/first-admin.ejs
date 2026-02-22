@@ -1,0 +1,163 @@
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 to-blue-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8 bg-white p-10 rounded-2xl shadow-2xl border border-indigo-100">
+        <!-- Header -->
+        <div>
+            <div class="mx-auto h-20 w-20 flex items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-blue-600 mb-6 shadow-lg">
+                <svg class="h-10 w-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                </svg>
+            </div>
+            <h2 class="text-center text-3xl font-extrabold text-gray-900">Criar Conta de Administrador</h2>
+            <p class="mt-3 text-center text-sm text-gray-600">
+                Bem-vindo! Nenhum usuário foi encontrado no sistema. Por favor, crie a conta de administrador para prosseguir.
+            </p>
+        </div>
+        
+        <!-- Info Box -->
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div class="flex items-start">
+                <svg class="h-5 w-5 text-blue-500 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zm-11-1a1 1 0 11-2 0 1 1 0 012 0z" clip-rule="evenodd" />
+                </svg>
+                <div class="ml-3">
+                    <p class="text-sm text-blue-700">
+                        <strong>Esta é a primeira vez?</strong> Esta conta terá acesso administrativo total ao sistema.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <% if (typeof error !== 'undefined' && error) { %>
+            <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r shadow-sm">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-red-700"><%= error %></p>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+        
+        <form class="mt-8 space-y-6" action="/primeiro-admin" method="POST">
+            <div class="space-y-4">
+                <!-- Nome -->
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Nome Completo</label>
+                    <div class="mt-1 relative rounded-md shadow-sm">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <input 
+                            id="name" 
+                            name="name" 
+                            type="text" 
+                            required 
+                            value="<%= typeof name !== 'undefined' ? name : '' %>"
+                            class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition duration-200" 
+                            placeholder="Seu nome completo">
+                    </div>
+                </div>
+
+                <!-- Email -->
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <div class="mt-1 relative rounded-md shadow-sm">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                            </svg>
+                        </div>
+                        <input 
+                            id="email" 
+                            name="email" 
+                            type="email" 
+                            autocomplete="email" 
+                            required 
+                            value="<%= typeof email !== 'undefined' ? email : '' %>"
+                            class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition duration-200" 
+                            placeholder="exemplo@email.com">
+                    </div>
+                </div>
+
+                <!-- Senha -->
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
+                    <div class="mt-1 relative rounded-md shadow-sm">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <input 
+                            id="password" 
+                            name="password" 
+                            type="password" 
+                            required 
+                            minlength="6"
+                            class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition duration-200" 
+                            placeholder="Mínimo 6 caracteres">
+                    </div>
+                    <p class="mt-1 text-xs text-gray-500">Mínimo de 6 caracteres</p>
+                </div>
+
+                <!-- Confirmar Senha -->
+                <div>
+                    <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-1">Confirmar Senha</label>
+                    <div class="mt-1 relative rounded-md shadow-sm">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <input 
+                            id="confirmPassword" 
+                            name="confirmPassword" 
+                            type="password" 
+                            required 
+                            minlength="6"
+                            class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition duration-200" 
+                            placeholder="Repita a senha">
+                    </div>
+                </div>
+            </div>
+
+            <button 
+                type="submit" 
+                class="w-full flex justify-center py-3 px-4 rounded-lg shadow-md text-sm font-bold text-white bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all duration-200 transform hover:scale-105 active:scale-95">
+                <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                </svg>
+                Criar Conta de Administrador
+            </button>
+        </form>
+
+        <!-- Footer -->
+        <div class="text-center text-xs text-gray-500 pt-4 border-t border-gray-200">
+            <p>Esta é a primeira conta do sistema. Ela será criada com privilégios administrativos.</p>
+        </div>
+    </div>
+</div>
+
+<style>
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .max-w-md {
+        animation: fadeInUp 0.3s ease-out;
+    }
+</style>

@@ -48,6 +48,47 @@ const User = sequelize.define('User', {
   resetPasswordExpires: {
     type: DataTypes.DATE,
     allowNull: true
+  },
+  phone: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  cpfCnpj: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  company: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  entePublico: {
+    type: DataTypes.BOOLEAN,
+    allowNull: true,
+    defaultValue: false
+  },
+  pais: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  endereco: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  cidade: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  estado: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  cep: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  avatar: {
+    type: DataTypes.STRING,
+    allowNull: true
   }
 }, {
   hooks: {

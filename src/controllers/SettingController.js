@@ -38,8 +38,8 @@ class SettingController {
       const settings = req.body;
       
       // Handle file upload for logo if present
-      if (req.file) {
-        settings.logo_url = `/uploads/courses/images/${req.file.filename}`;
+      if (req.file && req.file.fieldname === 'logo') {
+        settings.logo_url = `/uploads/logos/${req.file.filename}`;
       }
 
       for (let [key, value] of Object.entries(settings)) {

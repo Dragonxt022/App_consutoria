@@ -92,48 +92,78 @@
             </div>
         </div>
 
-        <!-- Curso e Valores -->
+        <!-- Curso e Valores (melhor organizado) -->
         <div class="border-b pb-6">
             <h3 class="text-lg font-semibold text-gray-700 mb-4">Curso e Valores</h3>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Curso</label>
-                    <select name="courseId" id="courseSelect" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
-                        <% courses.forEach(course => { %>
-                            <option value="<%= course.id %>" data-price="<%= course.price %>" <%= enrollment.courseId === course.id ? 'selected' : '' %>>
-                                <%= course.title %>
-                            </option>
-                        <% }) %>
-                    </select>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Coluna 1: seleção e status -->
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Curso</label>
+                        <select name="courseId" id="courseSelect" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                            <% courses.forEach(course => { %>
+                                <option value="<%= course.id %>" data-price="<%= course.price %>" <%= enrollment.courseId === course.id ? 'selected' : '' %>><%= course.title %></option>
+                            <% }) %>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                        <select name="status" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                            <option value="pendente" <%= enrollment.status === 'pendente' ? 'selected' : '' %>>Pendente</option>
+                            <option value="confirmado" <%= enrollment.status === 'confirmado' ? 'selected' : '' %>>Confirmado</option>
+                            <option value="completo" <%= enrollment.status === 'completo' ? 'selected' : '' %>>Completo</option>
+                            <option value="cancelado" <%= enrollment.status === 'cancelado' ? 'selected' : '' %>>Cancelado</option>
+                        </select>
+                    </div>
                 </div>
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                    <select name="status" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
-                        <option value="pendente" <%= enrollment.status === 'pendente' ? 'selected' : '' %>>Pendente</option>
-                        <option value="confirmado" <%= enrollment.status === 'confirmado' ? 'selected' : '' %>>Confirmado</option>
-                        <option value="completo" <%= enrollment.status === 'completo' ? 'selected' : '' %>>Completo</option>
-                        <option value="cancelado" <%= enrollment.status === 'cancelado' ? 'selected' : '' %>>Cancelado</option>
-                    </select>
+                <!-- Coluna 2: valores editáveis -->
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Valor do Curso (R$)</label>
+                        <input type="number" step="0.01" name="coursePrice" id="coursePrice" value="<%= enrollment.coursePrice || 0 %>" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 items-end">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Desconto (R$)</label>
+                            <input type="number" step="0.01" name="discount" id="discount" value="<%= enrollment.discount || 0 %>" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Desconto (%)</label>
+                            <input type="number" step="0.01" name="discountPercent" id="discountPercent" value="<%= enrollment.discount && enrollment.coursePrice ? ((enrollment.discount / enrollment.coursePrice) * 100).toFixed(2) : 0 %>" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm text-gray-600 mr-2">Aplicar desconto rápido:</span>
+                        <button type="button" class="px-3 py-1 bg-gray-100 rounded-md text-sm hover:bg-gray-200" data-percent="5">5%</button>
+                        <button type="button" class="px-3 py-1 bg-gray-100 rounded-md text-sm hover:bg-gray-200" data-percent="10">10%</button>
+                        <button type="button" class="px-3 py-1 bg-gray-100 rounded-md text-sm hover:bg-gray-200" data-percent="15">15%</button>
+                        <button type="button" class="px-3 py-1 bg-gray-100 rounded-md text-sm hover:bg-gray-200" data-percent="20">20%</button>
+                    </div>
                 </div>
 
+                <!-- Coluna 3: resumo e valor final -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Valor do Curso (R$)</label>
-                    <input type="number" step="0.01" name="coursePrice" id="coursePrice" value="<%= enrollment.coursePrice || 0 %>" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
-                </div>
+                    <div class="bg-gray-50 p-4 rounded-lg flex flex-col h-full justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500">Valor Original</p>
+                            <p class="text-lg font-semibold text-slate-800" id="originalPriceDisplay">R$ <%= (enrollment.coursePrice || 0).toFixed(2) %></p>
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Desconto (R$)</label>
-                    <input type="number" step="0.01" name="discount" id="discount" value="<%= enrollment.discount || 0 %>" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
-                </div>
-            </div>
+                            <p class="mt-3 text-sm text-gray-500">Desconto</p>
+                            <p class="text-lg font-medium text-red-600" id="discountDisplay">R$ <%= (enrollment.discount || 0).toFixed(2) %> (<span id="discountPercentDisplay"><%= enrollment.coursePrice && enrollment.coursePrice > 0 ? ((enrollment.discount || 0) / enrollment.coursePrice * 100).toFixed(2) : '0.00' %></span>%)</p>
+                        </div>
 
-            <div class="bg-gray-50 p-4 rounded-lg flex justify-between items-center mt-4">
-                <span class="font-bold text-gray-600">Valor Final:</span>
-                <span class="text-xl font-bold text-green-600" id="finalPriceDisplay">R$ <%= (enrollment.finalPrice || 0).toFixed(2) %></span>
+                        <div class="mt-4 pt-4 border-t">
+                            <p class="text-sm text-gray-500">Valor Final</p>
+                            <p class="text-2xl font-bold text-green-600" id="finalPriceDisplay">R$ <%= (enrollment.finalPrice || 0).toFixed(2) %></p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -157,31 +187,83 @@
     const courseSelect = document.getElementById('courseSelect');
     const coursePriceInput = document.getElementById('coursePrice');
     const discountInput = document.getElementById('discount');
+    const discountPercentInput = document.getElementById('discountPercent');
     const finalPriceDisplay = document.getElementById('finalPriceDisplay');
+    const originalPriceDisplay = document.getElementById('originalPriceDisplay');
+    const discountDisplay = document.getElementById('discountDisplay');
+    const discountPercentDisplay = document.getElementById('discountPercentDisplay');
 
-    function updateFinalPrice() {
-        const price = parseFloat(coursePriceInput.value) || 0;
-        const discount = parseFloat(discountInput.value) || 0;
-        const final = Math.max(0, price - discount);
-        finalPriceDisplay.textContent = 'R$ ' + final.toFixed(2);
+    function toNumber(v) {
+        return parseFloat(v) || 0;
     }
 
+    function formatBRL(v) {
+        return 'R$ ' + Number(v).toFixed(2);
+    }
+
+    function updateDisplays(price, discount) {
+        const final = Math.max(0, price - discount);
+        originalPriceDisplay.textContent = formatBRL(price);
+        finalPriceDisplay.textContent = formatBRL(final);
+        discountDisplay.textContent = formatBRL(discount) + ' (' + (price > 0 ? ((discount / price) * 100).toFixed(2) : '0.00') + '%)';
+        discountPercentDisplay.textContent = price > 0 ? ((discount / price) * 100).toFixed(2) : '0.00';
+    }
+
+    function syncFromPriceAndDiscount() {
+        const price = toNumber(coursePriceInput.value);
+        const discount = toNumber(discountInput.value);
+        const percent = price > 0 ? (discount / price) * 100 : 0;
+        discountPercentInput.value = percent.toFixed(2);
+        updateDisplays(price, discount);
+    }
+
+    function syncFromPercent() {
+        const price = toNumber(coursePriceInput.value);
+        const percent = toNumber(discountPercentInput.value);
+        const discount = Math.max(0, (percent / 100) * price);
+        discountInput.value = discount.toFixed(2);
+        updateDisplays(price, discount);
+    }
+
+    // Handle course select change (use data-price)
     courseSelect.addEventListener('change', function() {
         const selectedOption = this.options[this.selectedIndex];
         const priceString = selectedOption.getAttribute('data-price');
-        
-        // Basic parsing assuming "R$ 100,00" format or similar
-        // Ideally pass raw number from backend but this works for simple strings
         let price = 0;
-        if(priceString) {
-             const cleanPrice = priceString.toString().replace(/[^\d,]/g, '').replace(',', '.');
-             price = parseFloat(cleanPrice) || 0;
+        if (priceString !== null && priceString !== undefined) {
+            // Accept numbers or strings like "100" or "100.00" or "R$ 100,00"
+            const cleaned = priceString.toString().replace(/[^\d.,-]/g, '').replace(',', '.');
+            price = parseFloat(cleaned) || 0;
         }
-        
-        coursePriceInput.value = price;
-        updateFinalPrice();
+        coursePriceInput.value = price.toFixed(2);
+        syncFromPriceAndDiscount();
     });
 
-    coursePriceInput.addEventListener('input', updateFinalPrice);
-    discountInput.addEventListener('input', updateFinalPrice);
+    // Quick discount buttons
+    document.querySelectorAll('[data-percent]').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const pct = toNumber(this.getAttribute('data-percent'));
+            const price = toNumber(coursePriceInput.value);
+            const discount = Math.max(0, (pct / 100) * price);
+            discountInput.value = discount.toFixed(2);
+            discountPercentInput.value = pct.toFixed(2);
+            updateDisplays(price, discount);
+        });
+    });
+
+    // Inputs
+    coursePriceInput.addEventListener('input', syncFromPriceAndDiscount);
+    discountInput.addEventListener('input', function() {
+        syncFromPriceAndDiscount();
+    });
+    discountPercentInput.addEventListener('input', function() {
+        syncFromPercent();
+    });
+
+    // Inicializa displays
+    (function init() {
+        const price = toNumber(coursePriceInput.value);
+        const discount = toNumber(discountInput.value);
+        updateDisplays(price, discount);
+    })();
 </script>

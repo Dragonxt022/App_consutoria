@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs');
 
 // Ensure upload directories exist
-const uploadDirs = ['src/public/uploads/courses/images', 'src/public/uploads/courses/documents'];
+const uploadDirs = ['src/public/uploads/courses/images', 'src/public/uploads/courses/documents', 'src/public/uploads/logos'];
 uploadDirs.forEach(dir => {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
@@ -14,6 +14,8 @@ const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     if (file.fieldname === 'image') {
       cb(null, 'src/public/uploads/courses/images');
+    } else if (file.fieldname === 'logo') {
+      cb(null, 'src/public/uploads/logos');
     } else {
       cb(null, 'src/public/uploads/courses/documents');
     }
@@ -27,7 +29,7 @@ const storage = multer.diskStorage({
 const upload = multer({ 
   storage: storage,
   fileFilter: (req, file, cb) => {
-    if (file.fieldname === 'image') {
+    if (file.fieldname === 'image' || file.fieldname === 'logo') {
       if (!file.originalname.match(/\.(jpg|jpeg|png|webp|gif)$/)) {
         return cb(new Error('Apenas arquivos de imagem são permitidos!'), false);
       }

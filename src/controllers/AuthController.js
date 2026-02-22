@@ -3,9 +3,24 @@ const { generateToken } = require('../middleware/jwt');
 
 class AuthController {
   async showLogin(req, res) {
-    res.render('login', {
-      title: 'Acesso ao Sistema'
-    });
+    try {
+      // Verificar se há usuários no sistema
+      const userCount = await User.count();
+      
+      // Se não há usuários, redireciona para cadastro de primeiro admin
+      if (userCount === 0) {
+        return res.redirect('/primeiro-admin');
+      }
+
+      res.render('login', {
+        title: 'Acesso ao Sistema'
+      });
+    } catch (error) {
+      console.error(error);
+      res.render('login', {
+        title: 'Acesso ao Sistema'
+      });
+    }
   }
 
   async login(req, res) {
@@ -177,6 +192,104 @@ class AuthController {
   async logout(req, res) {
     req.session.destroy();
     res.redirect('/?success=Logout realizado com sucesso');
+  }
+
+  // Verificar se há usuários no sistema
+  async checkAdminExists(req, res) {
+    try {
+      const adminCount = await User.count();
+      res.json({ exists: adminCount > 0 });
+    } catch (error) {
+      res.status(500).json({ error: 'Erro ao verificar administrador' });
+    }
+  }
+
+  // Mostrar formulário de cadastro do primeiro admin
+  async showFirstAdminSetup(req, res) {
+    try {
+      const userCount = await User.count();
+      
+      // Se já existe usuário, redireciona para login
+      if (userCount > 0) {
+        return res.redirect('/login');
+      }
+
+      res.render('auth/first-admin', {
+        title: 'Criar Conta de Administrador',
+        layout: 'public/layout'
+      });
+    } catch (error) {
+      console.error(error);
+      res.redirect('/login?error=Erro ao verificar sistema');
+    }
+  }
+
+  // Criar primeiro usuário admin
+  async createFirstAdmin(req, res) {
+    try {
+      const { name, email, password, confirmPassword } = req.body;
+      const cryptoRandomString = (await import('crypto-random-string')).default;
+
+      // Verificar se já existe usuário
+      const userCount = await User.count();
+      if (userCount > 0) {
+        return res.redirect('/login?error=Já existe um administrador cadastrado');
+      }
+
+      // Validações
+      if (password !== confirmPassword) {
+        return res.render('auth/first-admin', {
+          title: 'Criar Conta de Administrador',
+          error: 'As senhas não coincidem',
+          name,
+          email,
+          layout: 'public/layout'
+        });
+      }
+
+      if (password.length < 6) {
+        return res.render('auth/first-admin', {
+          title: 'Criar Conta de Administrador',
+          error: 'A senha deve ter no mínimo 6 caracteres',
+          name,
+          email,
+          layout: 'public/layout'
+        });
+      }
+
+      // Verificar se email já existe
+      const existingUser = await User.findOne({ where: { email } });
+      if (existingUser) {
+        return res.render('auth/first-admin', {
+          title: 'Criar Conta de Administrador',
+          error: 'Este e-mail já está cadastrado',
+          name,
+          layout: 'public/layout'
+        });
+      }
+
+      // Criar o primeiro usuário como admin
+      const newAdmin = await User.create({
+        name,
+        email,
+        password,
+        role: 'admin',
+        active: true // Primeiro admin é ativado automaticamente
+      });
+
+      // Gerar token e fazer login automático
+      const token = generateToken(newAdmin);
+      req.session.token = token;
+
+      res.redirect('/admin/dashboard?success=Conta de administrador criada com sucesso! Bem-vindo ao sistema.');
+    } catch (error) {
+      console.error(error);
+      res.render('auth/first-admin', {
+        title: 'Criar Conta de Administrador',
+        error: 'Erro ao criar conta. Tente novamente.',
+        layout: 'public/layout'
+      });
+    }
   }
 }
 

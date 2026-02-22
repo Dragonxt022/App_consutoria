@@ -66,9 +66,18 @@ class CourseController {
       return res.redirect('/?error=Inscrições encerradas para este curso');
     }
 
+    let lastEnrollment = null;
+    if (req.user) {
+      lastEnrollment = await Enrollment.findOne({
+        where: { userId: req.user.id },
+        order: [['createdAt', 'DESC']]
+      });
+    }
+
     res.render('public/enroll', {
       title: `Inscrição - ${course.title}`,
       course,
+      lastEnrollment,
       layout: 'public/layout'
     });
   }
@@ -201,14 +210,27 @@ class CourseController {
 
   async adminStore(req, res) {
     try {
-      const { title, description, location, workload, price, startDate, spots, includes_material, includes_coffee, includes_cert } = req.body;
+      const { title, description, location, workload, price, startDate, spots } = req.body;
       
       const slug = slugify(title, { lower: true, strict: true });
       
-      const itemsIncluded = [];
-      if (includes_material) itemsIncluded.push('Material didático completo');
-      if (includes_coffee) itemsIncluded.push('Coffee break premium');
-      if (includes_cert) itemsIncluded.push('Certificado impresso');
+      // Support itemsIncluded[] coming from the form (dynamic list)
+      let itemsIncluded = req.body.itemsIncluded || [];
+      if (typeof itemsIncluded === 'string') {
+        // single item
+        itemsIncluded = [itemsIncluded];
+      }
+      // Normalize and filter empty
+      itemsIncluded = (Array.isArray(itemsIncluded) ? itemsIncluded : []).map(i => (i || '').toString().trim()).filter(Boolean);
+
+      // If nothing provided, set defaults (uppercase as requested)
+      if (itemsIncluded.length === 0) {
+        itemsIncluded = [
+          'COPO E CANETA.',
+          'COFFEE-BREAK.',
+          'CERTIFICADO DE PARTICIPAÇÃO.'
+        ];
+      }
 
       const imageUrl = req.files['image'] ? `/uploads/courses/images/${req.files['image'][0].filename}` : null;
       const docUrl = req.files['proposalDoc'] ? `/uploads/courses/documents/${req.files['proposalDoc'][0].filename}` : null;
@@ -255,7 +277,7 @@ class CourseController {
 
   async adminUpdate(req, res) {
     try {
-      const { title, description, location, workload, price, startDate, spots, includes_material, includes_coffee, includes_cert, active } = req.body;
+      const { title, description, location, workload, price, startDate, spots, active } = req.body;
       const course = await Course.findByPk(req.params.id);
 
       if (!course) {
@@ -264,10 +286,17 @@ class CourseController {
 
       const slug = slugify(title, { lower: true, strict: true });
       
-      const itemsIncluded = [];
-      if (includes_material) itemsIncluded.push('Material didático completo');
-      if (includes_coffee) itemsIncluded.push('Coffee break premium');
-      if (includes_cert) itemsIncluded.push('Certificado impresso');
+      let itemsIncluded = req.body.itemsIncluded || [];
+      if (typeof itemsIncluded === 'string') itemsIncluded = [itemsIncluded];
+      itemsIncluded = (Array.isArray(itemsIncluded) ? itemsIncluded : []).map(i => (i || '').toString().trim()).filter(Boolean);
+
+      if (itemsIncluded.length === 0) {
+        itemsIncluded = [
+          'COPO E CANETA.',
+          'COFFEE-BREAK.',
+          'CERTIFICADO DE PARTICIPAÇÃO.'
+        ];
+      }
 
       const updateData = {
         title,

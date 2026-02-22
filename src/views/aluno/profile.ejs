@@ -1,0 +1,438 @@
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="bg-white shadow-xl rounded-2xl overflow-hidden">
+        <div class="p-6 md:p-8 bg-gradient-to-r from-blue-500 to-blue-600 text-white">
+            <div class="flex items-center space-x-4">
+                <div class="relative">
+                    <img class="h-20 w-20 md:h-24 md:w-24 rounded-full border-4 border-white/30 shadow-2xl" 
+                         src="https://ui-avatars.com/api/?name=<%= user.name %>&background=fff&color=0066cc" 
+                         alt="<%= user.name %>">
+                    <div class="absolute -bottom-1 -right-1 h-5 w-5 bg-blue-400 rounded-full border-2 border-white"></div>
+                </div>
+                <div>
+                    <h2 class="text-2xl md:text-3xl font-extrabold">Editar Perfil</h2>
+                    <p class="text-blue-100 font-medium text-sm md:text-base">Mantenha seus dados pessoais atualizados</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Formulário Principal -->
+        <div class="lg:col-span-2">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8">
+                <form id="profileForm" class="space-y-6">
+                    <!-- Seção Dados Pessoais -->
+                    <div class="border-b pb-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-6 flex items-center">
+                            <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Dados Pessoais
+                        </h3>
+
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Nome Completo</label>
+                                <input 
+                                    type="text" 
+                                    id="name" 
+                                    name="name" 
+                                    value="<%= user.name %>" 
+                                    required 
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                                    placeholder="Seu nome completo">
+                            </div>
+                            <div>
+                                <label for="email" class="block text-sm font-medium text-gray-500 mb-2">E-mail (não pode ser alterado)</label>
+                                <input 
+                                    type="email" 
+                                    id="email" 
+                                    name="email" 
+                                    value="<%= user.email %>" 
+                                    disabled 
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-600 cursor-not-allowed transition-all"
+                                    placeholder="seu@email.com">
+                            </div>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-6 mt-6">
+                            <div>
+                                <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">Telefone / WhatsApp</label>
+                                <input 
+                                    type="tel" 
+                                    id="phone" 
+                                    name="phone" 
+                                    value="<%= user.phone || '' %>" 
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                                    placeholder="(00) 00000-0000"
+                                    data-mask="(00) 00000-0000">
+                            </div>
+                            <div>
+                                <label for="cpfCnpj" class="block text-sm font-medium text-gray-700 mb-2">CPF ou CNPJ</label>
+                                <input 
+                                    type="text" 
+                                    id="cpfCnpj" 
+                                    name="cpfCnpj" 
+                                    value="<%= user.cpfCnpj || '' %>" 
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                                    placeholder="000.000.000-00"
+                                    data-mask-cpf-cnpj>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Seção Dados Profissionais -->
+                    <div class="border-b pb-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-6 flex items-center">
+                            <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5.489-4.674-.989H2m15.989-2.3c.732.232 1.54.348 2.523.348 1.500 0 2.866-.256 4.007-.704" />
+                            </svg>
+                            Dados Profissionais
+                        </h3>
+
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="company" class="block text-sm font-medium text-gray-700 mb-2">Empresa / Organização</label>
+                                <input 
+                                    type="text" 
+                                    id="company" 
+                                    name="company" 
+                                    value="<%= user.company || '' %>" 
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                                    placeholder="Nome da sua empresa">
+                            </div>
+                            <div>
+                                <label for="entePublico" class="block text-sm font-medium text-gray-700 mb-2">Tipo de Organização</label>
+                                <select 
+                                    id="entePublico" 
+                                    name="entePublico" 
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
+                                    <option value="">Selecione uma opção</option>
+                                    <option value="0" <% if (user.entePublico === false) { %>selected<% } %>>Setor Privado</option>
+                                    <option value="1" <% if (user.entePublico === true) { %>selected<% } %>>Ente Público</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Seção Endereço -->
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-800 mb-6 flex items-center">
+                            <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            Endereço
+                        </h3>
+
+                        <div class="grid md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label for="pais" class="block text-sm font-medium text-gray-700 mb-2">País</label>
+                                <input 
+                                    type="text" 
+                                    id="pais" 
+                                    name="pais" 
+                                    value="<%= user.pais || '' %>" 
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                                    placeholder="Brasil">
+                            </div>
+                            <div>
+                                <label for="estado" class="block text-sm font-medium text-gray-700 mb-2">Estado / Região</label>
+                                <input 
+                                    type="text" 
+                                    id="estado" 
+                                    name="estado" 
+                                    value="<%= user.estado || '' %>" 
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                                    placeholder="São Paulo">
+                            </div>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label for="cidade" class="block text-sm font-medium text-gray-700 mb-2">Cidade</label>
+                                <input 
+                                    type="text" 
+                                    id="cidade" 
+                                    name="cidade" 
+                                    value="<%= user.cidade || '' %>" 
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                                    placeholder="São Paulo">
+                            </div>
+                            <div>
+                                <label for="cep" class="block text-sm font-medium text-gray-700 mb-2">CEP</label>
+                                <input 
+                                    type="text" 
+                                    id="cep" 
+                                    name="cep" 
+                                    value="<%= user.cep || '' %>" 
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                                    placeholder="00000-000"
+                                    data-mask="00000-000">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="endereco" class="block text-sm font-medium text-gray-700 mb-2">Endereço Completo</label>
+                            <input 
+                                type="text" 
+                                id="endereco" 
+                                name="endereco" 
+                                value="<%= user.endereco || '' %>" 
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                                placeholder="Rua, número, complemento">
+                        </div>
+                    </div>
+
+                    <!-- Botões de Ação -->
+                    <div class="flex gap-4 pt-6 border-t">
+                        <button 
+                            type="submit" 
+                            class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-all shadow-md flex items-center justify-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            Salvar Alterações
+                        </button>
+                        <a 
+                            href="/aluno/dashboard" 
+                            class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-3 px-6 rounded-lg transition-all shadow-md flex items-center justify-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                            Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Sidebar Ações -->
+        <div class="space-y-4">
+            <!-- Alterar Senha -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                    <svg class="w-5 h-5 mr-2 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                    Segurança
+                </h3>
+                <button 
+                    type="button" 
+                    onclick="document.getElementById('changePasswordModal').style.display = 'flex'" 
+                    class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition-all flex items-center justify-center">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                    </svg>
+                    Alterar Senha
+                </button>
+            </div>
+
+            <!-- Informações Úteis -->
+            <div class="bg-blue-50 border border-blue-200 rounded-2xl p-6">
+                <h3 class="text-sm font-bold text-blue-900 mb-3">Dicas de Segurança</h3>
+                <ul class="text-xs text-blue-700 space-y-2">
+                    <li class="flex items-start">
+                        <svg class="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                        </svg>
+                        <span>Nunca compartilhe sua senha</span>
+                    </li>
+                    <li class="flex items-start">
+                        <svg class="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                        </svg>
+                        <span>Use senhas fortes e únicas</span>
+                    </li>
+                    <li class="flex items-start">
+                        <svg class="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                        </svg>
+                        <span>Atualize regularmente</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Alterar Senha -->
+<div id="changePasswordModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" style="display: none;">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 md:p-8 transform transition-all">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-gray-800">Alterar Senha</h2>
+            <button 
+                type="button" 
+                onclick="document.getElementById('changePasswordModal').style.display = 'none'" 
+                class="text-gray-400 hover:text-gray-600 text-2xl font-bold">
+                &times;
+            </button>
+        </div>
+
+        <form id="changePasswordForm" class="space-y-4">
+            <div>
+                <label for="currentPassword" class="block text-sm font-medium text-gray-700 mb-2">Senha Atual</label>
+                <input 
+                    type="password" 
+                    id="currentPassword" 
+                    name="currentPassword" 
+                    required 
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all"
+                    placeholder="Insira sua senha atual">
+                <small class="text-gray-500">Precisamos confirmar sua senha atual para segurança</small>
+            </div>
+
+            <div>
+                <label for="newPassword" class="block text-sm font-medium text-gray-700 mb-2">Nova Senha</label>
+                <input 
+                    type="password" 
+                    id="newPassword" 
+                    name="newPassword" 
+                    required 
+                    minlength="6"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all"
+                    placeholder="Mínimo 6 caracteres">
+            </div>
+
+            <div>
+                <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-2">Confirmar Nova Senha</label>
+                <input 
+                    type="password" 
+                    id="confirmPassword" 
+                    name="confirmPassword" 
+                    required 
+                    minlength="6"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all"
+                    placeholder="Repita a nova senha">
+            </div>
+
+            <div class="flex gap-3 pt-4">
+                <button 
+                    type="submit" 
+                    class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition-all">
+                    Alterar
+                </button>
+                <button 
+                    type="button" 
+                    onclick="document.getElementById('changePasswordModal').style.display = 'none'" 
+                    class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg transition-all">
+                    Cancelar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    [data-mask] {
+        /* Placeholder para mascara de input se necessario */
+    }
+</style>
+
+<script>
+    // Fechar modal ao clicar fora
+    document.getElementById('changePasswordModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            this.style.display = 'none';
+        }
+    });
+
+    // Submissão do formulário de perfil
+    document.getElementById('profileForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(document.getElementById('profileForm'));
+        const data = Object.fromEntries(formData);
+
+        try {
+            const response = await fetch('/perfil/atualizar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                // Mostrar toast de sucesso
+                showToast('Perfil atualizado com sucesso!', 'success');
+                setTimeout(() => {
+                    window.location.href = '/aluno/dashboard';
+                }, 2000);
+            } else {
+                showToast(result.message || 'Erro ao atualizar perfil', 'error');
+            }
+        } catch (error) {
+            console.error(error);
+            showToast('Erro ao atualizar perfil', 'error');
+        }
+    });
+
+    // Submissão do formulário de alterar senha
+    document.getElementById('changePasswordForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const currentPassword = document.getElementById('currentPassword').value;
+        const newPassword = document.getElementById('newPassword').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+
+        if (newPassword !== confirmPassword) {
+            showToast('As senhas não coincidem', 'error');
+            return;
+        }
+
+        try {
+            const response = await fetch('/perfil/alterar-senha', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    currentPassword,
+                    newPassword,
+                    confirmPassword
+                })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                showToast('Senha alterada com sucesso!', 'success');
+                document.getElementById('changePasswordModal').style.display = 'none';
+                document.getElementById('changePasswordForm').reset();
+            } else {
+                showToast(result.message || 'Erro ao alterar senha', 'error');
+            }
+        } catch (error) {
+            console.error(error);
+            showToast('Erro ao alterar senha', 'error');
+        }
+    });
+
+    // Função para mostrar toast
+    function showToast(message, type = 'info') {
+        const bgColor = type === 'success' ? 'bg-emerald-600' : type === 'error' ? 'bg-red-600' : 'bg-blue-600';
+        const toast = document.createElement('div');
+        toast.className = `fixed bottom-4 right-4 ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300`;
+        toast.textContent = message;
+        
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.classList.remove('translate-x-full');
+            toast.classList.add('translate-x-0');
+        }, 10);
+        
+        setTimeout(() => {
+            toast.classList.remove('translate-x-0');
+            toast.classList.add('translate-x-full');
+            setTimeout(() => {
+                document.body.removeChild(toast);
+            }, 300);
+        }, 3000);
+    }
+</script>

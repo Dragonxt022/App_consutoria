@@ -1,11 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const HomeController = require('../controllers/HomeController');
+const AuthController = require('../controllers/AuthController');
 const CourseController = require('../controllers/CourseController');
 const SettingController = require('../controllers/SettingController');
 const EnrollmentController = require('../controllers/EnrollmentController');
 const SalesController = require('../controllers/SalesController');
 const CertificateController = require('../controllers/CertificateController');
+const ProfileController = require('../controllers/ProfileController');
 const { authMiddleware, guestMiddleware, publicMiddleware } = require('../middleware/auth'); // Adicione publicMiddleware
 const upload = require('../config/multer');
 
@@ -69,13 +71,15 @@ router.get('/admin/dashboard', authMiddleware('admin'), (req, res) => HomeContro
 router.get('/aluno/dashboard', authMiddleware('aluno'), (req, res) => HomeController.alunoDashboard(req, res));
 
 // Adicione também as rotas de login/registro
-router.get('/login', guestMiddleware, (req, res) => {
-  // Verifica se já existe um layout de login, senão use o padrão
-  res.render('login', { title: 'Login' });
-});
+router.get('/login', guestMiddleware, (req, res) => AuthController.showLogin(req, res));
 
 router.get('/register', guestMiddleware, (req, res) => {
   res.render('register', { title: 'Registro' });
 });
+
+// Rotas de Perfil do Aluno
+router.get('/perfil', authMiddleware('aluno'), (req, res) => ProfileController.show(req, res));
+router.post('/perfil/atualizar', authMiddleware('aluno'), (req, res) => ProfileController.update(req, res));
+router.post('/perfil/alterar-senha', authMiddleware('aluno'), (req, res) => ProfileController.changePassword(req, res));
 
 module.exports = router;
