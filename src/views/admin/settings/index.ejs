@@ -45,6 +45,89 @@
 
             <hr class="border-slate-100">
 
+            <!-- Certificado -->
+            <section class="space-y-6">
+                <h3 class="text-sm font-bold text-indigo-600 uppercase tracking-wider">Configurações de Certificado</h3>
+                <p class="text-xs text-slate-500">Defina o template e padronize a assinatura para uso em certificados (1200 x 360 px).</p>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Template Padrão</label>
+                        <select name="certificate_default_template" class="w-full px-4 py-3 rounded-xl border border-slate-200">
+                            <option value="classic" <%= settings.certificate_default_template === 'classic' ? 'selected' : '' %>>Clássico (padrão)</option>
+                            <option value="minimal" <%= settings.certificate_default_template === 'minimal' ? 'selected' : '' %>>Minimal</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Assinatura do Certificado</label>
+                        <div class="space-y-3">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <input id="certSignatureInput" type="file" name="cert_signature" accept="image/png,image/jpeg,image/webp" class="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                                <button type="button" id="openSignatureModal" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded text-sm">Desenhar</button>
+                                <button type="button" id="clearSignatureSelection" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2 rounded text-sm">Limpar</button>
+                                <input type="hidden" name="certificate_signature_base64" id="certificate_signature_base64">
+                            </div>
+
+                            <div class="rounded-lg border border-slate-200 bg-slate-50 p-3">
+                                <div class="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2">Preview Final (1200 x 360)</div>
+                                <div class="h-20 w-full max-w-md rounded bg-white border border-dashed border-slate-200 flex items-center justify-center overflow-hidden">
+                                    <% if (settings.certificate_signature_url) { %>
+                                        <img id="signaturePreview" src="<%= settings.certificate_signature_url %>" class="h-full w-full object-contain" alt="Assinatura atual">
+                                    <% } else { %>
+                                        <img id="signaturePreview" src="" class="h-full w-full object-contain hidden" alt="Preview da assinatura">
+                                    <% } %>
+                                    <span id="signaturePreviewPlaceholder" class="<%= settings.certificate_signature_url ? 'hidden' : '' %> text-xs text-slate-400">Nenhuma assinatura selecionada</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Signature Drawing Modal -->
+            <div id="signatureModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4">
+                <div class="bg-white rounded-xl p-6 w-[900px] max-w-full">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="text-lg font-bold">Desenhar Assinatura</h4>
+                        <button type="button" id="closeSignatureModal" class="text-slate-500">Fechar</button>
+                    </div>
+                    <p class="text-xs text-slate-500 mb-3">Assinatura digital padronizada para 1200 x 360 px.</p>
+                    <div class="border rounded p-2 bg-slate-50">
+                        <canvas id="signatureCanvas" width="760" height="220" style="width:100%; height:220px; display:block; background:#fff;"></canvas>
+                    </div>
+                    <div class="mt-4 flex items-center justify-between">
+                        <div>
+                            <button id="clearSignature" type="button" class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded mr-2">Limpar</button>
+                            <button id="saveSignature" type="button" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded">Usar Assinatura</button>
+                        </div>
+                        <div class="text-sm text-slate-500">Ao salvar, substitui o upload de imagem atual.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Signature Crop Modal -->
+            <div id="signatureCropModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60 p-4">
+                <div class="bg-white rounded-xl p-6 w-[920px] max-w-full">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="text-lg font-bold">Ajustar Assinatura PNG</h4>
+                        <button type="button" id="closeCropModal" class="text-slate-500">Fechar</button>
+                    </div>
+                    <p class="text-xs text-slate-500 mb-3">Arraste para posicionar e use zoom. O recorte final será salvo no padrão 1200 x 360 px.</p>
+                    <div class="border rounded p-2 bg-slate-50">
+                        <canvas id="cropCanvas" width="760" height="240" style="width:100%; height:240px; display:block; background:#fff;"></canvas>
+                    </div>
+                    <div class="mt-4">
+                        <label for="cropZoom" class="block text-xs font-semibold text-slate-600 mb-1">Zoom</label>
+                        <input type="range" id="cropZoom" min="1" max="4" value="1.2" step="0.01" class="w-full">
+                    </div>
+                    <div class="mt-4 flex items-center justify-between">
+                        <button type="button" id="resetCrop" class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded">Resetar</button>
+                        <button type="button" id="confirmCrop" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded">Confirmar Corte</button>
+                    </div>
+                </div>
+            </div>
+
             <!-- Informações do Rodapé -->
             <section class="space-y-6">
                 <h3 class="text-sm font-bold text-indigo-600 uppercase tracking-wider">Informações do Rodapé</h3>
@@ -112,3 +195,278 @@
         </form>
     </div>
 </div>
+
+<script>
+(() => {
+    const SIGNATURE_WIDTH = 1200;
+    const SIGNATURE_HEIGHT = 360;
+
+    const fileInput = document.getElementById('certSignatureInput');
+    const hiddenInput = document.getElementById('certificate_signature_base64');
+    const preview = document.getElementById('signaturePreview');
+    const previewPlaceholder = document.getElementById('signaturePreviewPlaceholder');
+    const clearSelectionBtn = document.getElementById('clearSignatureSelection');
+
+    const drawModal = document.getElementById('signatureModal');
+    const openDrawBtn = document.getElementById('openSignatureModal');
+    const closeDrawBtn = document.getElementById('closeSignatureModal');
+    const drawCanvas = document.getElementById('signatureCanvas');
+    const clearDrawBtn = document.getElementById('clearSignature');
+    const saveDrawBtn = document.getElementById('saveSignature');
+
+    const cropModal = document.getElementById('signatureCropModal');
+    const closeCropBtn = document.getElementById('closeCropModal');
+    const cropCanvas = document.getElementById('cropCanvas');
+    const cropZoom = document.getElementById('cropZoom');
+    const resetCropBtn = document.getElementById('resetCrop');
+    const confirmCropBtn = document.getElementById('confirmCrop');
+
+    if (!drawCanvas || !cropCanvas || !hiddenInput || !preview) return;
+
+    function setPreview(dataUrl) {
+        if (!dataUrl) {
+            preview.src = '';
+            preview.classList.add('hidden');
+            previewPlaceholder && previewPlaceholder.classList.remove('hidden');
+            return;
+        }
+        preview.src = dataUrl;
+        preview.classList.remove('hidden');
+        previewPlaceholder && previewPlaceholder.classList.add('hidden');
+    }
+
+    function clearSignatureSelection() {
+        if (fileInput) fileInput.value = '';
+        hiddenInput.value = '';
+        setPreview('');
+    }
+
+    clearSelectionBtn && clearSelectionBtn.addEventListener('click', clearSignatureSelection);
+
+    function openModal(el) {
+        if (!el) return;
+        el.classList.remove('hidden');
+        el.classList.add('flex');
+    }
+
+    function closeModal(el) {
+        if (!el) return;
+        el.classList.add('hidden');
+        el.classList.remove('flex');
+    }
+
+    // Drawing canvas
+    const drawCtx = drawCanvas.getContext('2d');
+    let drawing = false;
+
+    function resizeDrawCanvas() {
+        const rect = drawCanvas.getBoundingClientRect();
+        const scale = window.devicePixelRatio || 1;
+        drawCanvas.width = Math.max(1, Math.floor(rect.width * scale));
+        drawCanvas.height = Math.max(1, Math.floor(rect.height * scale));
+        drawCtx.setTransform(scale, 0, 0, scale, 0, 0);
+        drawCtx.strokeStyle = '#111827';
+        drawCtx.lineWidth = 2.4;
+        drawCtx.lineCap = 'round';
+    }
+
+    function drawPos(evt) {
+        const rect = drawCanvas.getBoundingClientRect();
+        const point = evt.touches ? evt.touches[0] : evt;
+        return { x: point.clientX - rect.left, y: point.clientY - rect.top };
+    }
+
+    drawCanvas.addEventListener('pointerdown', (evt) => {
+        drawing = true;
+        const p = drawPos(evt);
+        drawCtx.beginPath();
+        drawCtx.moveTo(p.x, p.y);
+    });
+
+    drawCanvas.addEventListener('pointermove', (evt) => {
+        if (!drawing) return;
+        const p = drawPos(evt);
+        drawCtx.lineTo(p.x, p.y);
+        drawCtx.stroke();
+    });
+
+    window.addEventListener('pointerup', () => { drawing = false; });
+
+    resizeDrawCanvas();
+    window.addEventListener('resize', resizeDrawCanvas);
+
+    clearDrawBtn && clearDrawBtn.addEventListener('click', () => {
+        drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+    });
+
+    openDrawBtn && openDrawBtn.addEventListener('click', () => openModal(drawModal));
+    closeDrawBtn && closeDrawBtn.addEventListener('click', () => closeModal(drawModal));
+    drawModal && drawModal.addEventListener('click', (evt) => {
+        if (evt.target === drawModal) closeModal(drawModal);
+    });
+
+    saveDrawBtn && saveDrawBtn.addEventListener('click', () => {
+        const out = document.createElement('canvas');
+        out.width = SIGNATURE_WIDTH;
+        out.height = SIGNATURE_HEIGHT;
+        const outCtx = out.getContext('2d');
+        outCtx.drawImage(drawCanvas, 0, 0, drawCanvas.width, drawCanvas.height, 0, 0, SIGNATURE_WIDTH, SIGNATURE_HEIGHT);
+        const result = out.toDataURL('image/png');
+        hiddenInput.value = result;
+        if (fileInput) fileInput.value = '';
+        setPreview(result);
+        closeModal(drawModal);
+    });
+
+    // Crop canvas
+    const cropCtx = cropCanvas.getContext('2d');
+    let cropImage = null;
+    let cropState = { zoom: 1.2, x: 0, y: 0, dragging: false, dragStartX: 0, dragStartY: 0 };
+
+    function clampCrop() {
+        if (!cropImage) return;
+        const drawW = Math.max(cropCanvas.width, cropImage.width * cropState.zoom);
+        const drawH = Math.max(cropCanvas.height, cropImage.height * cropState.zoom);
+        const minX = cropCanvas.width - drawW;
+        const minY = cropCanvas.height - drawH;
+        cropState.x = Math.min(0, Math.max(minX, cropState.x));
+        cropState.y = Math.min(0, Math.max(minY, cropState.y));
+    }
+
+    function renderCrop() {
+        cropCtx.clearRect(0, 0, cropCanvas.width, cropCanvas.height);
+        cropCtx.fillStyle = '#ffffff';
+        cropCtx.fillRect(0, 0, cropCanvas.width, cropCanvas.height);
+        if (!cropImage) return;
+
+        const drawW = Math.max(cropCanvas.width, cropImage.width * cropState.zoom);
+        const drawH = Math.max(cropCanvas.height, cropImage.height * cropState.zoom);
+        clampCrop();
+        cropCtx.drawImage(cropImage, cropState.x, cropState.y, drawW, drawH);
+
+        cropCtx.strokeStyle = '#6366f1';
+        cropCtx.lineWidth = 2;
+        cropCtx.setLineDash([8, 5]);
+        cropCtx.strokeRect(1, 1, cropCanvas.width - 2, cropCanvas.height - 2);
+        cropCtx.setLineDash([]);
+    }
+
+    function resetCropState() {
+        if (!cropImage) return;
+        const fitZoom = Math.max(cropCanvas.width / cropImage.width, cropCanvas.height / cropImage.height);
+        cropState.zoom = Math.max(1, fitZoom);
+        cropState.x = (cropCanvas.width - cropImage.width * cropState.zoom) / 2;
+        cropState.y = (cropCanvas.height - cropImage.height * cropState.zoom) / 2;
+        cropZoom.value = String(cropState.zoom);
+        renderCrop();
+    }
+
+    function loadImageForCrop(file) {
+        const reader = new FileReader();
+        reader.onload = () => {
+            const img = new Image();
+            img.onload = () => {
+                cropImage = img;
+                resetCropState();
+                openModal(cropModal);
+            };
+            img.src = String(reader.result || '');
+        };
+        reader.readAsDataURL(file);
+    }
+
+    fileInput && fileInput.addEventListener('change', (evt) => {
+        const file = evt.target.files && evt.target.files[0];
+        if (!file) return;
+        if (!file.type.startsWith('image/')) {
+            alert('Selecione um arquivo de imagem válido.');
+            fileInput.value = '';
+            return;
+        }
+        hiddenInput.value = '';
+        loadImageForCrop(file);
+    });
+
+    cropZoom && cropZoom.addEventListener('input', () => {
+        const nextZoom = Number(cropZoom.value || 1);
+        if (!Number.isFinite(nextZoom)) return;
+
+        const cx = cropCanvas.width / 2;
+        const cy = cropCanvas.height / 2;
+        const oldDrawW = Math.max(cropCanvas.width, cropImage ? cropImage.width * cropState.zoom : cropCanvas.width);
+        const oldDrawH = Math.max(cropCanvas.height, cropImage ? cropImage.height * cropState.zoom : cropCanvas.height);
+        const relX = (cx - cropState.x) / oldDrawW;
+        const relY = (cy - cropState.y) / oldDrawH;
+
+        cropState.zoom = nextZoom;
+        const newDrawW = Math.max(cropCanvas.width, cropImage ? cropImage.width * cropState.zoom : cropCanvas.width);
+        const newDrawH = Math.max(cropCanvas.height, cropImage ? cropImage.height * cropState.zoom : cropCanvas.height);
+        cropState.x = cx - relX * newDrawW;
+        cropState.y = cy - relY * newDrawH;
+        renderCrop();
+    });
+
+    resetCropBtn && resetCropBtn.addEventListener('click', resetCropState);
+
+    function cropPoint(evt) {
+        const rect = cropCanvas.getBoundingClientRect();
+        const scaleX = cropCanvas.width / rect.width;
+        const scaleY = cropCanvas.height / rect.height;
+        return {
+            x: (evt.clientX - rect.left) * scaleX,
+            y: (evt.clientY - rect.top) * scaleY
+        };
+    }
+
+    cropCanvas.addEventListener('pointerdown', (evt) => {
+        const p = cropPoint(evt);
+        cropState.dragging = true;
+        cropState.dragStartX = p.x - cropState.x;
+        cropState.dragStartY = p.y - cropState.y;
+    });
+
+    cropCanvas.addEventListener('pointermove', (evt) => {
+        if (!cropState.dragging) return;
+        const p = cropPoint(evt);
+        cropState.x = p.x - cropState.dragStartX;
+        cropState.y = p.y - cropState.dragStartY;
+        renderCrop();
+    });
+
+    window.addEventListener('pointerup', () => { cropState.dragging = false; });
+
+    confirmCropBtn && confirmCropBtn.addEventListener('click', () => {
+        if (!cropImage) return;
+        const drawW = Math.max(cropCanvas.width, cropImage.width * cropState.zoom);
+        const drawH = Math.max(cropCanvas.height, cropImage.height * cropState.zoom);
+
+        const srcX = (-cropState.x / drawW) * cropImage.width;
+        const srcY = (-cropState.y / drawH) * cropImage.height;
+        const srcW = (cropCanvas.width / drawW) * cropImage.width;
+        const srcH = (cropCanvas.height / drawH) * cropImage.height;
+
+        const out = document.createElement('canvas');
+        out.width = SIGNATURE_WIDTH;
+        out.height = SIGNATURE_HEIGHT;
+        const outCtx = out.getContext('2d');
+        outCtx.drawImage(cropImage, srcX, srcY, srcW, srcH, 0, 0, SIGNATURE_WIDTH, SIGNATURE_HEIGHT);
+
+        const result = out.toDataURL('image/png');
+        hiddenInput.value = result;
+        if (fileInput) fileInput.value = '';
+        setPreview(result);
+        closeModal(cropModal);
+    });
+
+    closeCropBtn && closeCropBtn.addEventListener('click', () => {
+        if (fileInput) fileInput.value = '';
+        closeModal(cropModal);
+    });
+    cropModal && cropModal.addEventListener('click', (evt) => {
+        if (evt.target === cropModal) {
+            if (fileInput) fileInput.value = '';
+            closeModal(cropModal);
+        }
+    });
+})();
+</script>

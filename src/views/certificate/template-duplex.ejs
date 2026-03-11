@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificado Frente e Verso - <%= enrollment.studentName %></title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --a4-width: 297mm;
+            --a4-height: 210mm;
+            --ink: #0f172a;
+            --muted: #64748b;
+            --line: #cbd5e1;
+            --paper: #ffffff;
+            --accent: #0f766e;
+        }
+
+        body {
+            background: #cbd5e1;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 16px;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .page {
+            width: var(--a4-width);
+            height: var(--a4-height);
+            background: var(--paper);
+            margin: 0 auto 16px;
+            border: 1px solid var(--line);
+            box-shadow: 0 18px 42px rgba(15, 23, 42, 0.18);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .front-content {
+            padding: 22mm;
+            height: 100%;
+            border: 2px solid #0f172a;
+            margin: 12mm;
+            display: grid;
+            grid-template-rows: auto auto auto 1fr auto;
+            gap: 7mm;
+        }
+
+        .front-title {
+            text-align: center;
+            text-transform: uppercase;
+            font-size: 14px;
+            letter-spacing: .12em;
+            font-weight: 700;
+        }
+
+        .front-name {
+            text-align: center;
+            font-size: 48px;
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            font-style: italic;
+            line-height: 1.1;
+        }
+
+        .front-description {
+            font-size: 13px;
+            line-height: 1.6;
+            text-align: justify;
+        }
+
+        .front-footer {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: end;
+            gap: 16mm;
+        }
+
+        .signature-box {
+            position: relative;
+            min-height: 30mm;
+            text-align: center;
+        }
+
+        .signature-box img {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            transform: translateX(-50%);
+            width: 52mm;
+            max-height: 22mm;
+            object-fit: contain;
+        }
+
+        .signature-line {
+            margin-top: 20mm;
+            border-top: 2px solid #0f172a;
+            padding-top: 2mm;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .front-meta {
+            text-align: right;
+            font-size: 11px;
+            color: #334155;
+            line-height: 1.5;
+        }
+
+        .back-content {
+            padding: 14mm 16mm 12mm;
+            height: 100%;
+            display: grid;
+            grid-template-rows: auto auto 1fr auto;
+            gap: 7mm;
+        }
+
+        .back-header h1 {
+            font-size: 19px;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            font-weight: 800;
+        }
+
+        .back-header p {
+            margin-top: 2mm;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .back-meta {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 3mm;
+        }
+
+        .meta-item {
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 3mm;
+            font-size: 10.5px;
+        }
+
+        .meta-item .k {
+            color: var(--muted);
+            font-size: 9px;
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 1.2mm;
+        }
+
+        .meta-item .v {
+            font-weight: 600;
+            line-height: 1.35;
+        }
+
+        .topics {
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 4mm 5mm;
+        }
+
+        .topics h2 {
+            color: var(--accent);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            margin-bottom: 3mm;
+        }
+
+        .topic-cols {
+            columns: 2;
+            column-gap: 9mm;
+        }
+
+        .topic {
+            break-inside: avoid;
+            page-break-inside: avoid;
+            margin-bottom: 2.2mm;
+            font-size: 10.5px;
+            line-height: 1.45;
+            padding-left: 3.5mm;
+            position: relative;
+        }
+
+        .topic::before {
+            content: '';
+            width: 1.6mm;
+            height: 1.6mm;
+            border-radius: 999px;
+            background: var(--accent);
+            position: absolute;
+            left: 0;
+            top: .68em;
+            transform: translateY(-50%);
+        }
+
+        .back-footer {
+            border-top: 1px solid var(--line);
+            padding-top: 2.5mm;
+            color: var(--muted);
+            font-size: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .actions {
+            position: fixed;
+            right: 16px;
+            bottom: 16px;
+            display: flex;
+            gap: 10px;
+            z-index: 20;
+        }
+
+        .btn {
+            background: #0f766e;
+            color: white;
+            border: 0;
+            border-radius: 999px;
+            text-decoration: none;
+            padding: 10px 16px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn.alt {
+            background: #475569;
+        }
+
+        .page-break {
+            page-break-after: always;
+            break-after: page;
+        }
+
+        @page {
+            size: A4 landscape;
+            margin: 0;
+        }
+
+        @media print {
+            html, body {
+                margin: 0 !important;
+                padding: 0 !important;
+                background: white !important;
+            }
+
+            .page {
+                margin: 0 !important;
+                border: none !important;
+                box-shadow: none !important;
+            }
+
+            .actions { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+    <section class="page page-break">
+        <div class="front-content">
+            <div class="front-title">Certificado de Conclusão</div>
+            <div class="front-name"><%= enrollment.studentName %></div>
+            <div class="front-description">
+                Certificamos que <strong><%= enrollment.studentName %></strong> concluiu com êxito o curso
+                <strong>"<%= course.title %>"</strong>,
+                realizado <%= course.location ? `em ${course.location}` : 'online' %>,
+                com carga horária de <strong><%= course.workload %></strong> e aproveitamento satisfatório.
+            </div>
+            <div></div>
+            <div class="front-footer">
+                <div class="signature-box">
+                    <% if (settings && settings.certificate_signature_url) { %>
+                        <img src="<%= settings.certificate_signature_url %>" alt="Assinatura">
+                    <% } %>
+                    <div class="signature-line">Diretoria Acadêmica</div>
+                </div>
+                <div class="front-meta">
+                    <div>Emitido em <%= new Date().toLocaleDateString('pt-BR') %></div>
+                    <div>Cód. Validação: <%= code %></div>
+                    <div><%= validationUrl %></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="page">
+        <div class="back-content">
+            <header class="back-header">
+                <h1>Conteúdo Programático</h1>
+                <p>Verso do certificado de conclusão</p>
+            </header>
+
+            <div class="back-meta">
+                <div class="meta-item">
+                    <div class="k">Aluno</div>
+                    <div class="v"><%= enrollment.studentName %></div>
+                </div>
+                <div class="meta-item">
+                    <div class="k">Curso</div>
+                    <div class="v"><%= course.title %></div>
+                </div>
+                <div class="meta-item">
+                    <div class="k">Carga Horária</div>
+                    <div class="v"><%= course.workload %></div>
+                </div>
+                <div class="meta-item">
+                    <div class="k">Código</div>
+                    <div class="v"><%= code %></div>
+                </div>
+            </div>
+
+            <div class="topics">
+                <h2>Lista de Conteúdos</h2>
+                <div class="topic-cols">
+                    <% if (topics && topics.length) { %>
+                        <% topics.forEach((topic) => { %>
+                            <p class="topic"><%= topic %></p>
+                        <% }) %>
+                    <% } else { %>
+                        <p class="topic">Fundamentos e objetivos do curso</p>
+                        <p class="topic">Aplicações práticas no contexto profissional</p>
+                        <p class="topic">Estudos de caso e resolução de problemas</p>
+                        <p class="topic">Ferramentas e boas práticas de execução</p>
+                        <p class="topic">Consolidação de conhecimento e avaliação final</p>
+                    <% } %>
+                </div>
+            </div>
+
+            <footer class="back-footer">
+                <span>Documento complementar ao certificado.</span>
+                <span>Emitido em <%= new Date().toLocaleDateString('pt-BR') %></span>
+            </footer>
+        </div>
+    </section>
+
+    <div class="actions">
+        <a class="btn alt" href="/certificado/<%= code %>">Somente Frente</a>
+        <button class="btn" onclick="window.print()">Imprimir Frente + Verso</button>
+    </div>
+</body>
+</html>

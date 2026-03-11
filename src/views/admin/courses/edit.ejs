@@ -76,25 +76,51 @@
 
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase mb-2">O que está incluso?</label>
-                        <div class="space-y-3 mt-4">
-                            <% 
-                                const includesMaterial = course.itemsIncluded && course.itemsIncluded.includes('Material didático completo');
-                                const includesCoffee = course.itemsIncluded && course.itemsIncluded.includes('Coffee break premium');
-                                const includesCert = course.itemsIncluded && course.itemsIncluded.includes('Certificado impresso');
-                            %>
-                            <label class="flex items-center space-x-3 text-sm text-slate-600 cursor-pointer">
-                                <input type="checkbox" name="includes_material" <%= includesMaterial ? 'checked' : '' %> class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500">
-                                <span>Material didático completo</span>
-                            </label>
-                            <label class="flex items-center space-x-3 text-sm text-slate-600 cursor-pointer">
-                                <input type="checkbox" name="includes_coffee" <%= includesCoffee ? 'checked' : '' %> class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500">
-                                <span>Coffee break premium</span>
-                            </label>
-                            <label class="flex items-center space-x-3 text-sm text-slate-600 cursor-pointer">
-                                <input type="checkbox" name="includes_cert" <%= includesCert ? 'checked' : '' %> class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500">
-                                <span>Certificado impresso</span>
-                            </label>
+                        <p class="text-xs text-slate-400 mb-2">Digite um item e aperte <span class="font-semibold">Enter</span> para adicionar. Cada item será enviado como <code>itemsIncluded[]</code>.</p>
+
+                        <div class="flex items-center gap-3">
+                            <input id="includeInput" type="text" placeholder="Ex: Material didático completo" class="flex-1 px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none">
+                            <button type="button" id="addIncludeBtn" class="px-4 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700">Adicionar</button>
                         </div>
+
+                        <ul id="includesList" class="mt-4 space-y-2">
+                            <% 
+                                const initialIncludes = (course.itemsIncluded && Array.isArray(course.itemsIncluded) && course.itemsIncluded.length) ? course.itemsIncluded : [];
+                                if (initialIncludes.length === 0) {
+                            %>
+                                <li class="flex items-center justify-between bg-slate-50 p-2 rounded-lg">
+                                    <div class="flex items-center gap-3">
+                                        <input type="checkbox" name="itemsIncluded[]" value="COPO E CANETA." checked class="w-4 h-4 text-indigo-600">
+                                        <span class="text-sm text-slate-700">COPO E CANETA.</span>
+                                    </div>
+                                    <button type="button" class="removeInclude text-red-500 hover:text-red-600">Remover</button>
+                                </li>
+                                <li class="flex items-center justify-between bg-slate-50 p-2 rounded-lg">
+                                    <div class="flex items-center gap-3">
+                                        <input type="checkbox" name="itemsIncluded[]" value="COFFEE-BREAK." checked class="w-4 h-4 text-indigo-600">
+                                        <span class="text-sm text-slate-700">COFFEE-BREAK.</span>
+                                    </div>
+                                    <button type="button" class="removeInclude text-red-500 hover:text-red-600">Remover</button>
+                                </li>
+                                <li class="flex items-center justify-between bg-slate-50 p-2 rounded-lg">
+                                    <div class="flex items-center gap-3">
+                                        <input type="checkbox" name="itemsIncluded[]" value="CERTIFICADO DE PARTICIPAÇÃO." checked class="w-4 h-4 text-indigo-600">
+                                        <span class="text-sm text-slate-700">CERTIFICADO DE PARTICIPAÇÃO.</span>
+                                    </div>
+                                    <button type="button" class="removeInclude text-red-500 hover:text-red-600">Remover</button>
+                                </li>
+                            <% } else { %>
+                                <% initialIncludes.forEach(function(item) { %>
+                                    <li class="flex items-center justify-between bg-slate-50 p-2 rounded-lg">
+                                        <div class="flex items-center gap-3">
+                                            <input type="checkbox" name="itemsIncluded[]" value="<%= item %>" checked class="w-4 h-4 text-indigo-600">
+                                            <span class="text-sm text-slate-700"><%= item %></span>
+                                        </div>
+                                        <button type="button" class="removeInclude text-red-500 hover:text-red-600">Remover</button>
+                                    </li>
+                                <% }); %>
+                            <% } %>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -351,5 +377,67 @@ document.addEventListener('DOMContentLoaded', function() {
         const event = new Event('change');
         pdfInput.dispatchEvent(event);
     }, false);
+
+    // --- Itens inclusos dinâmicos (edição) ---
+    const includeInput = document.getElementById('includeInput');
+    const addIncludeBtn = document.getElementById('addIncludeBtn');
+    const includesList = document.getElementById('includesList');
+
+    function createIncludeItem(text) {
+        const li = document.createElement('li');
+        li.className = 'flex items-center justify-between bg-slate-50 p-2 rounded-lg';
+
+        const left = document.createElement('div');
+        left.className = 'flex items-center gap-3';
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.name = 'itemsIncluded[]';
+        checkbox.value = text;
+        checkbox.checked = true;
+        checkbox.className = 'w-4 h-4 text-indigo-600';
+
+        const span = document.createElement('span');
+        span.className = 'text-sm text-slate-700';
+        span.textContent = text;
+
+        left.appendChild(checkbox);
+        left.appendChild(span);
+
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'removeInclude text-red-500 hover:text-red-600';
+        removeBtn.textContent = 'Remover';
+        removeBtn.addEventListener('click', function() { li.remove(); });
+
+        li.appendChild(left);
+        li.appendChild(removeBtn);
+
+        return li;
+    }
+
+    function addIncludeFromInput() {
+        const text = (includeInput.value || '').trim();
+        if (!text) return;
+        includesList.appendChild(createIncludeItem(text));
+        includeInput.value = '';
+        includeInput.focus();
+    }
+
+    addIncludeBtn.addEventListener('click', addIncludeFromInput);
+    includeInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            addIncludeFromInput();
+        }
+    });
+
+    // attach remove handlers to any pre-existing remove buttons
+    document.querySelectorAll('.removeInclude').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const li = btn.closest('li');
+            if (li) li.remove();
+        });
+    });
 });
 </script>

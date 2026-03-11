@@ -18,7 +18,8 @@ async function cleanupUnconfirmed() {
       
       // Delete enrollments for these users
       await Enrollment.destroy({
-        where: { userId: userIds }
+        where: { userId: userIds },
+        force: true
       });
 
       // Delete the users

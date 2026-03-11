@@ -60,7 +60,7 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <!-- Top Courses -->
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <div class="p-6 border-b border-gray-50">
@@ -70,18 +70,20 @@
                 <table class="w-full text-left">
                     <thead class="bg-gray-50 text-gray-400 text-xs uppercase font-bold">
                         <tr>
-                            <th class="px-6 py-3">Curso</th>
-                            <th class="px-6 py-3 text-center">Vendas</th>
-                            <th class="px-6 py-3 text-right">Receita</th>
+                            <th class="px-4 md:px-6 py-3">Curso</th>
+                            <th class="px-4 md:px-6 py-3 text-center">Vendas</th>
+                            <th class="px-4 md:px-6 py-3 text-right">Receita</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100">
                         <% if(salesByCourse.length > 0) { %>
                             <% salesByCourse.forEach(item => { %>
                                 <tr class="hover:bg-gray-50/50 transition-colors">
-                                    <td class="px-6 py-4 font-medium text-gray-700"><%= item.title %></td>
-                                    <td class="px-6 py-4 text-center text-gray-600"><%= item.count %></td>
-                                    <td class="px-6 py-4 text-right font-bold text-green-600">R$ <%= item.revenue ? item.revenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) : '0,00' %></td>
+                                    <td class="px-4 md:px-6 py-4 font-medium text-gray-700">
+                                        <div class="max-w-[220px] truncate" title="<%= item.title %>"><%= item.title %></div>
+                                    </td>
+                                    <td class="px-4 md:px-6 py-4 text-center text-gray-600"><%= item.count %></td>
+                                    <td class="px-4 md:px-6 py-4 text-right font-bold text-green-600">R$ <%= item.revenue ? item.revenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) : '0,00' %></td>
                                 </tr>
                             <% }) %>
                         <% } else { %>
@@ -104,19 +106,19 @@
                 <table class="w-full text-left">
                     <thead class="bg-gray-50 text-gray-400 text-xs uppercase font-bold">
                         <tr>
-                            <th class="px-6 py-3">Aluno / Curso</th>
-                            <th class="px-6 py-3 text-right">Valor</th>
+                            <th class="px-4 md:px-6 py-3">Aluno / Curso</th>
+                            <th class="px-4 md:px-6 py-3 text-right">Valor</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100">
                         <% if(recentSales.length > 0) { %>
                             <% recentSales.forEach(sale => { %>
                                 <tr class="hover:bg-gray-50/50 transition-colors">
-                                    <td class="px-6 py-4">
+                                    <td class="px-4 md:px-6 py-4">
                                         <div class="font-medium text-gray-800"><%= sale.studentName %></div>
-                                        <div class="text-xs text-gray-500 truncate max-w-[200px]"><%= sale.Course ? sale.Course.title : 'Curso não encontrado' %></div>
+                                        <div class="text-xs text-gray-500 truncate max-w-[220px]"><%= sale.Course ? sale.Course.title : 'Curso não encontrado' %></div>
                                     </td>
-                                    <td class="px-6 py-4 text-right">
+                                    <td class="px-4 md:px-6 py-4 text-right">
                                         <div class="font-bold text-green-600">R$ <%= sale.finalPrice ? sale.finalPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) : '0,00' %></div>
                                         <div class="text-[10px] text-gray-400"><%= new Date(sale.createdAt).toLocaleDateString('pt-BR') %></div>
                                     </td>

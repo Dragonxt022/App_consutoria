@@ -23,6 +23,8 @@ router.get('/obrigado', publicMiddleware, (req, res) => CourseController.thankYo
 
 // Rotas de Certificado Público
 router.get('/certificado/:code', publicMiddleware, (req, res) => CertificateController.view(req, res));
+router.get('/certificado/:code/verso', publicMiddleware, (req, res) => CertificateController.viewBack(req, res));
+router.get('/certificado/:code/duplex', publicMiddleware, (req, res) => CertificateController.viewDuplex(req, res));
 router.get('/validar-certificado', publicMiddleware, (req, res) => CertificateController.validate(req, res));
 router.post('/validar-certificado', publicMiddleware, (req, res) => CertificateController.check(req, res));
 
@@ -33,6 +35,7 @@ router.get('/meu-comprovante/:id', authMiddleware('aluno'), (req, res) => Enroll
 // Admin Enrollment Routes
 router.get('/admin/inscricoes', authMiddleware('admin'), (req, res) => EnrollmentController.adminList(req, res));
 router.post('/admin/inscricoes/:id/status', authMiddleware('admin'), (req, res) => EnrollmentController.updateStatus(req, res));
+router.post('/admin/inscricoes/:id/deletar', authMiddleware('admin'), (req, res) => EnrollmentController.delete(req, res));
 router.get('/admin/inscricoes/:id/json', authMiddleware('admin'), (req, res) => EnrollmentController.viewStudentCertificate(req, res));
 
 // Admin Certificate Routes
@@ -49,7 +52,10 @@ router.get('/admin/vendas', authMiddleware('admin'), (req, res) => SalesControll
 
 // Admin Settings Routes
 router.get('/admin/configuracoes', authMiddleware('admin'), (req, res) => SettingController.index(req, res));
-router.post('/admin/configuracoes', authMiddleware('admin'), upload.single('logo'), (req, res) => SettingController.update(req, res));
+router.post('/admin/configuracoes', authMiddleware('admin'), upload.fields([
+  { name: 'logo', maxCount: 1 },
+  { name: 'cert_signature', maxCount: 1 }
+]), (req, res) => SettingController.update(req, res));
 
 // Admin Course Routes
 router.get('/admin/cursos', authMiddleware('admin'), (req, res) => CourseController.adminList(req, res));
@@ -81,5 +87,11 @@ router.get('/register', guestMiddleware, (req, res) => {
 router.get('/perfil', authMiddleware('aluno'), (req, res) => ProfileController.show(req, res));
 router.post('/perfil/atualizar', authMiddleware('aluno'), (req, res) => ProfileController.update(req, res));
 router.post('/perfil/alterar-senha', authMiddleware('aluno'), (req, res) => ProfileController.changePassword(req, res));
+
+// Rotas de Perfil do Administrador
+router.get('/admin/perfil', authMiddleware('admin'), (req, res) => ProfileController.adminShow(req, res));
+router.post('/admin/perfil/atualizar', authMiddleware('admin'), upload.single('avatar'), (req, res) => ProfileController.adminUpdate(req, res));
+router.post('/admin/perfil/alterar-senha', authMiddleware('admin'), (req, res) => ProfileController.adminChangePassword(req, res));
+router.get('/admin/perfil/confirmar-email/:token', publicMiddleware, (req, res) => ProfileController.confirmAdminEmailChange(req, res));
 
 module.exports = router;

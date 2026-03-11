@@ -49,6 +49,21 @@ const User = sequelize.define('User', {
     type: DataTypes.DATE,
     allowNull: true
   },
+  pendingEmail: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    validate: {
+      isEmail: true
+    }
+  },
+  emailChangeToken: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  emailChangeExpires: {
+    type: DataTypes.DATE,
+    allowNull: true
+  },
   phone: {
     type: DataTypes.STRING,
     allowNull: true

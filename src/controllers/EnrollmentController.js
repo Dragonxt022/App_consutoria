@@ -332,6 +332,23 @@ class EnrollmentController {
       });
     }
   }
+
+  async delete(req, res) {
+    try {
+      const { id } = req.params;
+      const enrollment = await Enrollment.findByPk(id);
+
+      if (!enrollment) {
+        return res.redirect('/admin/inscricoes?error=Inscrição não encontrada');
+      }
+
+      await enrollment.destroy();
+      res.redirect('/admin/inscricoes?success=Inscrição excluída com sucesso');
+    } catch (error) {
+      console.error(error);
+      res.redirect('/admin/inscricoes?error=Erro ao excluir inscrição');
+    }
+  }
 }
 
 module.exports = new EnrollmentController();

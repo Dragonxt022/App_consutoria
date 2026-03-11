@@ -9,7 +9,7 @@
     "build-css": "postcss src/public/css/input.css -o src/public/css/output.css --watch",
     "build-css-once": "postcss src/public/css/input.css -o src/public/css/output.css",
     "seed": "node scripts/seedCourses.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --test"
   },
   "keywords": [],
   "author": "",

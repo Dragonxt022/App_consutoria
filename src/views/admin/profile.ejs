@@ -1,0 +1,136 @@
+<div class="max-w-5xl mx-auto space-y-6">
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+        <h2 class="text-xl font-bold text-slate-800">Perfil do Administrador</h2>
+        <p class="text-sm text-slate-500 mt-1">Atualize seus dados, foto, e-mail e senha com segurança.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 space-y-6">
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+                <h3 class="text-base font-bold text-slate-800 mb-4">Dados do Perfil</h3>
+
+                <form action="/admin/perfil/atualizar" method="POST" enctype="multipart/form-data" class="space-y-5">
+                    <div class="flex items-center gap-4">
+                        <img id="avatarPreview"
+                             src="<%= user.avatar ? user.avatar : ('https://ui-avatars.com/api/?name=' + encodeURIComponent(user.name) + '&background=4f46e5&color=fff') %>"
+                             alt="Avatar"
+                             class="h-20 w-20 rounded-full border border-slate-200 object-cover bg-slate-100">
+                        <div class="flex-1">
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Foto de Perfil</label>
+                            <input type="file" name="avatar" id="avatarInput" accept="image/*"
+                                   class="text-xs text-slate-500 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                            <p class="text-xs text-slate-400 mt-1">PNG/JPG/WebP até 8MB.</p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Nome</label>
+                        <input type="text" name="name" required value="<%= user.name %>"
+                               class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">E-mail Atual</label>
+                        <input type="email" value="<%= user.email %>" disabled
+                               class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Novo E-mail</label>
+                        <input type="email" name="email" value="<%= user.pendingEmail || user.email %>"
+                               class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        <p class="text-xs text-slate-400 mt-1">A troca só será concluída após confirmação no novo e-mail.</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Senha Atual (obrigatória para trocar e-mail)</label>
+                        <input type="password" name="emailPassword"
+                               class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+
+                    <div class="pt-2">
+                        <button type="submit"
+                                class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl text-sm font-bold">
+                            Salvar Perfil
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+                <h3 class="text-base font-bold text-slate-800 mb-4">Alterar Senha</h3>
+                <form action="/admin/perfil/alterar-senha" method="POST" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Senha Atual</label>
+                        <input type="password" name="currentPassword" required
+                               class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Nova Senha</label>
+                            <input type="password" name="newPassword" required minlength="6"
+                                   class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Confirmar Nova Senha</label>
+                            <input type="password" name="confirmPassword" required minlength="6"
+                                   class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                    </div>
+                    <div class="pt-2">
+                        <button type="submit"
+                                class="bg-slate-800 hover:bg-slate-900 text-white px-6 py-3 rounded-xl text-sm font-bold">
+                            Atualizar Senha
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="space-y-6">
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+                <h4 class="font-bold text-slate-800 mb-3">Status do E-mail</h4>
+                <p class="text-xs text-slate-500">E-mail atual: <strong class="text-slate-700"><%= user.email %></strong></p>
+                <% if (user.pendingEmail) { %>
+                    <div class="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800">
+                        Há uma troca pendente para: <strong><%= user.pendingEmail %></strong>.
+                        Verifique a caixa de entrada e confirme o link recebido.
+                    </div>
+                <% } else { %>
+                    <div class="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-800">
+                        Nenhuma troca de e-mail pendente.
+                    </div>
+                <% } %>
+            </div>
+
+            <div class="bg-indigo-50 rounded-2xl border border-indigo-100 p-5">
+                <h4 class="font-bold text-indigo-900 mb-2">Regras de Segurança</h4>
+                <ul class="text-xs text-indigo-800 space-y-1">
+                    <li>- A troca de e-mail exige confirmação por link.</li>
+                    <li>- A troca de senha exige senha atual.</li>
+                    <li>- Use senhas com no mínimo 6 caracteres.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(() => {
+    const input = document.getElementById('avatarInput');
+    const preview = document.getElementById('avatarPreview');
+    if (!input || !preview) return;
+
+    input.addEventListener('change', (event) => {
+        const file = event.target.files && event.target.files[0];
+        if (!file) return;
+        if (!file.type.startsWith('image/')) return;
+
+        const reader = new FileReader();
+        reader.onload = () => {
+            preview.src = String(reader.result || '');
+        };
+        reader.readAsDataURL(file);
+    });
+})();
+</script>

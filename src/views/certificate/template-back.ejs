@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verso do Certificado - <%= enrollment.studentName %></title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --a4-width: 297mm;
+            --a4-height: 210mm;
+            --ink: #0f172a;
+            --muted: #64748b;
+            --line: #cbd5e1;
+            --paper: #ffffff;
+            --accent: #0f766e;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background: #e2e8f0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--ink);
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .sheet {
+            width: min(96vw, var(--a4-width));
+            aspect-ratio: 297 / 210;
+            background: var(--paper);
+            border: 1px solid var(--line);
+            box-shadow: 0 24px 60px rgba(15, 23, 42, 0.16);
+            padding: 15mm 16mm 12mm;
+            display: grid;
+            grid-template-rows: auto auto 1fr auto;
+            gap: 8mm;
+        }
+
+        .header {
+            border-bottom: 2px solid var(--line);
+            padding-bottom: 4mm;
+        }
+
+        .title {
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            margin-top: 2mm;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .meta {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 4mm;
+            font-size: 11px;
+        }
+
+        .meta .box {
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 3mm;
+            min-height: 18mm;
+        }
+
+        .meta .label {
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-size: 9px;
+            color: var(--muted);
+            font-weight: 700;
+            margin-bottom: 2mm;
+        }
+
+        .meta .value {
+            font-size: 11px;
+            line-height: 1.35;
+            font-weight: 600;
+        }
+
+        .program {
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 5mm 6mm;
+            overflow: hidden;
+        }
+
+        .program h2 {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--accent);
+            margin-bottom: 4mm;
+            font-weight: 800;
+        }
+
+        .columns {
+            columns: 2;
+            column-gap: 10mm;
+            height: 100%;
+        }
+
+        .topic {
+            break-inside: avoid;
+            page-break-inside: avoid;
+            font-size: 10.5px;
+            line-height: 1.45;
+            margin-bottom: 2.2mm;
+            padding-left: 4mm;
+            position: relative;
+        }
+
+        .topic::before {
+            content: '';
+            position: absolute;
+            width: 1.8mm;
+            height: 1.8mm;
+            border-radius: 999px;
+            background: var(--accent);
+            left: 0;
+            top: 0.7em;
+            transform: translateY(-50%);
+        }
+
+        .footer {
+            border-top: 1px solid var(--line);
+            padding-top: 3mm;
+            display: flex;
+            justify-content: space-between;
+            gap: 8mm;
+            font-size: 10px;
+            color: var(--muted);
+        }
+
+        .print-actions {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            border: 0;
+            border-radius: 999px;
+            padding: 10px 16px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            color: white;
+            background: #0f766e;
+            box-shadow: 0 8px 18px rgba(15, 118, 110, 0.3);
+        }
+
+        .btn.secondary {
+            background: #475569;
+            box-shadow: 0 8px 18px rgba(71, 85, 105, 0.28);
+        }
+
+        @page {
+            size: A4 landscape;
+            margin: 0;
+        }
+
+        @media print {
+            html, body {
+                width: var(--a4-width) !important;
+                height: var(--a4-height) !important;
+                background: white !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            .sheet {
+                width: var(--a4-width) !important;
+                height: var(--a4-height) !important;
+                border: none !important;
+                box-shadow: none !important;
+                margin: 0 !important;
+            }
+
+            .print-actions {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sheet">
+        <header class="header">
+            <h1 class="title">Conteúdo Programático</h1>
+            <p class="subtitle">Verso do certificado de conclusão</p>
+        </header>
+
+        <section class="meta">
+            <div class="box">
+                <div class="label">Aluno</div>
+                <div class="value"><%= enrollment.studentName %></div>
+            </div>
+            <div class="box">
+                <div class="label">Curso</div>
+                <div class="value"><%= course.title %></div>
+            </div>
+            <div class="box">
+                <div class="label">Carga Horária</div>
+                <div class="value"><%= course.workload %></div>
+            </div>
+            <div class="box">
+                <div class="label">Código</div>
+                <div class="value"><%= code %></div>
+            </div>
+        </section>
+
+        <section class="program">
+            <h2>Lista de Conteúdos</h2>
+            <div class="columns">
+                <% if (topics && topics.length) { %>
+                    <% topics.forEach((topic) => { %>
+                        <p class="topic"><%= topic %></p>
+                    <% }) %>
+                <% } else { %>
+                    <p class="topic">Fundamentos e objetivos do curso</p>
+                    <p class="topic">Aplicações práticas no contexto profissional</p>
+                    <p class="topic">Estudos de caso e resolução de problemas</p>
+                    <p class="topic">Ferramentas e boas práticas de execução</p>
+                    <p class="topic">Discussão orientada e consolidação de conhecimento</p>
+                <% } %>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <span>Documento complementar ao certificado de conclusão.</span>
+            <span>Emitido em <%= new Date().toLocaleDateString('pt-BR') %></span>
+        </footer>
+    </div>
+
+    <div class="print-actions">
+        <a href="/certificado/<%= code %>" class="btn secondary">Frente</a>
+        <a href="/certificado/<%= code %>/duplex" class="btn secondary">Frente + Verso</a>
+        <button class="btn" onclick="window.print()">Imprimir</button>
+    </div>
+</body>
+</html>

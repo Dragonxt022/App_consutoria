@@ -1,0 +1,38 @@
+/* Theme overrides: limitar paleta a 3 tons de laranja */
+:root{
+  --color-primary-100: #FFF3E6;
+  --color-primary-500: #FF7A00;
+  --color-primary-700: #CC4A00;
+
+  /* Mapear tokens comumente usados */
+  --color-indigo-50: var(--color-primary-100);
+  --color-indigo-100: var(--color-primary-100);
+  --color-indigo-200: var(--color-primary-100);
+  --color-indigo-300: var(--color-primary-500);
+  --color-indigo-400: var(--color-primary-500);
+  --color-indigo-500: var(--color-primary-500);
+  --color-indigo-600: var(--color-primary-700);
+  --color-indigo-700: var(--color-primary-700);
+  --color-indigo-800: var(--color-primary-700);
+  --color-indigo-900: var(--color-primary-700);
+
+  --color-amber-50: var(--color-primary-100);
+  --color-amber-100: var(--color-primary-100);
+  --color-amber-200: var(--color-primary-100);
+  --color-amber-500: var(--color-primary-500);
+  --color-amber-600: var(--color-primary-700);
+  --color-amber-700: var(--color-primary-700);
+
+  --color-emerald-50: var(--color-primary-100);
+  --color-emerald-100: var(--color-primary-100);
+  --color-emerald-200: var(--color-primary-100);
+  --color-emerald-400: var(--color-primary-500);
+  --color-emerald-500: var(--color-primary-500);
+  --color-emerald-600: var(--color-primary-700);
+
+  --color-green-50: var(--color-primary-100);
+  --color-green-100: var(--color-primary-100);
+  --color-green-400: var(--color-primary-500);
+  --color-green-500: var(--color-primary-500);
+  --color-green-600: var(--color-primary-700);
+}

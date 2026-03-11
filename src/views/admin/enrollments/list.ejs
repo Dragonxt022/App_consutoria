@@ -4,17 +4,17 @@
             <h2 class="text-xl font-bold text-gray-800">Inscrições Recebidas</h2>
             
             <form action="/admin/inscricoes" method="GET" class="flex flex-wrap gap-2">
-                <div class="flex items-center gap-4 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-                    <input type="text" name="search" placeholder="Buscar aluno..." value="<%= filters.search || '' %>" class="px-4 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                <div class="flex flex-wrap items-center gap-3 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                    <input type="text" name="search" placeholder="Buscar aluno..." value="<%= filters.search || '' %>" class="w-full sm:w-auto px-4 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
                     
-                    <select name="courseId" class="px-4 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                    <select name="courseId" class="w-full sm:w-auto px-4 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
                         <option value="">Todos os Cursos</option>
                         <% courses.forEach(course => { %>
                             <option value="<%= course.id %>" <%= filters.courseId == course.id ? 'selected' : '' %>><%= course.title %></option>
                         <% }) %>
                     </select>
 
-                    <select name="status" class="px-4 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                    <select name="status" class="w-full sm:w-auto px-4 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
                         <option value="">Todos os Status</option>
                         <option value="pendente" <%= filters.status === 'pendente' ? 'selected' : '' %>>Pendente</option>
                         <option value="confirmado" <%= filters.status === 'confirmado' ? 'selected' : '' %>>Confirmado</option>
@@ -22,7 +22,7 @@
                         <option value="cancelado" <%= filters.status === 'cancelado' ? 'selected' : '' %>>Cancelado</option>
                     </select>
                     
-                    <button type="submit" class="bg-indigo-600 text-white px-6 py-2 rounded-lg text-sm font-bold hover:bg-indigo-700 transition-colors">Filtrar</button>
+                    <button type="submit" class="w-full sm:w-auto bg-indigo-600 text-white px-6 py-2 rounded-lg text-sm font-bold hover:bg-indigo-700 transition-colors">Filtrar</button>
                     
                     <% if(filters.search || filters.courseId || filters.status) { %>
                         <a href="/admin/inscricoes" class="text-gray-500 text-sm hover:text-gray-700">Limpar</a>
@@ -33,20 +33,35 @@
     </div>
 
     <div class="overflow-x-auto">
-        <table class="w-full text-left">
+        <style>
+        /* Mobile-friendly table: hide header and show labels before cells */
+        @media (max-width: 1024px) {
+            .responsive-table thead { display: none; }
+            .responsive-table, .responsive-table tbody, .responsive-table tr, .responsive-table td { display: block; width: 100%; }
+            .responsive-table tr { margin-bottom: 1rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.5rem; }
+            .responsive-table td { padding: 0.5rem 0; }
+            .responsive-table td[data-label] { display: block; }
+            .responsive-table td[data-label]::before { content: attr(data-label); display: block; font-weight: 700; color: #475569; margin-bottom: 0.35rem; }
+            .responsive-table .actions { display: flex; gap: 0.5rem; justify-content: flex-start; flex-wrap: wrap; margin-top: 0.5rem; }
+            .responsive-table .actions form { width: 100%; }
+            .responsive-table .actions select { width: 100%; }
+        }
+        </style>
+
+        <table class="w-full text-left responsive-table">
             <thead class="bg-gray-50 text-gray-400 uppercase text-xs font-bold">
                 <tr>
-                    <th class="px-6 py-4">Estudante</th>
-                    <th class="px-6 py-4">Curso Inscrito</th>
-                    <th class="px-6 py-4">Data Inscrição</th>
-                    <th class="px-6 py-4">Status</th>
-                    <th class="px-6 py-4 text-right">Mudar Status</th>
+                    <th class="px-4 py-3 md:px-6 md:py-4">Estudante</th>
+                    <th class="hidden xl:table-cell px-4 py-3 md:px-6 md:py-4">Curso Inscrito</th>
+                    <th class="hidden xl:table-cell px-4 py-3 md:px-6 md:py-4">Data Inscrição</th>
+                    <th class="px-4 py-3 md:px-6 md:py-4">Status</th>
+                    <th class="px-4 py-3 md:px-6 md:py-4 text-right">Mudar Status</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-100">
                 <% enrollments.forEach(enroll => { %>
                     <tr class="hover:bg-gray-50/50 transition-colors">
-                        <td class="px-6 py-4">
+                        <td class="px-4 py-3 md:px-6 md:py-4" data-label="Estudante">
                             <div class="flex flex-col">
                                 <span class="text-sm font-bold text-gray-900"><%= enroll.studentName %></span>
                                 <span class="text-xs text-gray-500"><%= enroll.studentEmail %></span>
@@ -56,14 +71,14 @@
                                 <% } %>
                             </div>
                         </td>
-                        <td class="px-6 py-4">
+                        <td class="hidden xl:table-cell px-4 py-3 md:px-6 md:py-4" data-label="Curso Inscrito">
                             <div class="text-sm font-medium text-gray-700"><%= enroll.Course ? enroll.Course.title : 'Curso Removido' %></div>
                             <div class="text-xs text-gray-400"><%= enroll.Course ? enroll.Course.location : 'N/A' %></div>
                         </td>
-                        <td class="px-6 py-4 text-sm text-gray-500">
+                        <td class="hidden xl:table-cell px-4 py-3 md:px-6 md:py-4 text-sm text-gray-500" data-label="Data Inscrição">
                             <%= new Date(enroll.createdAt).toLocaleDateString('pt-BR') %>
                         </td>
-                        <td class="px-6 py-4">
+                        <td class="px-4 py-3 md:px-6 md:py-4" data-label="Status">
                             <% 
                                 let statusClass = '';
                                 switch(enroll.status) {
@@ -85,32 +100,54 @@
                                 </a>
                             <% } %>
                         </td>
-                        <td class="px-6 py-4 text-right flex items-center justify-end gap-3">
-                            <a href="/admin/inscricoes/<%= enroll.id %>/comprovante" title="Baixar Comprovante de Inscrição" target="_blank" class="text-green-600 hover:text-green-800 transition-colors">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
-                            </a>
-                            <% if(enroll.status === 'completo') { %>
-                                <a href="/admin/inscricoes/<%= enroll.id %>/json" title="Baixar JSON do Certificado" class="text-indigo-600 hover:text-indigo-800 transition-colors">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                                <td class="px-4 py-3 md:px-6 md:py-4 text-right" data-label="Acoes">
+                            <div class="actions flex items-center justify-end gap-3">
+                                <button
+                                    type="button"
+                                    class="px-3 py-1.5 text-xs font-semibold rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 js-enroll-details"
+                                    data-student="<%= enroll.studentName %>"
+                                    data-email="<%= enroll.studentEmail || 'Nao informado' %>"
+                                    data-phone="<%= enroll.studentPhone || 'Nao informado' %>"
+                                    data-company="<%= enroll.company || 'Nao informado' %>"
+                                    data-course="<%= enroll.Course ? enroll.Course.title : 'Curso Removido' %>"
+                                    data-location="<%= enroll.Course ? enroll.Course.location : 'N/A' %>"
+                                    data-date="<%= new Date(enroll.createdAt).toLocaleDateString('pt-BR') %>"
+                                    data-status="<%= enroll.status %>"
+                                    data-certificate="<%= (enroll.status === 'completo' && enroll.certificateCode) ? '/certificado/' + enroll.certificateCode : '' %>"
+                                >
+                                    Detalhes
+                                </button>
+                                <a href="/admin/inscricoes/<%= enroll.id %>/comprovante" title="Baixar Comprovante de Inscricao" target="_blank" class="text-green-600 hover:text-green-800 transition-colors">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
                                 </a>
-                            <% } %>
-                            <form action="/admin/inscricoes/<%= enroll.id %>/status" method="POST" class="flex items-center justify-end gap-2">
-                                <select name="status" onchange="this.form.submit()" class="text-xs bg-white border border-gray-200 rounded-lg p-1 outline-none">
-                                    <option value="pendente" <%= enroll.status === 'pendente' ? 'selected' : '' %>>Pendente</option>
-                                    <option value="confirmado" <%= enroll.status === 'confirmado' ? 'selected' : '' %>>Confirmado</option>
-                                    <option value="completo" <%= enroll.status === 'completo' ? 'selected' : '' %>>Completo</option>
-                                    <option value="cancelado" <%= enroll.status === 'cancelado' ? 'selected' : '' %>>Cancelado</option>
-                                </select>
-                            </form>
-                            <a href="/admin/inscricoes/<%= enroll.id %>/editar" title="Editar Inscrição" class="text-blue-600 hover:text-blue-800 transition-colors">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                            </a>
+                                <% if(enroll.status === 'completo') { %>
+                                    <a href="/admin/inscricoes/<%= enroll.id %>/json" title="Baixar JSON do Certificado" class="text-indigo-600 hover:text-indigo-800 transition-colors">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                    </a>
+                                <% } %>
+                                <form action="/admin/inscricoes/<%= enroll.id %>/status" method="POST" class="flex items-center justify-end gap-2">
+                                    <select name="status" onchange="this.form.submit()" class="text-xs bg-white border border-gray-200 rounded-lg p-1 outline-none">
+                                        <option value="pendente" <%= enroll.status === 'pendente' ? 'selected' : '' %>>Pendente</option>
+                                        <option value="confirmado" <%= enroll.status === 'confirmado' ? 'selected' : '' %>>Confirmado</option>
+                                        <option value="completo" <%= enroll.status === 'completo' ? 'selected' : '' %>>Completo</option>
+                                        <option value="cancelado" <%= enroll.status === 'cancelado' ? 'selected' : '' %>>Cancelado</option>
+                                    </select>
+                                </form>
+                                <a href="/admin/inscricoes/<%= enroll.id %>/editar" title="Editar Inscricao" class="text-blue-600 hover:text-blue-800 transition-colors">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                </a>
+                                <form action="/admin/inscricoes/<%= enroll.id %>/deletar" method="POST" class="inline" onsubmit="return confirm('Tem certeza que deseja excluir esta inscrição? Esta ação não pode ser desfeita.')">
+                                    <button type="submit" title="Excluir Inscrição" class="text-red-600 hover:text-red-800 transition-colors">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                 <% }) %>
                 <% if(enrollments.length === 0) { %>
                     <tr>
-                        <td colspan="5" class="px-6 py-10 text-center text-gray-500 italic">Nenhuma inscrição encontrada para os critérios selecionados.</td>
+                        <td colspan="5" class="px-6 py-10 text-center text-gray-500 italic">Nenhuma Inscrição encontrada para os critérios selecionados.</td>
                     </tr>
                 <% } %>
             </tbody>
@@ -131,3 +168,72 @@
         </div>
     <% } %>
 </div>
+
+<div id="enrollment-details-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/60 p-4">
+    <div class="w-full max-w-xl rounded-2xl bg-white shadow-2xl">
+        <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+            <h3 class="text-base font-bold text-slate-800">Detalhes da Inscricao</h3>
+            <button type="button" class="text-slate-400 hover:text-slate-700 js-close-enroll-modal" aria-label="Fechar modal">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+        <div class="grid grid-cols-1 gap-3 p-5 text-sm">
+            <div><span class="font-semibold text-slate-700">Aluno:</span> <span id="enroll-modal-student" class="text-slate-600"></span></div>
+            <div><span class="font-semibold text-slate-700">Email:</span> <span id="enroll-modal-email" class="text-slate-600"></span></div>
+            <div><span class="font-semibold text-slate-700">Telefone:</span> <span id="enroll-modal-phone" class="text-slate-600"></span></div>
+            <div><span class="font-semibold text-slate-700">Empresa:</span> <span id="enroll-modal-company" class="text-slate-600"></span></div>
+            <div><span class="font-semibold text-slate-700">Curso:</span> <span id="enroll-modal-course" class="text-slate-600"></span></div>
+            <div><span class="font-semibold text-slate-700">Local:</span> <span id="enroll-modal-location" class="text-slate-600"></span></div>
+            <div><span class="font-semibold text-slate-700">Data:</span> <span id="enroll-modal-date" class="text-slate-600"></span></div>
+            <div><span class="font-semibold text-slate-700">Status:</span> <span id="enroll-modal-status" class="text-slate-600"></span></div>
+            <a id="enroll-modal-certificate" href="#" target="_blank" class="hidden mt-2 inline-flex w-fit rounded-lg bg-indigo-50 px-3 py-2 text-xs font-semibold text-indigo-700 hover:bg-indigo-100">Ver Certificado</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const modal = document.getElementById('enrollment-details-modal');
+        const certLink = document.getElementById('enroll-modal-certificate');
+
+        const closeModal = () => {
+            if (!modal) return;
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        };
+
+        document.querySelectorAll('.js-enroll-details').forEach((btn) => {
+            btn.addEventListener('click', function () {
+                if (!modal) return;
+                document.getElementById('enroll-modal-student').textContent = this.dataset.student || '-';
+                document.getElementById('enroll-modal-email').textContent = this.dataset.email || '-';
+                document.getElementById('enroll-modal-phone').textContent = this.dataset.phone || '-';
+                document.getElementById('enroll-modal-company').textContent = this.dataset.company || '-';
+                document.getElementById('enroll-modal-course').textContent = this.dataset.course || '-';
+                document.getElementById('enroll-modal-location').textContent = this.dataset.location || '-';
+                document.getElementById('enroll-modal-date').textContent = this.dataset.date || '-';
+                document.getElementById('enroll-modal-status').textContent = this.dataset.status || '-';
+
+                if (this.dataset.certificate) {
+                    certLink.href = this.dataset.certificate;
+                    certLink.classList.remove('hidden');
+                } else {
+                    certLink.href = '#';
+                    certLink.classList.add('hidden');
+                }
+
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            });
+        });
+
+        document.querySelectorAll('.js-close-enroll-modal').forEach((el) => {
+            el.addEventListener('click', closeModal);
+        });
+
+        modal && modal.addEventListener('click', function (event) {
+            if (event.target === modal) closeModal();
+        });
+    });
+</script>
+

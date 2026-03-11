@@ -84,6 +84,8 @@ const Enrollment = sequelize.define('Enrollment', {
     allowNull: true,
     unique: true
   }
+}, {
+  paranoid: true
 });
 
 module.exports = Enrollment;
