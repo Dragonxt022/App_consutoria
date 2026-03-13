@@ -24,6 +24,7 @@
             print-color-adjust: exact;
         }
 
+        .certificate-front-page,
         .page {
             width: var(--a4-width);
             height: var(--a4-height);
@@ -35,74 +36,57 @@
             overflow: hidden;
         }
 
-        .front-content {
-            padding: 22mm;
-            height: 100%;
-            border: 2px solid #0f172a;
-            margin: 12mm;
-            display: grid;
-            grid-template-rows: auto auto auto 1fr auto;
-            gap: 7mm;
+        .certificate-front-page {
+            page-break-after: always;
+            break-after: page;
         }
 
-        .front-title {
-            text-align: center;
-            text-transform: uppercase;
-            font-size: 14px;
-            letter-spacing: .12em;
-            font-weight: 700;
-        }
-
-        .front-name {
-            text-align: center;
-            font-size: 48px;
-            font-family: Georgia, 'Times New Roman', Times, serif;
-            font-style: italic;
-            line-height: 1.1;
-        }
-
-        .front-description {
-            font-size: 13px;
-            line-height: 1.6;
-            text-align: justify;
-        }
-
-        .front-footer {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            align-items: end;
-            gap: 16mm;
-        }
-
-        .signature-box {
+        .certificate-front-surface {
             position: relative;
-            min-height: 30mm;
-            text-align: center;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
-        .signature-box img {
+        .certificate-element {
             position: absolute;
-            left: 50%;
-            top: 0;
-            transform: translateX(-50%);
-            width: 52mm;
-            max-height: 22mm;
+        }
+
+        .certificate-text {
+            white-space: pre-wrap;
+            line-height: 1.55;
+        }
+
+        .certificate-image {
+            object-fit: contain;
+            height: auto;
+        }
+
+        .certificate-signature-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .certificate-signature-image {
+            display: block;
+            width: 100%;
+            max-height: 72px;
             object-fit: contain;
         }
 
-        .signature-line {
-            margin-top: 20mm;
-            border-top: 2px solid #0f172a;
-            padding-top: 2mm;
-            font-size: 11px;
-            font-weight: 600;
+        .certificate-signature-line {
+            width: 100%;
+            border-top: 2px solid currentColor;
         }
 
-        .front-meta {
-            text-align: right;
-            font-size: 11px;
-            color: #334155;
-            line-height: 1.5;
+        .certificate-signature-name {
+            width: 100%;
+            line-height: 1.35;
         }
 
         .back-content {
@@ -244,6 +228,7 @@
                 background: white !important;
             }
 
+            .certificate-front-page,
             .page {
                 margin: 0 !important;
                 border: none !important;
@@ -255,38 +240,13 @@
     </style>
 </head>
 <body>
-    <section class="page page-break">
-        <div class="front-content">
-            <div class="front-title">Certificado de Conclusão</div>
-            <div class="front-name"><%= enrollment.studentName %></div>
-            <div class="front-description">
-                Certificamos que <strong><%= enrollment.studentName %></strong> concluiu com êxito o curso
-                <strong>"<%= course.title %>"</strong>,
-                realizado <%= course.location ? `em ${course.location}` : 'online' %>,
-                com carga horária de <strong><%= course.workload %></strong> e aproveitamento satisfatório.
-            </div>
-            <div></div>
-            <div class="front-footer">
-                <div class="signature-box">
-                    <% if (settings && settings.certificate_signature_url) { %>
-                        <img src="<%= settings.certificate_signature_url %>" alt="Assinatura">
-                    <% } %>
-                    <div class="signature-line">Diretoria Acadêmica</div>
-                </div>
-                <div class="front-meta">
-                    <div>Emitido em <%= new Date().toLocaleDateString('pt-BR') %></div>
-                    <div>Cód. Validação: <%= code %></div>
-                    <div><%= validationUrl %></div>
-                </div>
-            </div>
-        </div>
-    </section>
+    <%- include('_front-certificate', { builderConfig, renderElements }) %>
 
     <section class="page">
         <div class="back-content">
             <header class="back-header">
-                <h1>Conteúdo Programático</h1>
-                <p>Verso do certificado de conclusão</p>
+                <h1>Conteudo Programatico</h1>
+                <p>Verso do certificado de conclusao</p>
             </header>
 
             <div class="back-meta">
@@ -299,17 +259,17 @@
                     <div class="v"><%= course.title %></div>
                 </div>
                 <div class="meta-item">
-                    <div class="k">Carga Horária</div>
+                    <div class="k">Carga Horaria</div>
                     <div class="v"><%= course.workload %></div>
                 </div>
                 <div class="meta-item">
-                    <div class="k">Código</div>
+                    <div class="k">Codigo</div>
                     <div class="v"><%= code %></div>
                 </div>
             </div>
 
             <div class="topics">
-                <h2>Lista de Conteúdos</h2>
+                <h2>Lista de Conteudos</h2>
                 <div class="topic-cols">
                     <% if (topics && topics.length) { %>
                         <% topics.forEach((topic) => { %>
@@ -317,10 +277,10 @@
                         <% }) %>
                     <% } else { %>
                         <p class="topic">Fundamentos e objetivos do curso</p>
-                        <p class="topic">Aplicações práticas no contexto profissional</p>
-                        <p class="topic">Estudos de caso e resolução de problemas</p>
-                        <p class="topic">Ferramentas e boas práticas de execução</p>
-                        <p class="topic">Consolidação de conhecimento e avaliação final</p>
+                        <p class="topic">Aplicacoes praticas no contexto profissional</p>
+                        <p class="topic">Estudos de caso e resolucao de problemas</p>
+                        <p class="topic">Ferramentas e boas praticas de execucao</p>
+                        <p class="topic">Consolidacao de conhecimento e avaliacao final</p>
                     <% } %>
                 </div>
             </div>

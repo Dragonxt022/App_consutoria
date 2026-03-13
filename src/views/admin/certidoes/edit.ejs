@@ -1,0 +1,104 @@
+<section class="max-w-4xl">
+    <div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div class="border-b border-slate-100 px-6 py-5">
+            <h2 class="text-xl font-bold text-slate-900">Editar Certid&atilde;o</h2>
+            <p class="mt-1 text-sm text-slate-500">Atualize os dados e, se quiser, substitua o arquivo PDF.</p>
+        </div>
+
+        <form action="/admin/certidoes/<%= certificate.id %>/editar" method="POST" enctype="multipart/form-data" class="space-y-6 px-6 py-6">
+            <div>
+                <label for="name" class="mb-2 block text-sm font-semibold text-slate-700">Nome do arquivo</label>
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value="<%= certificate.name %>"
+                    required
+                    class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100"
+                >
+            </div>
+
+            <div class="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <p class="text-sm font-semibold text-slate-800">Arquivo atual</p>
+                        <p class="text-sm text-slate-500">O download abaixo aponta para o PDF cadastrado atualmente.</p>
+                    </div>
+                    <a href="<%= certificate.fileUrl %>" target="_blank" rel="noreferrer" class="inline-flex items-center justify-center rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-white">
+                        Ver PDF atual
+                    </a>
+                </div>
+
+                <div class="mt-5">
+                    <label for="certificateFile" class="mb-2 block text-sm font-semibold text-slate-700">Substituir arquivo PDF</label>
+                    <input
+                        type="file"
+                        id="certificateFile"
+                        name="certificateFile"
+                        accept="application/pdf"
+                        class="block w-full rounded-xl border border-dashed border-slate-300 bg-white px-4 py-3 text-sm text-slate-600 file:mr-4 file:rounded-lg file:border-0 file:bg-indigo-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-indigo-700"
+                    >
+                </div>
+            </div>
+
+            <div class="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                <label class="flex items-start gap-3">
+                    <input
+                        type="checkbox"
+                        id="hasExpiration"
+                        name="hasExpiration"
+                        value="1"
+                        <%= certificate.hasExpiration ? 'checked' : '' %>
+                        class="mt-1 h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                    >
+                    <span>
+                        <span class="block text-sm font-semibold text-slate-800">A certid&atilde;o possui validade</span>
+                        <span class="block text-sm text-slate-500">Desmarque para tratar a certid&atilde;o como vital&iacute;cia.</span>
+                    </span>
+                </label>
+
+                <div id="expirationDateWrapper" class="mt-4 <%= certificate.hasExpiration ? '' : 'hidden' %>">
+                    <label for="expirationDate" class="mb-2 block text-sm font-semibold text-slate-700">Data de expira&ccedil;&atilde;o</label>
+                    <input
+                        type="date"
+                        id="expirationDate"
+                        name="expirationDate"
+                        value="<%= certificate.expirationDate || '' %>"
+                        class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100"
+                    >
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-3 border-t border-slate-100 pt-6 sm:flex-row sm:justify-end">
+                <a href="/admin/certidoes" class="inline-flex items-center justify-center rounded-xl border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                    Cancelar
+                </a>
+                <button type="submit" class="inline-flex items-center justify-center rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-200 transition hover:bg-indigo-700">
+                    Atualizar certid&atilde;o
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const checkbox = document.getElementById('hasExpiration');
+        const wrapper = document.getElementById('expirationDateWrapper');
+        const input = document.getElementById('expirationDate');
+
+        function syncExpirationField() {
+            if (checkbox.checked) {
+                wrapper.classList.remove('hidden');
+                input.required = true;
+            } else {
+                wrapper.classList.add('hidden');
+                input.required = false;
+                input.value = '';
+            }
+        }
+
+        checkbox.addEventListener('change', syncExpirationField);
+        syncExpirationField();
+    });
+</script>

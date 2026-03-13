@@ -72,6 +72,24 @@ class SalesController {
         limit: 10
       });
 
+      const salesTrendRaw = await Enrollment.findAll({
+        attributes: ['createdAt', 'finalPrice'],
+        where: whereClause,
+        order: [['createdAt', 'ASC']]
+      });
+
+      const trendMap = new Map();
+      salesTrendRaw.forEach((sale) => {
+        const date = new Date(sale.createdAt);
+        const label = date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+        trendMap.set(label, (trendMap.get(label) || 0) + Number(sale.finalPrice || 0));
+      });
+
+      const salesTrend = Array.from(trendMap.entries()).map(([label, value]) => ({
+        label,
+        value
+      }));
+
       // Prepare years list for filter
       const years = [];
       for(let y = 2024; y <= currentYear + 1; y++) years.push(y);
@@ -92,6 +110,7 @@ class SalesController {
                 revenue: s.getDataValue('revenue')
             };
         }),
+        salesTrend,
         recentSales,
         filters: {
             month: selectedMonth,

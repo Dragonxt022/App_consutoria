@@ -1,7 +1,14 @@
 <div class="space-y-8">
     <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
-        <h2 class="text-xl font-bold text-slate-800">Emissão de Certificados</h2>
-        <p class="text-slate-500 text-sm">Gere os dados dos alunos que completaram todos os dias do curso em formato JSON.</p>
+        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+                <h2 class="text-xl font-bold text-slate-800">Emissao de Certificados</h2>
+                <p class="text-slate-500 text-sm">Gere os dados dos alunos aptos e monte o modelo visual padrao do certificado.</p>
+            </div>
+            <a href="/admin/certificados/montar" class="inline-flex items-center justify-center rounded-xl bg-slate-900 px-4 py-3 text-sm font-bold text-white transition hover:bg-slate-700">
+                Montar Certificado
+            </a>
+        </div>
     </div>
 
     <div class="grid gap-6 md:grid-cols-2">
@@ -21,7 +28,7 @@
                             <% } %>
                         </div>
                     </div>
-                    
+
                     <h3 class="text-lg font-bold text-slate-900 mb-2"><%= course.title %></h3>
                     <p class="text-sm text-slate-500 mb-4 flex items-center">
                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>

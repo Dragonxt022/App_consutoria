@@ -4,54 +4,99 @@ const crypto = require('crypto');
 const { formatCurrency } = require('../utils/currencyFormatter');
 
 class EnrollmentController {
+  buildAdminFilters(search) {
+    const normalizedSearch = typeof search === 'string' ? search.trim() : '';
+    const where = {};
+
+    if (normalizedSearch) {
+      where[Op.or] = [
+        { studentName: { [Op.like]: `%${normalizedSearch}%` } },
+        { studentEmail: { [Op.like]: `%${normalizedSearch}%` } },
+        { '$Course.title$': { [Op.like]: `%${normalizedSearch}%` } }
+      ];
+    }
+
+    return { normalizedSearch, where };
+  }
+
   async adminList(req, res) {
     try {
       const page = parseInt(req.query.page) || 1;
       const limit = 10;
       const offset = (page - 1) * limit;
-      const { search, courseId } = req.query;
-
-      const where = {};
-      if (search) {
-        where[Op.or] = [
-          { studentName: { [Op.like]: `%${search}%` } },
-          { studentEmail: { [Op.like]: `%${search}%` } }
-        ];
-      }
-      if (courseId) {
-        where.courseId = courseId;
-      }
-      if (req.query.status) {
-        where.status = req.query.status;
-      }
+      const { normalizedSearch, where } = this.buildAdminFilters(req.query.search);
 
       const { count, rows: enrollments } = await Enrollment.findAndCountAll({
         where,
         include: [{ model: Course }],
+        distinct: true,
         limit,
         offset,
         order: [['createdAt', 'DESC']]
       });
 
-      const courses = await Course.findAll({ attributes: ['id', 'title'] });
       const totalPages = Math.ceil(count / limit);
 
       res.render('admin/enrollments/list', {
         title: 'Gestão de Inscrições',
         enrollments,
-        courses,
         pagination: {
           currentPage: page,
           totalPages,
           totalItems: count
         },
-        filters: { search, courseId, status: req.query.status },
+        filters: { search: normalizedSearch },
         user: req.user,
         layout: 'admin/layout'
       });
     } catch (error) {
       console.error(error);
       res.redirect('/admin/dashboard?error=Erro ao carregar inscrições');
+    }
+  }
+
+  async exportAdminList(req, res) {
+    try {
+      const { normalizedSearch, where } = this.buildAdminFilters(req.query.search);
+      const enrollments = await Enrollment.findAll({
+        where,
+        include: [{ model: Course }],
+        order: [['createdAt', 'DESC']]
+      });
+
+      const escapeCsvValue = (value) => {
+        const stringValue = value == null ? '' : String(value);
+        return `"${stringValue.replace(/"/g, '""')}"`;
+      };
+
+      const rows = [
+        ['Nome', 'Email', 'Telefone', 'Empresa', 'Curso', 'Local', 'Data de Inscricao', 'Status']
+      ];
+
+      enrollments.forEach((enrollment) => {
+        rows.push([
+          enrollment.studentName,
+          enrollment.studentEmail,
+          enrollment.studentPhone,
+          enrollment.company,
+          enrollment.Course ? enrollment.Course.title : 'Curso removido',
+          enrollment.Course ? enrollment.Course.location : '',
+          new Date(enrollment.createdAt).toLocaleDateString('pt-BR'),
+          enrollment.status
+        ]);
+      });
+
+      const csvContent = rows
+        .map((row) => row.map(escapeCsvValue).join(';'))
+        .join('\n');
+
+      const fileSuffix = normalizedSearch ? '-filtrado' : '';
+      res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+      res.setHeader('Content-Disposition', `attachment; filename="inscricoes${fileSuffix}.csv"`);
+      res.send(`\uFEFF${csvContent}`);
+    } catch (error) {
+      console.error(error);
+      res.redirect('/admin/inscricoes?error=Erro ao exportar inscrições');
     }
   }
 

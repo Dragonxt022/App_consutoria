@@ -52,6 +52,10 @@ const Course = sequelize.define('Course', {
     type: DataTypes.JSON, // Stores array of items
     defaultValue: []
   },
+  certificateTopics: {
+    type: DataTypes.JSON,
+    defaultValue: []
+  },
   active: {
     type: DataTypes.BOOLEAN,
     defaultValue: true

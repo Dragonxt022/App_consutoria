@@ -1,0 +1,69 @@
+<div class="py-12 bg-slate-50 min-h-screen">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h1 class="text-4xl font-extrabold text-slate-900 sm:text-5xl">Loja</h1>
+            <p class="mt-4 text-xl text-slate-500 max-w-3xl mx-auto">
+                Explore nossos produtos digitais e recomendacoes especiais com link de compra afiliado.
+            </p>
+            <div class="mt-6 h-1 w-24 bg-indigo-600 mx-auto rounded-full"></div>
+        </div>
+
+        <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            <% if (products.length === 0) { %>
+                <div class="col-span-full py-20 text-center">
+                    <div class="bg-white p-12 rounded-2xl shadow-sm inline-block">
+                        <svg class="w-16 h-16 text-slate-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V7a2 2 0 00-2-2h-3V3H9v2H6a2 2 0 00-2 2v6m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-4m-8 0H4m8 0v4" />
+                        </svg>
+                        <h3 class="text-xl font-bold text-slate-800">Nenhum produto disponivel no momento</h3>
+                        <p class="text-slate-500 mt-2">Novos produtos serao publicados em breve.</p>
+                    </div>
+                </div>
+            <% } else { %>
+                <% products.forEach((product) => { %>
+                    <article class="flex flex-col rounded-2xl shadow-lg overflow-hidden bg-white transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl border border-slate-100 group">
+                        <div class="relative overflow-hidden aspect-video bg-slate-100">
+                            <% if (product.primaryImage) { %>
+                                <img src="<%= product.primaryImage %>" alt="<%= product.name %>" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                            <% } else { %>
+                                <div class="flex h-full w-full items-center justify-center text-slate-300">
+                                    <svg class="h-16 w-16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V7a2 2 0 00-2-2h-3V3H9v2H6a2 2 0 00-2 2v6m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-4m-8 0H4m8 0v4"></path></svg>
+                                </div>
+                            <% } %>
+                            <div class="absolute top-4 right-4">
+                                <span class="bg-white/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider text-indigo-600 shadow-sm border border-indigo-50">
+                                    <%= product.platform %>
+                                </span>
+                            </div>
+                            <% if (product.featured) { %>
+                                <div class="absolute top-4 left-4">
+                                    <span class="bg-amber-400 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider text-slate-900 shadow-sm">
+                                        Destaque
+                                    </span>
+                                </div>
+                            <% } %>
+                        </div>
+
+                        <div class="flex-1 p-6 flex flex-col">
+                            <div class="flex-1">
+                                <p class="text-xs font-black uppercase tracking-[0.25em] text-slate-400"><%= product.category || 'Geral' %></p>
+                                <h2 class="text-xl font-bold text-slate-900 group-hover:text-indigo-600 transition-colors"><%= product.name %></h2>
+                                <p class="mt-4 text-slate-600 text-sm line-clamp-3 leading-relaxed"><%= product.shortDescription %></p>
+                            </div>
+
+                            <div class="mt-8 pt-6 border-t border-slate-50 flex items-center justify-between gap-4">
+                                <div>
+                                    <p class="text-[10px] uppercase font-bold text-slate-400 tracking-tighter">Investimento</p>
+                                    <p class="text-lg font-black text-indigo-600"><%= product.price || 'Consulte' %></p>
+                                </div>
+                                <a href="/loja/<%= product.slug %>" class="inline-flex items-center px-5 py-2.5 bg-indigo-600 hover:bg-slate-900 text-white text-xs font-black rounded-xl transition-all shadow-lg shadow-indigo-100 uppercase tracking-widest">
+                                    Ver Detalhes
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+                <% }) %>
+            <% } %>
+        </div>
+    </div>
+</div>

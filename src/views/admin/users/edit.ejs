@@ -1,0 +1,165 @@
+<div class="max-w-6xl mx-auto space-y-6">
+    <% if (success) { %>
+        <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm font-medium text-emerald-800">
+            <%= success %>
+        </div>
+    <% } %>
+
+    <% if (error) { %>
+        <div class="rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-sm font-medium text-red-800">
+            <%= error %>
+        </div>
+    <% } %>
+
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+        <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+                <h2 class="text-xl font-bold text-slate-800">Editar Usuario</h2>
+                <p class="text-sm text-slate-500 mt-1">Atualize dados cadastrais, status da conta e perfil de acesso.</p>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.2em] <%= managedUser.active ? 'border border-emerald-200 bg-emerald-100 text-emerald-700' : 'border border-amber-200 bg-amber-100 text-amber-700' %>">
+                    <%= managedUser.active ? 'Conta ativa' : 'Aguardando validacao' %>
+                </span>
+                <span class="rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.2em] <%= managedUser.role === 'admin' ? 'bg-slate-900 text-white' : 'bg-indigo-100 text-indigo-700 border border-indigo-200' %>">
+                    <%= managedUser.role %>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div class="lg:col-span-2">
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+                <form action="/admin/usuarios/<%= managedUser.id %>/editar" method="POST" class="space-y-6">
+                    <div class="grid gap-6 md:grid-cols-2">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Nome</label>
+                            <input type="text" name="name" required value="<%= managedUser.name %>" class="w-full rounded-xl border border-slate-200 px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Email</label>
+                            <input type="email" name="email" required value="<%= managedUser.email %>" class="w-full rounded-xl border border-slate-200 px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                    </div>
+
+                    <div class="grid gap-6 md:grid-cols-2">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Perfil de acesso</label>
+                            <select name="role" class="w-full rounded-xl border border-slate-200 px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500">
+                                <option value="aluno" <%= managedUser.role === 'aluno' ? 'selected' : '' %>>Aluno</option>
+                                <option value="admin" <%= managedUser.role === 'admin' ? 'selected' : '' %>>Admin</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Telefone</label>
+                            <input type="text" name="phone" value="<%= managedUser.phone || '' %>" class="w-full rounded-xl border border-slate-200 px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                    </div>
+
+                    <div class="grid gap-6 md:grid-cols-2">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">CPF ou CNPJ</label>
+                            <input type="text" name="cpfCnpj" value="<%= managedUser.cpfCnpj || '' %>" class="w-full rounded-xl border border-slate-200 px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Empresa</label>
+                            <input type="text" name="company" value="<%= managedUser.company || '' %>" class="w-full rounded-xl border border-slate-200 px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                    </div>
+
+                    <div class="grid gap-6 md:grid-cols-2">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Pais</label>
+                            <input type="text" name="pais" value="<%= managedUser.pais || '' %>" class="w-full rounded-xl border border-slate-200 px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">CEP</label>
+                            <input type="text" name="cep" value="<%= managedUser.cep || '' %>" class="w-full rounded-xl border border-slate-200 px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Endereco</label>
+                        <input type="text" name="endereco" value="<%= managedUser.endereco || '' %>" class="w-full rounded-xl border border-slate-200 px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500">
+                    </div>
+
+                    <div class="grid gap-6 md:grid-cols-3">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Cidade</label>
+                            <input type="text" name="cidade" value="<%= managedUser.cidade || '' %>" class="w-full rounded-xl border border-slate-200 px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Estado</label>
+                            <input type="text" name="estado" value="<%= managedUser.estado || '' %>" class="w-full rounded-xl border border-slate-200 px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Setor publico</label>
+                            <select name="entePublico" class="w-full rounded-xl border border-slate-200 px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500">
+                                <option value="0" <%= managedUser.entePublico ? '' : 'selected' %>>Nao</option>
+                                <option value="1" <%= managedUser.entePublico ? 'selected' : '' %>>Sim</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                        <label class="flex items-center gap-3 text-sm font-semibold text-slate-700">
+                            <input type="checkbox" name="active" <%= managedUser.active ? 'checked' : '' %> class="h-5 w-5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500">
+                            Manter conta ativa para login
+                        </label>
+                        <p class="mt-2 text-xs text-slate-500">Se estiver desmarcado, o usuario continuara bloqueado ate validar novamente o acesso por email.</p>
+                    </div>
+
+                    <div class="flex justify-end gap-3 pt-2">
+                        <a href="/admin/usuarios" class="px-6 py-3 text-sm font-bold text-slate-600">Cancelar</a>
+                        <button type="submit" class="rounded-xl bg-indigo-600 px-8 py-3 text-sm font-bold text-white transition-colors hover:bg-indigo-700">
+                            Salvar Alteracoes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="space-y-6">
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+                <h3 class="text-base font-bold text-slate-800">Acoes de Acesso</h3>
+                <p class="mt-1 text-sm text-slate-500">Use o reenvio quando o usuario nao recebeu o email inicial ou esqueceu de concluir a ativacao.</p>
+
+                <form action="/admin/usuarios/<%= managedUser.id %>/reenviar-acesso" method="POST" class="mt-5" onsubmit="return confirm('Deseja reenviar o email de acesso para este usuario?')">
+                    <button type="submit" class="w-full rounded-xl border border-indigo-200 bg-indigo-50 px-4 py-3 text-sm font-bold text-indigo-700 transition-colors hover:bg-indigo-100">
+                        <%= managedUser.active ? 'Reenviar email de redefinicao' : 'Reenviar link de ativacao' %>
+                    </button>
+                </form>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-3 text-sm">
+                <h3 class="text-base font-bold text-slate-800">Resumo da Conta</h3>
+                <div class="flex items-start justify-between gap-3">
+                    <span class="text-slate-500">Criado em</span>
+                    <span class="font-medium text-slate-700"><%= new Date(managedUser.createdAt).toLocaleString('pt-BR') %></span>
+                </div>
+                <div class="flex items-start justify-between gap-3">
+                    <span class="text-slate-500">Ultima atualizacao</span>
+                    <span class="font-medium text-slate-700"><%= new Date(managedUser.updatedAt).toLocaleString('pt-BR') %></span>
+                </div>
+                <div class="flex items-start justify-between gap-3">
+                    <span class="text-slate-500">Status</span>
+                    <span class="font-medium text-slate-700"><%= managedUser.active ? 'Ativo' : 'Pendente de validacao' %></span>
+                </div>
+                <div class="flex items-start justify-between gap-3">
+                    <span class="text-slate-500">Perfil</span>
+                    <span class="font-medium text-slate-700"><%= managedUser.role %></span>
+                </div>
+            </div>
+
+            <div class="rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm text-amber-900">
+                <h3 class="font-bold">Observacoes</h3>
+                <ul class="mt-3 space-y-2 text-xs">
+                    <li>- Usuarios inativos precisam validar o acesso novamente pelo link reenviado.</li>
+                    <li>- Usuarios ativos recebem um email para definir uma nova senha.</li>
+                    <li>- O proprio administrador logado nao pode retirar seu proprio perfil admin.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

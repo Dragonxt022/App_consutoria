@@ -1,0 +1,465 @@
+<div class="space-y-6">
+    <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div class="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+            <div class="max-w-3xl">
+                <h2 class="text-2xl font-black tracking-tight text-slate-900">Montar Certificado</h2>
+                <p class="mt-2 text-sm leading-6 text-slate-500">Escolha um fundo, selecione um elemento e ajuste fonte, tamanho, cor, alinhamento e assinatura. O verso continua automatico.</p>
+            </div>
+            <div class="inline-flex items-center rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-amber-700">
+                Verso automatico ativo
+            </div>
+        </div>
+    </div>
+
+    <form id="certificate-builder-form" action="/admin/certificados/montar" method="POST" class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
+        <section class="space-y-6">
+            <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+                <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-[0.22em] text-slate-400">Fundos</p>
+                        <h3 class="mt-2 text-lg font-bold text-slate-900">Escolha o modelo base</h3>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button type="button" id="reset-certificate-builder" class="rounded-2xl border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                            Resetar layout
+                        </button>
+                        <button type="submit" class="rounded-2xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-200 transition hover:bg-indigo-700">
+                            Salvar modelo
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mt-5 overflow-x-auto pb-2">
+                    <div class="flex min-w-max gap-4">
+                        <% backgrounds.forEach((background) => { %>
+                            <label class="group block w-44 flex-shrink-0 cursor-pointer">
+                                <input
+                                    type="radio"
+                                    name="background_picker"
+                                    value="<%= background %>"
+                                    class="sr-only js-background-input"
+                                    <%= builderConfig.backgroundUrl === background ? 'checked' : '' %>
+                                >
+                                <span class="js-background-card block overflow-hidden rounded-2xl border-2 border-slate-200 bg-slate-50 shadow-sm transition group-hover:-translate-y-0.5 group-hover:border-indigo-300 group-hover:shadow-md">
+                                    <img src="<%= background %>" alt="Template do certificado" class="h-28 w-full object-cover">
+                                    <span class="flex items-center justify-between px-3 py-2 text-xs font-semibold text-slate-500">
+                                        <span><%= background.split('/').pop() %></span>
+                                        <span class="rounded-full bg-slate-100 px-2 py-1 uppercase tracking-[0.15em] text-[10px]">Fundo</span>
+                                    </span>
+                                </span>
+                            </label>
+                        <% }) %>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+                <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-[0.22em] text-slate-400">Editor visual</p>
+                        <h3 class="mt-2 text-lg font-bold text-slate-900">Arraste diretamente no certificado</h3>
+                    </div>
+                    <div class="rounded-2xl bg-slate-100 px-4 py-3 text-xs font-medium leading-5 text-slate-500">
+                        Dica: clique no elemento para editar suas propriedades no painel lateral.
+                    </div>
+                </div>
+
+                <div class="mt-5 overflow-auto rounded-[32px] bg-[linear-gradient(135deg,#dbeafe_0%,#eff6ff_42%,#f8fafc_100%)] p-4 lg:p-6">
+                    <div
+                        id="certificate-builder-stage"
+                        class="relative mx-auto aspect-[297/210] w-full max-w-6xl overflow-hidden rounded-[30px] border border-slate-300 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.18)]"
+                        style="background-size: cover; background-position: center;"
+                    >
+                        <% previewElements.forEach((element) => { %>
+                            <% if (element.type === 'signature-block') { %>
+                                <div
+                                    class="js-builder-element absolute cursor-grab rounded-2xl border border-dashed border-indigo-300 bg-white/86 p-3 shadow-sm backdrop-blur-sm active:cursor-grabbing"
+                                    data-id="<%= element.id %>"
+                                    style="left:<%= element.x %>%; top:<%= element.y %>%; width:<%= element.width %>%;"
+                                >
+                                    <div class="pointer-events-none flex flex-col items-center gap-2 text-center">
+                                        <% if (element.src) { %>
+                                            <img src="<%= element.src %>" alt="<%= element.label %>" class="w-full max-h-20 object-contain">
+                                        <% } else { %>
+                                            <div class="flex min-h-12 w-full items-center justify-center rounded-xl bg-slate-100 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                                                Assinatura
+                                            </div>
+                                        <% } %>
+                                        <div class="w-full border-t-2 border-current"></div>
+                                        <div class="js-builder-signature-name w-full leading-relaxed" style="color:<%= element.color %>; text-align:<%= element.align %>; font-size:<%= element.fontSize %>px; font-weight:<%= element.fontWeight %>; font-family:<%= element.fontFamily %>;"><%= element.signatureName %></div>
+                                    </div>
+                                </div>
+                            <% } else { %>
+                                <div
+                                    class="js-builder-element absolute cursor-grab rounded-2xl border border-dashed border-indigo-300 bg-white/80 px-3 py-2 shadow-sm backdrop-blur-sm active:cursor-grabbing"
+                                    data-id="<%= element.id %>"
+                                    style="left:<%= element.x %>%; top:<%= element.y %>%; width:<%= element.width %>%; color:<%= element.color %>; text-align:<%= element.align %>; font-size:<%= element.fontSize %>px; font-weight:<%= element.fontWeight %>; font-family:<%= element.fontFamily %>;"
+                                >
+                                    <span class="js-builder-text pointer-events-none block whitespace-pre-wrap leading-relaxed"><%= element.content %></span>
+                                </div>
+                            <% } %>
+                        <% }) %>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+                <p class="text-xs font-bold uppercase tracking-[0.22em] text-slate-400">Elementos</p>
+                <div id="builder-element-list" class="mt-4 flex flex-wrap gap-3">
+                    <% builderConfig.elements.forEach((element, index) => { %>
+                        <button
+                            type="button"
+                            class="js-element-select inline-flex items-center gap-2 rounded-2xl border px-4 py-3 text-sm font-semibold transition <%= index === 0 ? 'border-indigo-500 bg-indigo-50 text-indigo-700 shadow-sm' : 'border-slate-200 bg-slate-50 text-slate-700 hover:border-slate-300 hover:bg-white' %>"
+                            data-id="<%= element.id %>"
+                        >
+                            <span><%= element.label %></span>
+                            <span class="rounded-full bg-white/80 px-2 py-1 text-[10px] uppercase tracking-[0.16em] text-slate-400"><%= element.type %></span>
+                        </button>
+                    <% }) %>
+                </div>
+            </div>
+        </section>
+
+        <aside class="xl:sticky xl:top-6 xl:self-start">
+            <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+                <p class="text-xs font-bold uppercase tracking-[0.22em] text-slate-400">Propriedades</p>
+                <div class="mt-4 space-y-5">
+                    <div>
+                        <label class="mb-2 block text-xs font-bold uppercase tracking-[0.18em] text-slate-500">Elemento selecionado</label>
+                        <div id="selected-element-label" class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-800"></div>
+                    </div>
+
+                    <div>
+                        <label for="builder-width" class="mb-2 block text-xs font-bold uppercase tracking-[0.18em] text-slate-500">Largura</label>
+                        <input id="builder-width" type="range" min="5" max="100" step="0.5" class="w-full accent-indigo-600">
+                    </div>
+
+                    <div id="text-controls" class="space-y-4">
+                        <div>
+                            <label for="builder-font-family" class="mb-2 block text-xs font-bold uppercase tracking-[0.18em] text-slate-500">Fonte</label>
+                            <select id="builder-font-family" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm">
+                                <option value="Arial, sans-serif">Arial</option>
+                                <option value="Georgia, serif">Georgia</option>
+                                <option value="'Times New Roman', serif">Times New Roman</option>
+                                <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
+                                <option value="'Courier New', monospace">Courier New</option>
+                            </select>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label for="builder-font-size" class="mb-2 block text-xs font-bold uppercase tracking-[0.18em] text-slate-500">Tamanho</label>
+                                <input id="builder-font-size" type="number" min="6" max="72" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm">
+                            </div>
+                            <div>
+                                <label for="builder-font-weight" class="mb-2 block text-xs font-bold uppercase tracking-[0.18em] text-slate-500">Peso</label>
+                                <select id="builder-font-weight" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm">
+                                    <option value="400">Normal</option>
+                                    <option value="500">Medio</option>
+                                    <option value="600">Semibold</option>
+                                    <option value="700">Bold</option>
+                                    <option value="800">Extra Bold</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label for="builder-color" class="mb-2 block text-xs font-bold uppercase tracking-[0.18em] text-slate-500">Cor</label>
+                                <input id="builder-color" type="color" class="h-12 w-full rounded-2xl border border-slate-200 bg-white px-2 py-2">
+                            </div>
+                            <div>
+                                <label for="builder-align" class="mb-2 block text-xs font-bold uppercase tracking-[0.18em] text-slate-500">Alinhamento</label>
+                                <select id="builder-align" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm">
+                                    <option value="left">Esquerda</option>
+                                    <option value="center">Centro</option>
+                                    <option value="right">Direita</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="signature-name-control" class="hidden">
+                        <label for="builder-signature-name" class="mb-2 block text-xs font-bold uppercase tracking-[0.18em] text-slate-500">Nome abaixo da assinatura</label>
+                        <input id="builder-signature-name" type="text" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm" placeholder="Professor Responsavel">
+                    </div>
+
+                    <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-xs leading-5 text-slate-500">
+                        O bloco de assinatura sempre desenha:
+                        imagem da assinatura em cima, linha central e nome abaixo.
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <input type="hidden" name="certificate_builder_config" id="certificate_builder_config">
+    </form>
+</div>
+
+<script>
+(() => {
+    const sampleValues = <%- JSON.stringify(sampleValues) %>;
+    const stage = document.getElementById('certificate-builder-stage');
+    const form = document.getElementById('certificate-builder-form');
+    const hiddenInput = document.getElementById('certificate_builder_config');
+    const resetButton = document.getElementById('reset-certificate-builder');
+    const backgroundInputs = Array.from(document.querySelectorAll('.js-background-input'));
+    const backgroundCards = Array.from(document.querySelectorAll('.js-background-card'));
+    const selectedLabel = document.getElementById('selected-element-label');
+    const textControls = document.getElementById('text-controls');
+    const signatureNameControl = document.getElementById('signature-name-control');
+    const widthInput = document.getElementById('builder-width');
+    const fontFamilyInput = document.getElementById('builder-font-family');
+    const fontSizeInput = document.getElementById('builder-font-size');
+    const fontWeightInput = document.getElementById('builder-font-weight');
+    const colorInput = document.getElementById('builder-color');
+    const alignInput = document.getElementById('builder-align');
+    const signatureNameInput = document.getElementById('builder-signature-name');
+    const elementButtons = Array.from(document.querySelectorAll('.js-element-select'));
+    if (!stage || !form || !hiddenInput) return;
+
+    const defaultConfig = <%- JSON.stringify(builderConfig) %>;
+    let config = JSON.parse(JSON.stringify(defaultConfig));
+    let selectedId = config.elements[0] ? config.elements[0].id : null;
+
+    function replacePlaceholders(text) {
+        return String(text || '').replace(/\{\{\s*([a-zA-Z0-9_]+)\s*\}\}/g, (_, key) => sampleValues[key] ?? '');
+    }
+
+    function getSelectedElement() {
+        return config.elements.find((element) => element.id === selectedId) || null;
+    }
+
+    function applyBackground() {
+        stage.style.backgroundImage = config.backgroundUrl ? `url('${config.backgroundUrl}')` : 'none';
+
+        backgroundInputs.forEach((input, index) => {
+            const active = input.value === config.backgroundUrl;
+            if (backgroundCards[index]) {
+                backgroundCards[index].classList.toggle('border-indigo-500', active);
+                backgroundCards[index].classList.toggle('shadow-indigo-100', active);
+                backgroundCards[index].classList.toggle('shadow-lg', active);
+            }
+        });
+    }
+
+    function syncHiddenInput() {
+        hiddenInput.value = JSON.stringify(config);
+    }
+
+    function renderSelection() {
+        const selected = getSelectedElement();
+
+        elementButtons.forEach((button) => {
+            const active = button.dataset.id === selectedId;
+            button.classList.toggle('border-indigo-500', active);
+            button.classList.toggle('bg-indigo-50', active);
+            button.classList.toggle('text-indigo-700', active);
+            button.classList.toggle('shadow-sm', active);
+            button.classList.toggle('border-slate-200', !active);
+            button.classList.toggle('bg-slate-50', !active);
+            button.classList.toggle('text-slate-700', !active);
+        });
+
+        stage.querySelectorAll('.js-builder-element').forEach((node) => {
+            const active = node.dataset.id === selectedId;
+            node.classList.toggle('ring-2', active);
+            node.classList.toggle('ring-indigo-400', active);
+            node.classList.toggle('shadow-lg', active);
+        });
+
+        if (!selected) return;
+
+        selectedLabel.textContent = selected.label;
+        widthInput.value = selected.width;
+
+        const isTextLike = selected.type === 'text' || selected.type === 'signature-block';
+        textControls.classList.toggle('hidden', !isTextLike);
+        signatureNameControl.classList.toggle('hidden', selected.type !== 'signature-block');
+
+        if (isTextLike) {
+            fontFamilyInput.value = selected.fontFamily || 'Arial, sans-serif';
+            fontSizeInput.value = selected.fontSize || 12;
+            fontWeightInput.value = selected.fontWeight || 500;
+            colorInput.value = selected.color || '#111827';
+            alignInput.value = selected.align || 'center';
+        }
+
+        if (selected.type === 'signature-block') {
+            signatureNameInput.value = selected.text || '';
+        }
+    }
+
+    function renderElements() {
+        config.elements.forEach((element) => {
+            const node = stage.querySelector(`[data-id="${element.id}"]`);
+            if (!node) return;
+
+            node.style.left = `${element.x}%`;
+            node.style.top = `${element.y}%`;
+            node.style.width = `${element.width}%`;
+
+            if (element.type === 'signature-block') {
+                const nameNode = node.querySelector('.js-builder-signature-name');
+                if (nameNode) {
+                    nameNode.textContent = replacePlaceholders(element.text);
+                    nameNode.style.color = element.color;
+                    nameNode.style.textAlign = element.align;
+                    nameNode.style.fontSize = `${element.fontSize}px`;
+                    nameNode.style.fontWeight = element.fontWeight;
+                    nameNode.style.fontFamily = element.fontFamily;
+                }
+                node.style.color = element.color;
+            } else if (element.type === 'text') {
+                node.style.color = element.color;
+                node.style.textAlign = element.align;
+                node.style.fontSize = `${element.fontSize}px`;
+                node.style.fontWeight = element.fontWeight;
+                node.style.fontFamily = element.fontFamily;
+                const textNode = node.querySelector('.js-builder-text');
+                if (textNode) {
+                    textNode.textContent = replacePlaceholders(element.text);
+                }
+            }
+        });
+
+        renderSelection();
+    }
+
+    function clamp(value, min, max) {
+        return Math.min(max, Math.max(min, value));
+    }
+
+    function updateSelected(mutator) {
+        const selected = getSelectedElement();
+        if (!selected) return;
+        mutator(selected);
+        renderElements();
+        syncHiddenInput();
+    }
+
+    backgroundInputs.forEach((input) => {
+        input.addEventListener('change', () => {
+            if (!input.checked) return;
+            config.backgroundUrl = input.value;
+            applyBackground();
+            syncHiddenInput();
+        });
+    });
+
+    elementButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+            selectedId = button.dataset.id;
+            renderSelection();
+        });
+    });
+
+    widthInput.addEventListener('input', () => {
+        updateSelected((selected) => {
+            selected.width = clamp(Number(widthInput.value || selected.width), 5, 100);
+        });
+    });
+
+    fontFamilyInput.addEventListener('change', () => {
+        updateSelected((selected) => {
+            selected.fontFamily = fontFamilyInput.value;
+        });
+    });
+
+    fontSizeInput.addEventListener('input', () => {
+        updateSelected((selected) => {
+            selected.fontSize = clamp(Number(fontSizeInput.value || selected.fontSize), 6, 72);
+        });
+    });
+
+    fontWeightInput.addEventListener('change', () => {
+        updateSelected((selected) => {
+            selected.fontWeight = Number(fontWeightInput.value || selected.fontWeight);
+        });
+    });
+
+    colorInput.addEventListener('input', () => {
+        updateSelected((selected) => {
+            selected.color = colorInput.value;
+        });
+    });
+
+    alignInput.addEventListener('change', () => {
+        updateSelected((selected) => {
+            selected.align = alignInput.value;
+        });
+    });
+
+    signatureNameInput.addEventListener('input', () => {
+        updateSelected((selected) => {
+            selected.text = signatureNameInput.value;
+        });
+    });
+
+    let dragState = null;
+
+    stage.querySelectorAll('.js-builder-element').forEach((node) => {
+        node.addEventListener('pointerdown', (event) => {
+            selectedId = node.dataset.id;
+            renderSelection();
+
+            const element = getSelectedElement();
+            if (!element) return;
+
+            const stageRect = stage.getBoundingClientRect();
+            const elementRect = node.getBoundingClientRect();
+            dragState = {
+                id: node.dataset.id,
+                offsetX: event.clientX - elementRect.left,
+                offsetY: event.clientY - elementRect.top,
+                stageRect
+            };
+
+            node.setPointerCapture && node.setPointerCapture(event.pointerId);
+        });
+    });
+
+    window.addEventListener('pointermove', (event) => {
+        if (!dragState) return;
+
+        const element = config.elements.find((item) => item.id === dragState.id);
+        if (!element) return;
+
+        const widthPx = dragState.stageRect.width * (element.width / 100);
+        const maxX = dragState.stageRect.width - widthPx;
+        const maxY = dragState.stageRect.height - 24;
+
+        const leftPx = clamp(event.clientX - dragState.stageRect.left - dragState.offsetX, 0, maxX);
+        const topPx = clamp(event.clientY - dragState.stageRect.top - dragState.offsetY, 0, maxY);
+
+        element.x = Number(((leftPx / dragState.stageRect.width) * 100).toFixed(2));
+        element.y = Number(((topPx / dragState.stageRect.height) * 100).toFixed(2));
+
+        renderElements();
+        syncHiddenInput();
+    });
+
+    window.addEventListener('pointerup', () => {
+        dragState = null;
+    });
+
+    resetButton && resetButton.addEventListener('click', () => {
+        config = JSON.parse(JSON.stringify(defaultConfig));
+        selectedId = config.elements[0] ? config.elements[0].id : null;
+        backgroundInputs.forEach((input) => {
+            input.checked = input.value === config.backgroundUrl;
+        });
+        applyBackground();
+        renderElements();
+        syncHiddenInput();
+    });
+
+    form.addEventListener('submit', () => {
+        syncHiddenInput();
+    });
+
+    applyBackground();
+    renderElements();
+    syncHiddenInput();
+})();
+</script>

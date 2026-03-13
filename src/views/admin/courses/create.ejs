@@ -1,80 +1,117 @@
-<div class="max-w-4xl mx-auto">
+<div class="max-w-6xl mx-auto">
     <div class="bg-white shadow-xl rounded-2xl overflow-hidden">
         <div class="bg-slate-50 p-6 border-b border-slate-100">
             <h2 class="text-xl font-bold text-slate-800">Novo Cadastro de Curso</h2>
-            <p class="text-slate-500 text-sm">Preencha todos os detalhes técnicos do treinamento presencial.</p>
+            <p class="text-slate-500 text-sm">Preencha os detalhes do treinamento com mais espaço para descrição e verso do certificado.</p>
         </div>
 
         <form action="/admin/cursos/criar" method="POST" enctype="multipart/form-data" class="p-8 space-y-8">
-            <div class="grid md:grid-cols-2 gap-8">
-                <!-- Informações Básicas -->
-                <div class="space-y-6">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Nome do Curso</label>
-                        <input type="text" name="title" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" placeholder="Ex: Gestão Estratégica 4.0">
+            <div class="grid gap-8 xl:grid-cols-[1.45fr_0.95fr]">
+                <section class="space-y-8">
+                    <div class="rounded-2xl border border-slate-200 bg-slate-50/70 p-6">
+                        <div class="mb-5">
+                            <h3 class="text-lg font-bold text-slate-800">Conteudo principal</h3>
+                            <p class="text-sm text-slate-500">Area ampliada para escrever a proposta do curso com mais conforto.</p>
+                        </div>
+
+                        <div class="space-y-6">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Nome do Curso</label>
+                                <input type="text" name="title" required class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" placeholder="Ex: Gestão Estratégica 4.0">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Descricao do Curso</label>
+                                <p class="text-xs text-slate-400 mb-3">Descreva objetivo, publico, beneficios e resultado esperado. Esse campo ficou maior para facilitar a leitura durante o cadastro.</p>
+                                <textarea name="description" rows="12" required class="w-full min-h-[280px] px-4 py-4 rounded-2xl border border-slate-200 bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all resize-y" placeholder="Descreva o curso com mais detalhes, incluindo objetivos, publico-alvo, beneficios, metodologia e aplicacoes praticas..."></textarea>
+                            </div>
+                        </div>
                     </div>
 
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Descrição Curta</label>
-                        <textarea name="description" rows="4" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" placeholder="Resumo do que será abordado no curso..."></textarea>
-                    </div>
+                    <div class="rounded-2xl border border-slate-200 bg-white p-6">
+                        <div class="mb-5 flex items-start justify-between gap-4">
+                            <div>
+                                <h3 class="text-lg font-bold text-slate-800">Verso do certificado</h3>
+                                <p class="text-sm text-slate-500">Organize um topico por linha para melhorar a leitura no certificado.</p>
+                            </div>
+                            <span class="inline-flex items-center rounded-full bg-indigo-50 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-indigo-700">1 item por linha</span>
+                        </div>
 
-                    <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Investimento (R$)</label>
-                            <input type="text" name="price" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" placeholder="R$ 1.200,00">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Vagas Disponíveis</label>
-                            <input type="number" name="spots" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" placeholder="20">
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Lista de Conteudos</label>
+                            <p class="text-xs text-slate-400 mb-3">Sugestao: usar topicos curtos, sem textos longos. Isso melhora o visual do verso.</p>
+                            <textarea name="certificateTopics" rows="13" class="w-full min-h-[340px] px-4 py-4 rounded-2xl border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all resize-y" placeholder="Ex:&#10;Fundamentos do curso&#10;Estudos de caso&#10;Aplicacoes praticas&#10;Ferramentas utilizadas&#10;Plano de acao"></textarea>
                         </div>
                     </div>
-                </div>
+                </section>
 
-                <!-- Logística e Detalhes -->
-                <div class="space-y-6">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Local do Treinamento</label>
-                        <input type="text" name="location" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" placeholder="Ex: Hotel Hilton, São Paulo - SP">
+                <section class="space-y-8">
+                    <div class="rounded-2xl border border-slate-200 bg-white p-6">
+                        <div class="mb-5">
+                            <h3 class="text-lg font-bold text-slate-800">Dados do treinamento</h3>
+                            <p class="text-sm text-slate-500">Informacoes de agenda, local, investimento e disponibilidade.</p>
+                        </div>
+
+                        <div class="space-y-6">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Local do Treinamento</label>
+                                <input type="text" name="location" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" placeholder="Ex: Hotel Hilton, São Paulo - SP">
+                            </div>
+
+                            <div class="grid sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Data de Inicio</label>
+                                    <input type="date" name="startDate" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Carga Horaria</label>
+                                    <input type="text" name="workload" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" placeholder="Ex: 40 horas">
+                                </div>
+                            </div>
+
+                            <div class="grid sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Investimento (R$)</label>
+                                    <input type="text" name="price" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" placeholder="R$ 1.200,00">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Vagas Disponiveis</label>
+                                    <input type="number" name="spots" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" placeholder="20">
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Data de Início</label>
-                            <input type="date" name="startDate" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Carga Horária</label>
-                            <input type="text" name="workload" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" placeholder="Ex: 40 horas">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">O que está incluso?</label>
-                        <p class="text-xs text-slate-400 mb-2">Digite um item e aperte <span class="font-semibold">Enter</span> para adicionar. Cada item será enviado como <code>itemsIncluded[]</code>.</p>
-
-                        <div class="flex items-center gap-3">
-                            <input id="includeInput" type="text" placeholder="Ex: Material didático completo" class="flex-1 px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none">
-                            <button type="button" id="addIncludeBtn" class="px-4 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700">Adicionar</button>
+                    <div class="rounded-2xl border border-slate-200 bg-white p-6">
+                        <div class="mb-5">
+                            <h3 class="text-lg font-bold text-slate-800">Itens inclusos</h3>
+                            <p class="text-sm text-slate-500">Monte a lista do que o participante recebe junto com a inscricao.</p>
                         </div>
 
-                        <ul id="includesList" class="mt-4 space-y-2">
-                            <!-- itens iniciais -->
-                            <li class="flex items-center justify-between bg-slate-50 p-2 rounded-lg">
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">O que esta incluso?</label>
+                        <p class="text-xs text-slate-400 mb-3">Digite um item e aperte <span class="font-semibold">Enter</span> para adicionar.</p>
+
+                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                            <input id="includeInput" type="text" placeholder="Ex: Material didatico completo" class="flex-1 px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none">
+                            <button type="button" id="addIncludeBtn" class="px-5 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700">Adicionar</button>
+                        </div>
+
+                        <ul id="includesList" class="mt-4 space-y-2 max-h-80 overflow-y-auto pr-1">
+                            <li class="flex items-center justify-between bg-slate-50 p-3 rounded-lg">
                                 <div class="flex items-center gap-3">
                                     <input type="checkbox" name="itemsIncluded[]" value="COPO E CANETA." checked class="w-4 h-4 text-indigo-600">
                                     <span class="text-sm text-slate-700">COPO E CANETA.</span>
                                 </div>
                                 <button type="button" class="removeInclude text-red-500 hover:text-red-600">Remover</button>
                             </li>
-                            <li class="flex items-center justify-between bg-slate-50 p-2 rounded-lg">
+                            <li class="flex items-center justify-between bg-slate-50 p-3 rounded-lg">
                                 <div class="flex items-center gap-3">
                                     <input type="checkbox" name="itemsIncluded[]" value="COFFEE-BREAK." checked class="w-4 h-4 text-indigo-600">
                                     <span class="text-sm text-slate-700">COFFEE-BREAK.</span>
                                 </div>
                                 <button type="button" class="removeInclude text-red-500 hover:text-red-600">Remover</button>
                             </li>
-                            <li class="flex items-center justify-between bg-slate-50 p-2 rounded-lg">
+                            <li class="flex items-center justify-between bg-slate-50 p-3 rounded-lg">
                                 <div class="flex items-center gap-3">
                                     <input type="checkbox" name="itemsIncluded[]" value="CERTIFICADO DE PARTICIPAÇÃO." checked class="w-4 h-4 text-indigo-600">
                                     <span class="text-sm text-slate-700">CERTIFICADO DE PARTICIPAÇÃO.</span>
@@ -83,21 +120,17 @@
                             </li>
                         </ul>
                     </div>
-                </div>
+                </section>
             </div>
 
-            <!-- Uploads -->
             <div class="pt-8 border-t border-slate-100 flex flex-col md:flex-row gap-8">
-                <!-- Imagem de Capa -->
                 <div class="flex-1">
                     <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Imagem de Capa</label>
                     <div class="relative border-2 border-dashed border-slate-200 rounded-2xl p-6 text-center hover:border-indigo-400 transition-all">
                         <input type="file" name="image" id="imageInput" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-                        
-                        <!-- Preview da Imagem -->
                         <div id="imagePreview" class="hidden mb-4">
                             <div class="relative inline-block">
-                                <img id="previewImage" class="max-h-48 mx-auto rounded-lg shadow-md" src="#" alt="Pré-visualização da imagem">
+                                <img id="previewImage" class="max-h-48 mx-auto rounded-lg shadow-md" src="#" alt="Pre-visualizacao da imagem">
                                 <button type="button" id="removeImage" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors">
                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -105,8 +138,6 @@
                                 </button>
                             </div>
                         </div>
-                        
-                        <!-- Placeholder -->
                         <div id="imagePlaceholder">
                             <svg class="w-10 h-10 text-slate-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
@@ -116,14 +147,11 @@
                         </div>
                     </div>
                 </div>
-                
-                <!-- Proposta do Curso -->
+
                 <div class="flex-1">
                     <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Proposta do Curso (PDF/DOC)</label>
                     <div class="relative border-2 border-dashed border-slate-200 rounded-2xl p-6 text-center hover:border-indigo-400 transition-all">
                         <input type="file" name="proposalDoc" id="pdfInput" accept=".pdf,.doc,.docx,.txt" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-                        
-                        <!-- Preview do PDF -->
                         <div id="pdfPreview" class="hidden mb-4">
                             <div class="bg-slate-50 rounded-lg p-4">
                                 <div class="flex items-center justify-between">
@@ -144,8 +172,6 @@
                                 </div>
                             </div>
                         </div>
-                        
-                        <!-- Placeholder -->
                         <div id="pdfPlaceholder">
                             <svg class="w-10 h-10 text-slate-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
@@ -169,100 +195,76 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Elementos da imagem
     const imageInput = document.getElementById('imageInput');
     const imagePreview = document.getElementById('imagePreview');
     const previewImage = document.getElementById('previewImage');
     const imagePlaceholder = document.getElementById('imagePlaceholder');
     const removeImageBtn = document.getElementById('removeImage');
-    
-    // Elementos do PDF
     const pdfInput = document.getElementById('pdfInput');
     const pdfPreview = document.getElementById('pdfPreview');
     const pdfFileName = document.getElementById('pdfFileName');
     const pdfFileSize = document.getElementById('pdfFileSize');
     const pdfPlaceholder = document.getElementById('pdfPlaceholder');
     const removePdfBtn = document.getElementById('removePdf');
-    
-    // Manipulação da imagem
+
     imageInput.addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
-            // Verifica se é uma imagem
             if (!file.type.match('image.*')) {
                 alert('Por favor, selecione apenas arquivos de imagem.');
                 imageInput.value = '';
                 return;
             }
-            
-            // Verifica o tamanho (máximo 5MB)
             if (file.size > 5 * 1024 * 1024) {
-                alert('A imagem não pode ter mais de 5MB.');
+                alert('A imagem nao pode ter mais de 5MB.');
                 imageInput.value = '';
                 return;
             }
-            
             const reader = new FileReader();
-            reader.onload = function(e) {
-                previewImage.src = e.target.result;
+            reader.onload = function(event) {
+                previewImage.src = event.target.result;
                 imagePreview.classList.remove('hidden');
                 imagePlaceholder.classList.add('hidden');
-            }
+            };
             reader.readAsDataURL(file);
         }
     });
-    
-    // Remover imagem
+
     removeImageBtn.addEventListener('click', function() {
         imageInput.value = '';
         previewImage.src = '#';
         imagePreview.classList.add('hidden');
         imagePlaceholder.classList.remove('hidden');
     });
-    
-    // Manipulação do PDF
+
     pdfInput.addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
-            // Verifica a extensão
             const validExtensions = ['.pdf', '.doc', '.docx', '.txt'];
             const fileName = file.name.toLowerCase();
-            const isValid = validExtensions.some(ext => fileName.endsWith(ext));
-            
+            const isValid = validExtensions.some((ext) => fileName.endsWith(ext));
             if (!isValid) {
                 alert('Por favor, selecione apenas arquivos PDF, DOC, DOCX ou TXT.');
                 pdfInput.value = '';
                 return;
             }
-            
-            // Verifica o tamanho (máximo 10MB)
             if (file.size > 10 * 1024 * 1024) {
-                alert('O documento não pode ter mais de 10MB.');
+                alert('O documento nao pode ter mais de 10MB.');
                 pdfInput.value = '';
                 return;
             }
-            
-            // Mostra informações do arquivo
             pdfFileName.textContent = file.name;
-            
-            // Formata o tamanho do arquivo
             const fileSize = file.size;
             let sizeText;
-            if (fileSize < 1024) {
-                sizeText = fileSize + ' bytes';
-            } else if (fileSize < 1024 * 1024) {
-                sizeText = (fileSize / 1024).toFixed(1) + ' KB';
-            } else {
-                sizeText = (fileSize / (1024 * 1024)).toFixed(1) + ' MB';
-            }
+            if (fileSize < 1024) sizeText = fileSize + ' bytes';
+            else if (fileSize < 1024 * 1024) sizeText = (fileSize / 1024).toFixed(1) + ' KB';
+            else sizeText = (fileSize / (1024 * 1024)).toFixed(1) + ' MB';
             pdfFileSize.textContent = sizeText;
-            
             pdfPreview.classList.remove('hidden');
             pdfPlaceholder.classList.add('hidden');
         }
     });
-    
-    // Remover PDF
+
     removePdfBtn.addEventListener('click', function() {
         pdfInput.value = '';
         pdfFileName.textContent = '';
@@ -270,108 +272,77 @@ document.addEventListener('DOMContentLoaded', function() {
         pdfPreview.classList.add('hidden');
         pdfPlaceholder.classList.remove('hidden');
     });
-    
-    // Drag and Drop para a imagem
+
     const imageDropArea = imageInput.parentElement;
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach((eventName) => {
         imageDropArea.addEventListener(eventName, preventDefaults, false);
     });
-    
+
     function preventDefaults(e) {
         e.preventDefault();
         e.stopPropagation();
     }
-    
-    ['dragenter', 'dragover'].forEach(eventName => {
-        imageDropArea.addEventListener(eventName, highlight, false);
+
+    ['dragenter', 'dragover'].forEach((eventName) => {
+        imageDropArea.addEventListener(eventName, () => imageDropArea.classList.add('border-indigo-500', 'bg-indigo-50'), false);
     });
-    
-    ['dragleave', 'drop'].forEach(eventName => {
-        imageDropArea.addEventListener(eventName, unhighlight, false);
+
+    ['dragleave', 'drop'].forEach((eventName) => {
+        imageDropArea.addEventListener(eventName, () => imageDropArea.classList.remove('border-indigo-500', 'bg-indigo-50'), false);
     });
-    
-    function highlight() {
-        imageDropArea.classList.add('border-indigo-500', 'bg-indigo-50');
-    }
-    
-    function unhighlight() {
-        imageDropArea.classList.remove('border-indigo-500', 'bg-indigo-50');
-    }
-    
-    imageDropArea.addEventListener('drop', handleDrop, false);
-    
-    function handleDrop(e) {
+
+    imageDropArea.addEventListener('drop', function(e) {
         const dt = e.dataTransfer;
-        const files = dt.files;
-        imageInput.files = files;
-        
-        // Dispara o evento change manualmente
-        const event = new Event('change');
-        imageInput.dispatchEvent(event);
-    }
-    
-    // Drag and Drop para o PDF (similar)
-    const pdfDropArea = pdfInput.parentElement;
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-        pdfDropArea.addEventListener(eventName, preventDefaults, false);
-    });
-    
-    ['dragenter', 'dragover'].forEach(eventName => {
-        pdfDropArea.addEventListener(eventName, () => {
-            pdfDropArea.classList.add('border-indigo-500', 'bg-indigo-50');
-        }, false);
-    });
-    
-    ['dragleave', 'drop'].forEach(eventName => {
-        pdfDropArea.addEventListener(eventName, () => {
-            pdfDropArea.classList.remove('border-indigo-500', 'bg-indigo-50');
-        }, false);
-    });
-    
-    pdfDropArea.addEventListener('drop', function(e) {
-        const dt = e.dataTransfer;
-        const files = dt.files;
-        pdfInput.files = files;
-        
-        const event = new Event('change');
-        pdfInput.dispatchEvent(event);
+        imageInput.files = dt.files;
+        imageInput.dispatchEvent(new Event('change'));
     }, false);
 
-    // --- Itens inclusos dinâmicos ---
+    const pdfDropArea = pdfInput.parentElement;
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach((eventName) => {
+        pdfDropArea.addEventListener(eventName, preventDefaults, false);
+    });
+
+    ['dragenter', 'dragover'].forEach((eventName) => {
+        pdfDropArea.addEventListener(eventName, () => pdfDropArea.classList.add('border-indigo-500', 'bg-indigo-50'), false);
+    });
+
+    ['dragleave', 'drop'].forEach((eventName) => {
+        pdfDropArea.addEventListener(eventName, () => pdfDropArea.classList.remove('border-indigo-500', 'bg-indigo-50'), false);
+    });
+
+    pdfDropArea.addEventListener('drop', function(e) {
+        const dt = e.dataTransfer;
+        pdfInput.files = dt.files;
+        pdfInput.dispatchEvent(new Event('change'));
+    }, false);
+
     const includeInput = document.getElementById('includeInput');
     const addIncludeBtn = document.getElementById('addIncludeBtn');
     const includesList = document.getElementById('includesList');
 
     function createIncludeItem(text) {
         const li = document.createElement('li');
-        li.className = 'flex items-center justify-between bg-slate-50 p-2 rounded-lg';
-
+        li.className = 'flex items-center justify-between bg-slate-50 p-3 rounded-lg';
         const left = document.createElement('div');
         left.className = 'flex items-center gap-3';
-
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
         checkbox.name = 'itemsIncluded[]';
         checkbox.value = text;
         checkbox.checked = true;
         checkbox.className = 'w-4 h-4 text-indigo-600';
-
         const span = document.createElement('span');
         span.className = 'text-sm text-slate-700';
         span.textContent = text;
-
         left.appendChild(checkbox);
         left.appendChild(span);
-
         const removeBtn = document.createElement('button');
         removeBtn.type = 'button';
         removeBtn.className = 'removeInclude text-red-500 hover:text-red-600';
         removeBtn.textContent = 'Remover';
         removeBtn.addEventListener('click', function() { li.remove(); });
-
         li.appendChild(left);
         li.appendChild(removeBtn);
-
         return li;
     }
 
@@ -390,8 +361,8 @@ document.addEventListener('DOMContentLoaded', function() {
             addIncludeFromInput();
         }
     });
-    // attach remove handlers to any pre-existing remove buttons
-    document.querySelectorAll('.removeInclude').forEach(btn => {
+
+    document.querySelectorAll('.removeInclude').forEach((btn) => {
         btn.addEventListener('click', function() {
             const li = btn.closest('li');
             if (li) li.remove();

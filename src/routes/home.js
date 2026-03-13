@@ -7,13 +7,21 @@ const SettingController = require('../controllers/SettingController');
 const EnrollmentController = require('../controllers/EnrollmentController');
 const SalesController = require('../controllers/SalesController');
 const CertificateController = require('../controllers/CertificateController');
+const CertificateBuilderController = require('../controllers/CertificateBuilderController');
 const ProfileController = require('../controllers/ProfileController');
+const CompanyCertificateController = require('../controllers/CompanyCertificateController');
+const UserController = require('../controllers/UserController');
+const ProductController = require('../controllers/ProductController');
 const { authMiddleware, guestMiddleware, publicMiddleware } = require('../middleware/auth'); // Adicione publicMiddleware
 const upload = require('../config/multer');
 
 // Rotas públicas do site institucional - use publicMiddleware
 router.get('/', publicMiddleware, (req, res) => CourseController.index(req, res));
 router.get('/cursos', publicMiddleware, (req, res) => CourseController.publicList(req, res));
+router.get('/loja', publicMiddleware, (req, res) => ProductController.publicList(req, res));
+router.get('/loja/:slug', publicMiddleware, (req, res) => ProductController.publicDetails(req, res));
+router.get('/loja/:slug/comprar', publicMiddleware, (req, res) => ProductController.redirectToAffiliate(req, res));
+router.get('/certidoes', publicMiddleware, (req, res) => CompanyCertificateController.publicList(req, res));
 router.get('/contato', publicMiddleware, (req, res) => HomeController.contact(req, res));
 router.get('/politica-de-privacidade', publicMiddleware, (req, res) => HomeController.privacyPolicy(req, res));
 router.get('/curso/:id', publicMiddleware, (req, res) => CourseController.details(req, res));
@@ -34,6 +42,7 @@ router.get('/meu-comprovante/:id', authMiddleware('aluno'), (req, res) => Enroll
 
 // Admin Enrollment Routes
 router.get('/admin/inscricoes', authMiddleware('admin'), (req, res) => EnrollmentController.adminList(req, res));
+router.get('/admin/inscricoes/exportar', authMiddleware('admin'), (req, res) => EnrollmentController.exportAdminList(req, res));
 router.post('/admin/inscricoes/:id/status', authMiddleware('admin'), (req, res) => EnrollmentController.updateStatus(req, res));
 router.post('/admin/inscricoes/:id/deletar', authMiddleware('admin'), (req, res) => EnrollmentController.delete(req, res));
 router.get('/admin/inscricoes/:id/json', authMiddleware('admin'), (req, res) => EnrollmentController.viewStudentCertificate(req, res));
@@ -41,6 +50,14 @@ router.get('/admin/inscricoes/:id/json', authMiddleware('admin'), (req, res) => 
 // Admin Certificate Routes
 router.get('/admin/certificados', authMiddleware('admin'), (req, res) => EnrollmentController.adminCertificates(req, res));
 router.get('/admin/certificados/json/:courseId', authMiddleware('admin'), (req, res) => EnrollmentController.generateJson(req, res));
+router.get('/admin/certificados/montar', authMiddleware('admin'), (req, res) => CertificateBuilderController.showEditor(req, res));
+router.post('/admin/certificados/montar', authMiddleware('admin'), (req, res) => CertificateBuilderController.saveEditor(req, res));
+router.get('/admin/certidoes', authMiddleware('admin'), (req, res) => CompanyCertificateController.adminList(req, res));
+router.get('/admin/certidoes/criar', authMiddleware('admin'), (req, res) => CompanyCertificateController.adminCreateForm(req, res));
+router.post('/admin/certidoes/criar', authMiddleware('admin'), upload.single('certificateFile'), (req, res) => CompanyCertificateController.adminStore(req, res));
+router.get('/admin/certidoes/:id/editar', authMiddleware('admin'), (req, res) => CompanyCertificateController.adminEditForm(req, res));
+router.post('/admin/certidoes/:id/editar', authMiddleware('admin'), upload.single('certificateFile'), (req, res) => CompanyCertificateController.adminUpdate(req, res));
+router.post('/admin/certidoes/:id/deletar', authMiddleware('admin'), (req, res) => CompanyCertificateController.adminDelete(req, res));
 
 // Admin Enrollment Edit Routes
 router.get('/admin/inscricoes/:id/editar', authMiddleware('admin'), (req, res) => EnrollmentController.edit(req, res));
@@ -49,6 +66,21 @@ router.get('/admin/inscricoes/:id/comprovante', authMiddleware('admin'), (req, r
 
 // Admin Sales Routes
 router.get('/admin/vendas', authMiddleware('admin'), (req, res) => SalesController.index(req, res));
+
+// Admin User Routes
+router.get('/admin/usuarios', authMiddleware('admin'), (req, res) => UserController.index(req, res));
+router.get('/admin/usuarios/:id/editar', authMiddleware('admin'), (req, res) => UserController.edit(req, res));
+router.post('/admin/usuarios/:id/editar', authMiddleware('admin'), (req, res) => UserController.update(req, res));
+router.post('/admin/usuarios/:id/reenviar-acesso', authMiddleware('admin'), (req, res) => UserController.resendAccess(req, res));
+
+// Admin Store Routes
+router.get('/admin/loja', authMiddleware('admin'), (req, res) => ProductController.adminList(req, res));
+router.get('/admin/loja/criar', authMiddleware('admin'), (req, res) => ProductController.adminCreateForm(req, res));
+router.post('/admin/loja/criar', authMiddleware('admin'), (req, res) => ProductController.adminStore(req, res));
+router.get('/admin/loja/:id/editar', authMiddleware('admin'), (req, res) => ProductController.adminEditForm(req, res));
+router.post('/admin/loja/:id/editar', authMiddleware('admin'), (req, res) => ProductController.adminUpdate(req, res));
+router.post('/admin/loja/:id/status', authMiddleware('admin'), (req, res) => ProductController.adminToggleStatus(req, res));
+router.post('/admin/loja/:id/deletar', authMiddleware('admin'), (req, res) => ProductController.adminDelete(req, res));
 
 // Admin Settings Routes
 router.get('/admin/configuracoes', authMiddleware('admin'), (req, res) => SettingController.index(req, res));

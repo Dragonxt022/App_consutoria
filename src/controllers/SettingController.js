@@ -20,6 +20,7 @@ class SettingController {
         site_name: 'ConsultPro',
         use_logo: 'false',
         logo_url: '',
+        show_course_store_offers: 'false',
         footer_email: 'contato@consultpro.com.br',
         footer_phone: '(11) 99999-9999',
         footer_address: 'Av. Paulista, 1000 - SP',
@@ -34,7 +35,6 @@ class SettingController {
     };
 
       // Certificate defaults
-      defaults.certificate_default_template = 'classic';
       defaults.certificate_signature_url = '';
 
     const finalSettings = { ...defaults, ...settings };
@@ -123,6 +123,7 @@ class SettingController {
         site_name: 'ConsultPro',
         use_logo: 'false',
         logo_url: '',
+        show_course_store_offers: 'false',
         footer_email: 'contato@consultpro.com.br',
         footer_phone: '(11) 99999-9999',
         footer_address: 'Av. Paulista, 1000 - SP',
@@ -137,7 +138,6 @@ class SettingController {
     };
 
       // Certificate defaults
-      defaults.certificate_default_template = 'classic';
       defaults.certificate_signature_url = '';
 
     return { ...defaults, ...settings };

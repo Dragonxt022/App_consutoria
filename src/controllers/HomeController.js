@@ -1,4 +1,4 @@
-const { Course, User, Enrollment } = require('../models');
+const { Course, User, Enrollment, Product } = require('../models');
 const { formatCurrency } = require('../utils/currencyFormatter');
 
 class HomeController {
@@ -10,18 +10,58 @@ class HomeController {
   }
 
   async adminDashboard(req, res) {
-    const courseCount = await Course.count();
-    const studentCount = await User.count({ where: { role: 'aluno' } });
-    const enrollmentCount = await Enrollment.count({ where: { status: 'pendente' } });
+    const now = new Date();
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const nextMonthStart = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+
+    const [
+      courseCount,
+      activeCourseCount,
+      studentCount,
+      pendingEnrollmentCount,
+      confirmedSalesCount,
+      activeProductCount,
+      featuredProductCount,
+      monthlyRevenue,
+      recentEnrollments
+    ] = await Promise.all([
+      Course.count(),
+      Course.count({ where: { active: true } }),
+      User.count({ where: { role: 'aluno' } }),
+      Enrollment.count({ where: { status: 'pendente' } }),
+      Enrollment.count({ where: { status: ['confirmado', 'completo'] } }),
+      Product.count({ where: { active: true } }),
+      Product.count({ where: { active: true, featured: true } }),
+      Enrollment.sum('finalPrice', {
+        where: {
+          status: ['confirmado', 'completo'],
+          createdAt: {
+            [require('sequelize').Op.gte]: monthStart,
+            [require('sequelize').Op.lt]: nextMonthStart
+          }
+        }
+      }),
+      Enrollment.findAll({
+        include: [{ model: Course, attributes: ['title'] }],
+        order: [['createdAt', 'DESC']],
+        limit: 5
+      })
+    ]);
     
     res.render('admin/dashboard', {
       title: 'Dashboard Administrativo',
       user: req.user,
       stats: {
         courses: courseCount,
+        activeCourses: activeCourseCount,
         students: studentCount,
-        enrollments: enrollmentCount
+        enrollments: pendingEnrollmentCount,
+        confirmedSales: confirmedSalesCount,
+        products: activeProductCount,
+        featuredProducts: featuredProductCount,
+        monthlyRevenue: monthlyRevenue || 0
       },
+      recentEnrollments,
       layout: 'admin/layout'
     });
   }

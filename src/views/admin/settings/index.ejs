@@ -1,4 +1,4 @@
-<div class="max-w-4xl mx-auto">
+<div class="max-w-5xl mx-auto" x-data="{ activeConfigTab: 'identidade' }">
     <div class="bg-white shadow-xl rounded-2xl overflow-hidden">
         <div class="bg-slate-50 p-6 border-b border-slate-100">
             <h2 class="text-xl font-bold text-slate-800">Configurações de Cabeçalho e Rodapé</h2>
@@ -6,9 +6,28 @@
         </div>
 
         <form action="/admin/configuracoes" method="POST" enctype="multipart/form-data" class="p-8 space-y-10">
+            <section class="sticky top-4 z-20 rounded-2xl border border-slate-200 bg-white/95 p-3 shadow-sm backdrop-blur">
+                <div class="grid grid-cols-2 gap-2 md:grid-cols-5">
+                    <button type="button" @click="activeConfigTab = 'identidade'" :class="activeConfigTab === 'identidade' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" class="rounded-xl px-4 py-3 text-sm font-semibold transition-all">
+                        Identidade
+                    </button>
+                    <button type="button" @click="activeConfigTab = 'loja'" :class="activeConfigTab === 'loja' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" class="rounded-xl px-4 py-3 text-sm font-semibold transition-all">
+                        Loja
+                    </button>
+                    <button type="button" @click="activeConfigTab = 'certificados'" :class="activeConfigTab === 'certificados' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" class="rounded-xl px-4 py-3 text-sm font-semibold transition-all">
+                        Certificados
+                    </button>
+                    <button type="button" @click="activeConfigTab = 'rodape'" :class="activeConfigTab === 'rodape' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" class="rounded-xl px-4 py-3 text-sm font-semibold transition-all">
+                        Rodapé
+                    </button>
+                    <button type="button" @click="activeConfigTab = 'email'" :class="activeConfigTab === 'email' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" class="rounded-xl px-4 py-3 text-sm font-semibold transition-all">
+                        SMTP
+                    </button>
+                </div>
+            </section>
             
             <!-- Identidade Visual -->
-            <section class="space-y-6">
+            <section x-show="activeConfigTab === 'identidade'" x-transition.opacity class="space-y-6">
                 <h3 class="text-sm font-bold text-indigo-600 uppercase tracking-wider">Identidade Visual</h3>
                 
                 <div class="grid md:grid-cols-2 gap-8">
@@ -43,10 +62,28 @@
                 </div>
             </section>
 
-            <hr class="border-slate-100">
+            <hr x-show="activeConfigTab === 'identidade'" class="border-slate-100">
+
+            <section x-show="activeConfigTab === 'loja'" x-transition.opacity class="space-y-6">
+                <h3 class="text-sm font-bold text-indigo-600 uppercase tracking-wider">Configuracoes da Loja</h3>
+
+                <div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
+                    <div>
+                        <span class="block font-bold text-slate-700">Ofertas abaixo dos cursos</span>
+                        <span class="text-xs text-slate-500">Exibe uma linha com ate 4 produtos da loja no final da pagina de detalhes do curso.</span>
+                    </div>
+
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="hidden" name="show_course_store_offers" value="false">
+                        <input type="checkbox" name="show_course_store_offers" value="true" <%= settings.show_course_store_offers === 'true' ? 'checked' : '' %> class="sr-only peer">
+                        <div class="w-14 h-7 bg-slate-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-indigo-600"></div>
+                        <span class="ml-3 text-sm font-medium text-slate-900"><%= settings.show_course_store_offers === 'true' ? 'Ativado' : 'Desativado' %></span>
+                    </label>
+                </div>
+            </section>
 
             <!-- Certificado -->
-            <section class="space-y-6">
+            <section x-show="activeConfigTab === 'certificados'" x-transition.opacity class="space-y-6">
                 <h3 class="text-sm font-bold text-indigo-600 uppercase tracking-wider">Configurações de Certificado</h3>
                 <p class="text-xs text-slate-500">Defina o template e padronize a assinatura para uso em certificados (1200 x 360 px).</p>
 
@@ -94,7 +131,7 @@
                     </div>
                     <p class="text-xs text-slate-500 mb-3">Assinatura digital padronizada para 1200 x 360 px.</p>
                     <div class="border rounded p-2 bg-slate-50">
-                        <canvas id="signatureCanvas" width="760" height="220" style="width:100%; height:220px; display:block; background:#fff;"></canvas>
+                        <canvas id="signatureCanvas" width="760" height="220" style="width:100%; height:220px; display:block; background:#fff; touch-action:none;"></canvas>
                     </div>
                     <div class="mt-4 flex items-center justify-between">
                         <div>
@@ -115,7 +152,7 @@
                     </div>
                     <p class="text-xs text-slate-500 mb-3">Arraste para posicionar e use zoom. O recorte final será salvo no padrão 1200 x 360 px.</p>
                     <div class="border rounded p-2 bg-slate-50">
-                        <canvas id="cropCanvas" width="760" height="240" style="width:100%; height:240px; display:block; background:#fff;"></canvas>
+                        <canvas id="cropCanvas" width="760" height="240" style="width:100%; height:240px; display:block; background:#fff; touch-action:none;"></canvas>
                     </div>
                     <div class="mt-4">
                         <label for="cropZoom" class="block text-xs font-semibold text-slate-600 mb-1">Zoom</label>
@@ -129,7 +166,7 @@
             </div>
 
             <!-- Informações do Rodapé -->
-            <section class="space-y-6">
+            <section x-show="activeConfigTab === 'rodape'" x-transition.opacity class="space-y-6">
                 <h3 class="text-sm font-bold text-indigo-600 uppercase tracking-wider">Informações do Rodapé</h3>
                 
                 <div class="grid md:grid-cols-2 gap-6">
@@ -155,7 +192,7 @@
             </section>
 
             <!-- Configurações de E-mail -->
-            <section class="space-y-6">
+            <section x-show="activeConfigTab === 'email'" x-transition.opacity class="space-y-6">
                 <h3 class="text-sm font-bold text-indigo-600 uppercase tracking-wider">Configuração de E-mail (SMTP)</h3>
                 <p class="text-xs text-slate-500">Dados do servidor para envio de notificações e confirmação de conta.</p>
                 
@@ -243,6 +280,12 @@
 
     clearSelectionBtn && clearSelectionBtn.addEventListener('click', clearSignatureSelection);
 
+    function afterModalVisible(callback) {
+        requestAnimationFrame(() => {
+            requestAnimationFrame(callback);
+        });
+    }
+
     function openModal(el) {
         if (!el) return;
         el.classList.remove('hidden');
@@ -261,13 +304,25 @@
 
     function resizeDrawCanvas() {
         const rect = drawCanvas.getBoundingClientRect();
+        if (!rect.width || !rect.height) return;
         const scale = window.devicePixelRatio || 1;
+        const previous = document.createElement('canvas');
+        previous.width = drawCanvas.width;
+        previous.height = drawCanvas.height;
+        const previousCtx = previous.getContext('2d');
+        previousCtx.drawImage(drawCanvas, 0, 0);
+
         drawCanvas.width = Math.max(1, Math.floor(rect.width * scale));
         drawCanvas.height = Math.max(1, Math.floor(rect.height * scale));
         drawCtx.setTransform(scale, 0, 0, scale, 0, 0);
         drawCtx.strokeStyle = '#111827';
         drawCtx.lineWidth = 2.4;
         drawCtx.lineCap = 'round';
+        drawCtx.clearRect(0, 0, rect.width, rect.height);
+
+        if (previous.width > 0 && previous.height > 0) {
+            drawCtx.drawImage(previous, 0, 0, previous.width, previous.height, 0, 0, rect.width, rect.height);
+        }
     }
 
     function drawPos(evt) {
@@ -277,6 +332,8 @@
     }
 
     drawCanvas.addEventListener('pointerdown', (evt) => {
+        evt.preventDefault();
+        drawCanvas.setPointerCapture && drawCanvas.setPointerCapture(evt.pointerId);
         drawing = true;
         const p = drawPos(evt);
         drawCtx.beginPath();
@@ -285,21 +342,31 @@
 
     drawCanvas.addEventListener('pointermove', (evt) => {
         if (!drawing) return;
+        evt.preventDefault();
         const p = drawPos(evt);
         drawCtx.lineTo(p.x, p.y);
         drawCtx.stroke();
     });
 
+    drawCanvas.addEventListener('pointerup', (evt) => {
+        if (drawCanvas.releasePointerCapture) {
+            try { drawCanvas.releasePointerCapture(evt.pointerId); } catch (_) {}
+        }
+    });
+    drawCanvas.addEventListener('pointercancel', () => { drawing = false; });
     window.addEventListener('pointerup', () => { drawing = false; });
 
-    resizeDrawCanvas();
+    afterModalVisible(resizeDrawCanvas);
     window.addEventListener('resize', resizeDrawCanvas);
 
     clearDrawBtn && clearDrawBtn.addEventListener('click', () => {
         drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
     });
 
-    openDrawBtn && openDrawBtn.addEventListener('click', () => openModal(drawModal));
+    openDrawBtn && openDrawBtn.addEventListener('click', () => {
+        openModal(drawModal);
+        afterModalVisible(resizeDrawCanvas);
+    });
     closeDrawBtn && closeDrawBtn.addEventListener('click', () => closeModal(drawModal));
     drawModal && drawModal.addEventListener('click', (evt) => {
         if (evt.target === drawModal) closeModal(drawModal);
@@ -322,6 +389,16 @@
     const cropCtx = cropCanvas.getContext('2d');
     let cropImage = null;
     let cropState = { zoom: 1.2, x: 0, y: 0, dragging: false, dragStartX: 0, dragStartY: 0 };
+
+    function resizeCropCanvas() {
+        const rect = cropCanvas.getBoundingClientRect();
+        if (!rect.width || !rect.height) return;
+        const scale = window.devicePixelRatio || 1;
+        cropCanvas.width = Math.max(1, Math.floor(rect.width * scale));
+        cropCanvas.height = Math.max(1, Math.floor(rect.height * scale));
+        cropCtx.setTransform(scale, 0, 0, scale, 0, 0);
+        renderCrop();
+    }
 
     function clampCrop() {
         if (!cropImage) return;
@@ -367,8 +444,11 @@
             const img = new Image();
             img.onload = () => {
                 cropImage = img;
-                resetCropState();
                 openModal(cropModal);
+                afterModalVisible(() => {
+                    resizeCropCanvas();
+                    resetCropState();
+                });
             };
             img.src = String(reader.result || '');
         };
@@ -419,6 +499,8 @@
     }
 
     cropCanvas.addEventListener('pointerdown', (evt) => {
+        evt.preventDefault();
+        cropCanvas.setPointerCapture && cropCanvas.setPointerCapture(evt.pointerId);
         const p = cropPoint(evt);
         cropState.dragging = true;
         cropState.dragStartX = p.x - cropState.x;
@@ -427,13 +509,20 @@
 
     cropCanvas.addEventListener('pointermove', (evt) => {
         if (!cropState.dragging) return;
+        evt.preventDefault();
         const p = cropPoint(evt);
         cropState.x = p.x - cropState.dragStartX;
         cropState.y = p.y - cropState.dragStartY;
         renderCrop();
     });
 
+    cropCanvas.addEventListener('pointerup', (evt) => {
+        if (cropCanvas.releasePointerCapture) {
+            try { cropCanvas.releasePointerCapture(evt.pointerId); } catch (_) {}
+        }
+    });
     window.addEventListener('pointerup', () => { cropState.dragging = false; });
+    window.addEventListener('resize', resizeCropCanvas);
 
     confirmCropBtn && confirmCropBtn.addEventListener('click', () => {
         if (!cropImage) return;

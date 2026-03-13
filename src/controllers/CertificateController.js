@@ -1,5 +1,12 @@
 const { Enrollment, Course, User, Setting } = require('../models');
 const { Op } = require('sequelize');
+const {
+  listCertificateBackgrounds,
+  getDefaultCertificateBuilderConfig,
+  normalizeCertificateBuilderConfig,
+  buildCertificateRenderValues,
+  buildCertificateRenderElements
+} = require('../utils/certificateBuilder');
 
 class CertificateController {
   async loadSettings() {
@@ -9,7 +16,33 @@ class CertificateController {
     return settings;
   }
 
+  loadBuilderConfig(settings) {
+    const backgrounds = listCertificateBackgrounds();
+    let parsed = null;
+
+    if (settings.certificate_builder_config) {
+      try {
+        parsed = JSON.parse(settings.certificate_builder_config);
+      } catch (error) {
+        console.error('Erro ao interpretar layout salvo do certificado:', error);
+      }
+    }
+
+    return normalizeCertificateBuilderConfig(
+      parsed || getDefaultCertificateBuilderConfig(backgrounds[0] || ''),
+      backgrounds
+    );
+  }
+
   extractCourseTopics(course) {
+    const fromDedicatedField = Array.isArray(course.certificateTopics)
+      ? course.certificateTopics.map((item) => String(item).trim()).filter((item) => item.length > 1)
+      : [];
+
+    if (fromDedicatedField.length > 0) {
+      return fromDedicatedField.slice(0, 40);
+    }
+
     const fromDescription = (course.description || '')
       .replace(/\r/g, '\n')
       .split(/\n|•|-|;/g)
@@ -61,13 +94,28 @@ class CertificateController {
       // Load settings for certificate (signature url, template)
       const settings = await this.loadSettings();
 
+      const builderConfig = this.loadBuilderConfig(settings);
+      const renderValues = buildCertificateRenderValues({
+        enrollment,
+        course: enrollment.Course,
+        code: enrollment.certificateCode,
+        validationUrl: `${req.protocol}://${req.get('host')}/validar-certificado`
+      });
+      const renderElements = buildCertificateRenderElements(
+        builderConfig,
+        renderValues,
+        settings.certificate_signature_url || ''
+      );
+
       res.render('certificate/template', {
         layout: false,
         enrollment,
         course: enrollment.Course,
         code: enrollment.certificateCode,
         validationUrl: `${req.protocol}://${req.get('host')}/validar-certificado`,
-        settings
+        settings,
+        builderConfig,
+        renderElements
       });
 
     } catch (error) {
@@ -130,6 +178,19 @@ class CertificateController {
       const course = enrollment.Course;
       const topics = this.extractCourseTopics(course);
 
+      const builderConfig = this.loadBuilderConfig(settings);
+      const renderValues = buildCertificateRenderValues({
+        enrollment,
+        course,
+        code: enrollment.certificateCode,
+        validationUrl: `${req.protocol}://${req.get('host')}/validar-certificado`
+      });
+      const renderElements = buildCertificateRenderElements(
+        builderConfig,
+        renderValues,
+        settings.certificate_signature_url || ''
+      );
+
       res.render('certificate/template-duplex', {
         layout: false,
         enrollment,
@@ -137,7 +198,9 @@ class CertificateController {
         code: enrollment.certificateCode,
         validationUrl: `${req.protocol}://${req.get('host')}/validar-certificado`,
         settings,
-        topics
+        topics,
+        builderConfig,
+        renderElements
       });
     } catch (error) {
       console.error(error);

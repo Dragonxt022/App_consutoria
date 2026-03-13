@@ -1,13 +1,30 @@
-const { Course, Enrollment, User } = require('../models');
+const { Course, Enrollment, User, Product, Setting } = require('../models');
 const slugify = require('slugify');
 const { Op } = require('sequelize');
+const ProductController = require('./ProductController');
 
 class CourseController {
+  normalizeCertificateTopics(rawTopics) {
+    const normalizedInput = Array.isArray(rawTopics) ? rawTopics.join('\n') : (rawTopics || '');
+
+    return String(normalizedInput)
+      .replace(/\r/g, '\n')
+      .split('\n')
+      .map((item) => item.trim())
+      .filter(Boolean);
+  }
+
   // Public Methods
   async index(req, res) {
     const courses = await Course.findAll({
       where: { active: true },
       order: [['startDate', 'ASC']]
+    });
+
+    const featuredProducts = await Product.findAll({
+      where: { active: true, featured: true },
+      order: [['createdAt', 'DESC']],
+      limit: 3
     });
 
     const now = new Date();
@@ -20,6 +37,7 @@ class CourseController {
     res.render('public/home', {
       title: 'Consultoria Profissional | Início',
       courses: formattedCourses,
+      featuredProducts: featuredProducts.map((product) => ProductController.formatProduct(product)),
       layout: 'public/layout'
     });
   }
@@ -50,12 +68,31 @@ class CourseController {
       return res.status(404).render('error', { title: 'Curso não encontrado', layout: false });
     }
 
+    const showCourseStoreOffersSetting = await Setting.findOne({
+      where: { key: 'show_course_store_offers' }
+    });
+
     const data = course.toJSON();
     data.isExpired = new Date(data.startDate) < new Date();
+
+    let courseStoreOffers = [];
+    const showCourseStoreOffers = showCourseStoreOffersSetting && showCourseStoreOffersSetting.value === 'true';
+
+    if (showCourseStoreOffers) {
+      const storeOffers = await Product.findAll({
+        where: { active: true },
+        order: [['featured', 'DESC'], ['createdAt', 'DESC']],
+        limit: 4
+      });
+
+      courseStoreOffers = storeOffers.map((product) => ProductController.formatProduct(product));
+    }
 
     res.render('public/course-details', {
       title: `${data.title} | Consultoria`,
       course: data,
+      courseStoreOffers,
+      showCourseStoreOffers,
       layout: 'public/layout'
     });
   }
@@ -210,7 +247,7 @@ class CourseController {
 
   async adminStore(req, res) {
     try {
-      const { title, description, location, workload, price, startDate, spots } = req.body;
+      const { title, description, location, workload, price, startDate, spots, certificateTopics } = req.body;
       
       const slug = slugify(title, { lower: true, strict: true });
       
@@ -232,6 +269,8 @@ class CourseController {
         ];
       }
 
+      const normalizedCertificateTopics = this.normalizeCertificateTopics(certificateTopics);
+
       const imageUrl = req.files['image'] ? `/uploads/courses/images/${req.files['image'][0].filename}` : null;
       const docUrl = req.files['proposalDoc'] ? `/uploads/courses/documents/${req.files['proposalDoc'][0].filename}` : null;
 
@@ -245,6 +284,7 @@ class CourseController {
         startDate,
         spots,
         itemsIncluded,
+        certificateTopics: normalizedCertificateTopics,
         image: imageUrl,
         proposalDoc: docUrl
       });
@@ -277,7 +317,7 @@ class CourseController {
 
   async adminUpdate(req, res) {
     try {
-      const { title, description, location, workload, price, startDate, spots, active } = req.body;
+      const { title, description, location, workload, price, startDate, spots, active, certificateTopics } = req.body;
       const course = await Course.findByPk(req.params.id);
 
       if (!course) {
@@ -298,6 +338,8 @@ class CourseController {
         ];
       }
 
+      const normalizedCertificateTopics = this.normalizeCertificateTopics(certificateTopics);
+
       const updateData = {
         title,
         slug,
@@ -308,6 +350,7 @@ class CourseController {
         startDate,
         spots,
         itemsIncluded,
+        certificateTopics: normalizedCertificateTopics,
         active: active === 'on' || active === true
       };
 

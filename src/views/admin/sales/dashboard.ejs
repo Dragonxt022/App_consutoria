@@ -1,94 +1,133 @@
+<%
+    const months = ['Janeiro', 'Fevereiro', 'Marco', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+    const trendValues = (salesTrend || []).map((item) => Number(item.value || 0));
+    const chartWidth = 760;
+    const chartHeight = 260;
+    const maxValue = Math.max(...trendValues, 1);
+    const points = (salesTrend || []).map((item, index) => {
+        const x = salesTrend.length <= 1 ? chartWidth / 2 : (index / (salesTrend.length - 1)) * chartWidth;
+        const y = chartHeight - ((Number(item.value || 0) / maxValue) * (chartHeight - 30)) - 15;
+        return `${x},${y}`;
+    }).join(' ');
+%>
+
 <div class="space-y-6">
-    <div class="flex justify-between items-center flex-wrap gap-4">
+    <div class="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
         <div>
-            <div class="text-sm text-gray-500">
-                Visão Geral de Receita
-            </div>
+            <div class="text-sm font-bold uppercase tracking-[0.25em] text-slate-400">Performance Comercial</div>
+            <h2 class="mt-2 text-2xl font-black text-slate-900">Receita e evolucao de vendas</h2>
         </div>
-        
-        <form action="/admin/vendas" method="GET" class="flex items-center space-x-2 bg-white p-2 rounded-lg shadow-sm border border-gray-100">
-            <select name="month" class="text-sm border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-gray-700 bg-gray-50">
-                <% const months = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']; %>
-                <option value="">Todas as Datas</option>
+
+        <form action="/admin/vendas" method="GET" class="flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+            <select name="month" class="rounded-xl border-slate-200 bg-slate-50 text-sm text-slate-700 focus:border-indigo-500 focus:ring-indigo-500">
                 <% months.forEach((m, index) => { %>
                     <option value="<%= index + 1 %>" <%= filters.month == (index + 1) ? 'selected' : '' %>><%= m %></option>
                 <% }) %>
             </select>
-            
-            <select name="year" class="text-sm border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-gray-700 bg-gray-50">
+
+            <select name="year" class="rounded-xl border-slate-200 bg-slate-50 text-sm text-slate-700 focus:border-indigo-500 focus:ring-indigo-500">
                 <% filters.years.forEach(y => { %>
                     <option value="<%= y %>" <%= filters.year == y ? 'selected' : '' %>><%= y %></option>
                 <% }) %>
             </select>
-            
-            <button type="submit" class="p-2 text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
+
+            <button type="submit" class="inline-flex items-center rounded-xl bg-indigo-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-indigo-700">
+                Aplicar
             </button>
         </form>
     </div>
 
-    <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center space-x-4">
-            <div class="p-3 bg-green-100 rounded-full text-green-600">
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            </div>
-            <div>
-                <p class="text-sm text-gray-500 font-medium">Receita Total</p>
-                <p class="text-2xl font-bold text-gray-800">R$ <%= stats.totalRevenue ? stats.totalRevenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) : '0,00' %></p>
-            </div>
+    <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+        <div class="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
+            <div class="text-sm font-medium text-slate-500">Receita Total</div>
+            <div class="mt-2 text-3xl font-black text-slate-900">R$ <%= stats.totalRevenue ? stats.totalRevenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) : '0,00' %></div>
+            <div class="mt-1 text-sm text-emerald-600">Periodo selecionado</div>
         </div>
-
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center space-x-4">
-            <div class="p-3 bg-blue-100 rounded-full text-blue-600">
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
-            </div>
-            <div>
-                <p class="text-sm text-gray-500 font-medium">Vendas Confirmadas</p>
-                <p class="text-2xl font-bold text-gray-800"><%= stats.totalSales %></p>
-            </div>
+        <div class="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
+            <div class="text-sm font-medium text-slate-500">Vendas Confirmadas</div>
+            <div class="mt-2 text-3xl font-black text-slate-900"><%= stats.totalSales %></div>
+            <div class="mt-1 text-sm text-slate-500">Pagamentos confirmados e completos</div>
         </div>
-
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center space-x-4">
-            <div class="p-3 bg-purple-100 rounded-full text-purple-600">
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
-            </div>
-            <div>
-                <p class="text-sm text-gray-500 font-medium">Ticket Médio</p>
-                <p class="text-2xl font-bold text-gray-800">R$ <%= stats.averageTicket ? stats.averageTicket.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) : '0,00' %></p>
-            </div>
+        <div class="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
+            <div class="text-sm font-medium text-slate-500">Ticket Medio</div>
+            <div class="mt-2 text-3xl font-black text-slate-900">R$ <%= stats.averageTicket ? stats.averageTicket.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) : '0,00' %></div>
+            <div class="mt-1 text-sm text-slate-500">Receita media por venda</div>
         </div>
     </div>
 
-    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        <!-- Top Courses -->
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="p-6 border-b border-gray-50">
-                <h3 class="text-lg font-bold text-gray-800">Desempenho por Curso</h3>
+    <div class="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
+        <div class="mb-6 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+            <div>
+                <h3 class="text-lg font-bold text-slate-900">Linha de Receita</h3>
+                <p class="text-sm text-slate-500">Visualizacao diaria da receita dentro do periodo filtrado.</p>
+            </div>
+            <div class="text-sm text-slate-400"><%= months[(filters.month || 1) - 1] %> / <%= filters.year %></div>
+        </div>
+
+        <% if (salesTrend && salesTrend.length > 0) { %>
+            <div class="overflow-x-auto">
+                <div class="min-w-[760px]">
+                    <svg viewBox="0 0 760 260" class="h-[260px] w-full">
+                        <defs>
+                            <linearGradient id="trendFill" x1="0" x2="0" y1="0" y2="1">
+                                <stop offset="0%" stop-color="#4f46e5" stop-opacity="0.25"></stop>
+                                <stop offset="100%" stop-color="#4f46e5" stop-opacity="0"></stop>
+                            </linearGradient>
+                        </defs>
+
+                        <line x1="0" y1="245" x2="760" y2="245" stroke="#e2e8f0" stroke-width="1"></line>
+                        <line x1="0" y1="185" x2="760" y2="185" stroke="#eef2ff" stroke-width="1"></line>
+                        <line x1="0" y1="125" x2="760" y2="125" stroke="#eef2ff" stroke-width="1"></line>
+                        <line x1="0" y1="65" x2="760" y2="65" stroke="#eef2ff" stroke-width="1"></line>
+
+                        <polyline fill="url(#trendFill)" stroke="none" points="0,245 <%= points %> 760,245"></polyline>
+                        <polyline fill="none" stroke="#4f46e5" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" points="<%= points %>"></polyline>
+
+                        <% salesTrend.forEach((item, index) => {
+                            const x = salesTrend.length <= 1 ? chartWidth / 2 : (index / (salesTrend.length - 1)) * chartWidth;
+                            const y = chartHeight - ((Number(item.value || 0) / maxValue) * (chartHeight - 30)) - 15;
+                        %>
+                            <circle cx="<%= x %>" cy="<%= y %>" r="5" fill="#4f46e5"></circle>
+                            <text x="<%= x %>" y="258" text-anchor="middle" class="fill-slate-400 text-[10px]"><%= item.label %></text>
+                        <% }) %>
+                    </svg>
+                </div>
+            </div>
+        <% } else { %>
+            <div class="rounded-2xl border border-dashed border-slate-200 px-6 py-16 text-center text-slate-500">
+                Ainda nao ha vendas suficientes para montar a linha de receita neste periodo.
+            </div>
+        <% } %>
+    </div>
+
+    <div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
+        <div class="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm">
+            <div class="border-b border-slate-100 p-6">
+                <h3 class="text-lg font-bold text-slate-900">Desempenho por Curso</h3>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left">
-                    <thead class="bg-gray-50 text-gray-400 text-xs uppercase font-bold">
+                    <thead class="bg-slate-50 text-xs font-bold uppercase text-slate-400">
                         <tr>
-                            <th class="px-4 md:px-6 py-3">Curso</th>
-                            <th class="px-4 md:px-6 py-3 text-center">Vendas</th>
-                            <th class="px-4 md:px-6 py-3 text-right">Receita</th>
+                            <th class="px-4 py-3 md:px-6">Curso</th>
+                            <th class="px-4 py-3 text-center md:px-6">Vendas</th>
+                            <th class="px-4 py-3 text-right md:px-6">Receita</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-100">
+                    <tbody class="divide-y divide-slate-100">
                         <% if(salesByCourse.length > 0) { %>
                             <% salesByCourse.forEach(item => { %>
-                                <tr class="hover:bg-gray-50/50 transition-colors">
-                                    <td class="px-4 md:px-6 py-4 font-medium text-gray-700">
-                                        <div class="max-w-[220px] truncate" title="<%= item.title %>"><%= item.title %></div>
+                                <tr class="hover:bg-slate-50/60">
+                                    <td class="px-4 py-4 md:px-6">
+                                        <div class="max-w-[240px] truncate font-medium text-slate-700" title="<%= item.title %>"><%= item.title %></div>
                                     </td>
-                                    <td class="px-4 md:px-6 py-4 text-center text-gray-600"><%= item.count %></td>
-                                    <td class="px-4 md:px-6 py-4 text-right font-bold text-green-600">R$ <%= item.revenue ? item.revenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) : '0,00' %></td>
+                                    <td class="px-4 py-4 text-center text-slate-600 md:px-6"><%= item.count %></td>
+                                    <td class="px-4 py-4 text-right font-bold text-emerald-600 md:px-6">R$ <%= item.revenue ? item.revenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) : '0,00' %></td>
                                 </tr>
                             <% }) %>
                         <% } else { %>
                             <tr>
-                                <td colspan="3" class="px-6 py-8 text-center text-gray-500 italic">Sem dados de vendas ainda.</td>
+                                <td colspan="3" class="px-6 py-8 text-center text-slate-500">Sem dados de vendas ainda.</td>
                             </tr>
                         <% } %>
                     </tbody>
@@ -96,37 +135,36 @@
             </div>
         </div>
 
-        <!-- Recent Sales -->
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="p-6 border-b border-gray-50 flex justify-between items-center">
-                <h3 class="text-lg font-bold text-gray-800">Vendas Recentes</h3>
-                <a href="/admin/inscricoes" class="text-sm text-indigo-600 font-medium hover:underline">Ver todas</a>
+        <div class="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm">
+            <div class="flex items-center justify-between border-b border-slate-100 p-6">
+                <h3 class="text-lg font-bold text-slate-900">Vendas Recentes</h3>
+                <a href="/admin/inscricoes" class="text-sm font-bold text-indigo-600 hover:text-indigo-700">Ver todas</a>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left">
-                    <thead class="bg-gray-50 text-gray-400 text-xs uppercase font-bold">
+                    <thead class="bg-slate-50 text-xs font-bold uppercase text-slate-400">
                         <tr>
-                            <th class="px-4 md:px-6 py-3">Aluno / Curso</th>
-                            <th class="px-4 md:px-6 py-3 text-right">Valor</th>
+                            <th class="px-4 py-3 md:px-6">Aluno / Curso</th>
+                            <th class="px-4 py-3 text-right md:px-6">Valor</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-100">
+                    <tbody class="divide-y divide-slate-100">
                         <% if(recentSales.length > 0) { %>
                             <% recentSales.forEach(sale => { %>
-                                <tr class="hover:bg-gray-50/50 transition-colors">
-                                    <td class="px-4 md:px-6 py-4">
-                                        <div class="font-medium text-gray-800"><%= sale.studentName %></div>
-                                        <div class="text-xs text-gray-500 truncate max-w-[220px]"><%= sale.Course ? sale.Course.title : 'Curso não encontrado' %></div>
+                                <tr class="hover:bg-slate-50/60">
+                                    <td class="px-4 py-4 md:px-6">
+                                        <div class="font-medium text-slate-800"><%= sale.studentName %></div>
+                                        <div class="max-w-[220px] truncate text-xs text-slate-500"><%= sale.Course ? sale.Course.title : 'Curso nao encontrado' %></div>
                                     </td>
-                                    <td class="px-4 md:px-6 py-4 text-right">
-                                        <div class="font-bold text-green-600">R$ <%= sale.finalPrice ? sale.finalPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) : '0,00' %></div>
-                                        <div class="text-[10px] text-gray-400"><%= new Date(sale.createdAt).toLocaleDateString('pt-BR') %></div>
+                                    <td class="px-4 py-4 text-right md:px-6">
+                                        <div class="font-bold text-emerald-600">R$ <%= sale.finalPrice ? sale.finalPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) : '0,00' %></div>
+                                        <div class="text-[10px] text-slate-400"><%= new Date(sale.createdAt).toLocaleDateString('pt-BR') %></div>
                                     </td>
                                 </tr>
                             <% }) %>
                         <% } else { %>
                             <tr>
-                                <td colspan="2" class="px-6 py-8 text-center text-gray-500 italic">Nenhuma venda recente.</td>
+                                <td colspan="2" class="px-6 py-8 text-center text-slate-500">Nenhuma venda recente.</td>
                             </tr>
                         <% } %>
                     </tbody>

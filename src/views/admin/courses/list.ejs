@@ -100,7 +100,7 @@
 
     <!-- Desktop Table View -->
     <div class="hidden lg:block overflow-x-auto table-responsive">
-        <table class="w-full text-left">
+        <table class="courses-table w-full text-left">
             <thead class="bg-gray-50 text-gray-500 uppercase text-xs font-bold">
                 <tr>
                     <th class="px-6 py-4">Curso</th>
@@ -127,13 +127,13 @@
                 <% courses.forEach(course => { %>
                     <tr class="hover:bg-gray-50/50 transition-colors">
                         <td class="px-6 py-4" data-label="Curso">
-                            <div class="flex items-center">
+                            <div class="flex min-w-0 items-center">
                                 <div class="h-10 w-16 bg-gray-200 rounded overflow-hidden mr-3 flex-shrink-0">
                                     <%- imgTag(course.image, course.title, 'h-full w-full object-cover', 'course') %>
                                 </div>
-                                <div class="min-w-0">
-                                    <div class="text-sm font-bold text-gray-900 truncate"><%= course.title %></div>
-                                    <div class="text-xs text-gray-500 truncate"><%= course.location %></div>
+                                <div class="min-w-0 max-w-full">
+                                    <div class="text-sm font-bold leading-snug text-gray-900 break-words"><%= course.title %></div>
+                                    <div class="mt-1 text-xs text-gray-500 break-words"><%= course.location %></div>
                                 </div>
                             </div>
                         </td>
@@ -156,7 +156,7 @@
                             <%= course.price %>
                         </td>
                         <td class="px-6 py-4 text-right actions-cell">
-                            <div class="flex items-center justify-end space-x-2">
+                            <div class="flex items-center justify-end space-x-2 whitespace-nowrap">
                                 <button
                                     type="button"
                                     class="p-2 text-gray-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-all js-course-details"
@@ -239,6 +239,29 @@
 </div>
 
 <style>
+    .courses-table {
+        table-layout: fixed;
+    }
+    .courses-table th:nth-child(1),
+    .courses-table td:nth-child(1) {
+        width: 38%;
+    }
+    .courses-table th:nth-child(2),
+    .courses-table td:nth-child(2),
+    .courses-table th:nth-child(3),
+    .courses-table td:nth-child(3) {
+        width: 14%;
+    }
+    .courses-table th:nth-child(4),
+    .courses-table td:nth-child(4) {
+        width: 10%;
+    }
+    .courses-table th:nth-child(5),
+    .courses-table td:nth-child(5),
+    .courses-table th:nth-child(6),
+    .courses-table td:nth-child(6) {
+        width: 12%;
+    }
     /* Melhorias para mobile */
     @media (max-width: 640px) {
         .text-sm-mobile {

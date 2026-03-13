@@ -4,12 +4,16 @@ const User = require('./User');
 const Course = require('./Course');
 const Setting = require('./Setting');
 const Enrollment = require('./Enrollment');
+const CompanyCertificate = require('./CompanyCertificate');
+const Product = require('./Product');
 
 const models = {
   User,
   Course,
   Setting,
   Enrollment,
+  CompanyCertificate,
+  Product,
   sequelize
 };
 

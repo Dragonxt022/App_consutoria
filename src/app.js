@@ -71,8 +71,12 @@ app.use(async (req, res, next) => {
   }
 
   res.locals.siteSettings = await SettingController.getSettings();
-  res.locals.error = req.query.error || null;
-  res.locals.success = req.query.success || null;
+  const flash = req.session.flash || null;
+  delete req.session.flash;
+
+  res.locals.toast = flash || (req.query.error ? { type: 'error', message: req.query.error } : null) || (req.query.success ? { type: 'success', message: req.query.success } : null);
+  res.locals.error = null;
+  res.locals.success = null;
 
   next();
 });

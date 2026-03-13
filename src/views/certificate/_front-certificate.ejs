@@ -1,0 +1,30 @@
+<section class="certificate-front-page">
+    <div class="certificate-front-surface" style="<%= builderConfig.backgroundUrl ? `background-image:url('${builderConfig.backgroundUrl}');` : '' %>">
+        <% renderElements.forEach((element) => { %>
+            <% if (!element.visible) { return; } %>
+            <% if (element.type === 'signature-block') { %>
+                <div
+                    class="certificate-element certificate-signature-block"
+                    style="left:<%= element.x %>%; top:<%= element.y %>%; width:<%= element.width %>%; text-align:<%= element.align %>; color:<%= element.color %>;"
+                >
+                    <% if (element.src) { %>
+                        <img src="<%= element.src %>" alt="<%= element.label %>" class="certificate-signature-image">
+                    <% } %>
+                    <div class="certificate-signature-line"></div>
+                    <div class="certificate-signature-name" style="font-size:<%= element.fontSize %>px; font-weight:<%= element.fontWeight %>; font-family:<%= element.fontFamily %>;"><%= element.signatureName %></div>
+                </div>
+            <% } else if (element.type === 'image') { %>
+                <img
+                    src="<%= element.src %>"
+                    alt="<%= element.label %>"
+                    class="certificate-element certificate-image"
+                    style="left:<%= element.x %>%; top:<%= element.y %>%; width:<%= element.width %>%;">
+            <% } else { %>
+                <div
+                    class="certificate-element certificate-text"
+                    style="left:<%= element.x %>%; top:<%= element.y %>%; width:<%= element.width %>%; color:<%= element.color %>; text-align:<%= element.align %>; font-size:<%= element.fontSize %>px; font-weight:<%= element.fontWeight %>; font-family:<%= element.fontFamily %>;"
+                ><%= element.content %></div>
+            <% } %>
+        <% }) %>
+    </div>
+</section>
