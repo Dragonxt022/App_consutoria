@@ -1,6 +1,7 @@
 const { User, Enrollment } = require('../models');
 const { Op } = require('sequelize');
 const { redirectWithFlash } = require('../utils/flash');
+const { buildAppUrl } = require('../utils/url');
 
 class UserController {
   async buildUserFormData(managedUser) {
@@ -194,7 +195,7 @@ class UserController {
         managedUser.resetPasswordExpires = new Date(Date.now() + 3600000);
         await managedUser.save();
 
-        const resetUrl = `${req.protocol}://${req.get('host')}/redefinir-senha/${resetToken}`;
+        const resetUrl = buildAppUrl(req, `/redefinir-senha/${resetToken}`);
         sent = await EmailService.sendPasswordReset(managedUser, resetToken, resetUrl);
       } else {
         const confirmationToken = cryptoRandomString({ length: 32, type: 'url-safe' });
@@ -202,7 +203,7 @@ class UserController {
         managedUser.confirmationExpires = new Date(Date.now() + 24 * 3600 * 1000);
         await managedUser.save();
 
-        const confirmationUrl = `${req.protocol}://${req.get('host')}/confirmar-conta/${confirmationToken}`;
+        const confirmationUrl = buildAppUrl(req, `/confirmar-conta/${confirmationToken}`);
         sent = await EmailService.sendAccountActivationLink(managedUser, confirmationUrl);
       }
 

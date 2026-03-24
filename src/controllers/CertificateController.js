@@ -7,6 +7,7 @@ const {
   buildCertificateRenderValues,
   buildCertificateRenderElements
 } = require('../utils/certificateBuilder');
+const { buildAppUrl } = require('../utils/url');
 
 class CertificateController {
   async loadSettings() {
@@ -99,7 +100,7 @@ class CertificateController {
         enrollment,
         course: enrollment.Course,
         code: enrollment.certificateCode,
-        validationUrl: `${req.protocol}://${req.get('host')}/validar-certificado`
+        validationUrl: buildAppUrl(req, '/validar-certificado')
       });
       const renderElements = buildCertificateRenderElements(
         builderConfig,
@@ -112,7 +113,7 @@ class CertificateController {
         enrollment,
         course: enrollment.Course,
         code: enrollment.certificateCode,
-        validationUrl: `${req.protocol}://${req.get('host')}/validar-certificado`,
+        validationUrl: buildAppUrl(req, '/validar-certificado'),
         settings,
         builderConfig,
         renderElements
@@ -183,7 +184,7 @@ class CertificateController {
         enrollment,
         course,
         code: enrollment.certificateCode,
-        validationUrl: `${req.protocol}://${req.get('host')}/validar-certificado`
+        validationUrl: buildAppUrl(req, '/validar-certificado')
       });
       const renderElements = buildCertificateRenderElements(
         builderConfig,
@@ -196,7 +197,7 @@ class CertificateController {
         enrollment,
         course,
         code: enrollment.certificateCode,
-        validationUrl: `${req.protocol}://${req.get('host')}/validar-certificado`,
+        validationUrl: buildAppUrl(req, '/validar-certificado'),
         settings,
         topics,
         builderConfig,

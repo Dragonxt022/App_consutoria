@@ -16,6 +16,16 @@ const homeRoutes = require('./routes/home');
 const authRoutes = require('./routes/auth');
 
 const app = express();
+const isProduction = process.env.NODE_ENV === 'production';
+const trustProxy = process.env.TRUST_PROXY || (isProduction ? '1' : '0');
+const sessionSecret = process.env.SESSION_SECRET || process.env.JWT_SECRET || 'secret';
+
+function parseBoolean(value, fallback = false) {
+  if (value === undefined) return fallback;
+  return ['1', 'true', 'yes', 'on'].includes(String(value).toLowerCase());
+}
+
+app.set('trust proxy', trustProxy);
 
 /* =======================
    View engine & layouts
@@ -44,11 +54,22 @@ app.locals.courseImgTag = (imagePath, alt = '', className = '') =>
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+const secureCookie = parseBoolean(process.env.SESSION_COOKIE_SECURE, isProduction);
+const sameSite = process.env.SESSION_COOKIE_SAME_SITE || 'lax';
+const sessionMaxAge = Number(process.env.SESSION_MAX_AGE_MS || 1000 * 60 * 60 * 24 * 7);
+
 app.use(session({
-  secret: process.env.JWT_SECRET || 'secret',
+  name: process.env.SESSION_COOKIE_NAME || 'consultoria.sid',
+  secret: sessionSecret,
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: false }
+  proxy: parseBoolean(trustProxy, isProduction),
+  cookie: {
+    httpOnly: true,
+    sameSite,
+    secure: secureCookie,
+    maxAge: sessionMaxAge
+  }
 }));
 
 /* =======================
@@ -98,6 +119,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 /* =======================
    Routes
 ======================= */
+app.get('/health', (_req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
+
 app.use('/', homeRoutes);
 app.use('/', authRoutes);
 

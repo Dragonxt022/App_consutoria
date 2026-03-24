@@ -4,6 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const EmailService = require('../services/EmailService');
 const { generateToken } = require('../middleware/jwt');
+const { buildAppUrl } = require('../utils/url');
 
 class ProfileController {
   // Perfil do aluno (fluxo existente)
@@ -172,7 +173,7 @@ class ProfileController {
         user.emailChangeExpires = new Date(Date.now() + 60 * 60 * 1000);
         emailChangeRequested = true;
 
-        const confirmUrl = `${req.protocol}://${req.get('host')}/admin/perfil/confirmar-email/${token}`;
+        const confirmUrl = buildAppUrl(req, `/admin/perfil/confirmar-email/${token}`);
         await EmailService.sendEmailChangeConfirmation(user, normalizedEmail, confirmUrl);
       }
 

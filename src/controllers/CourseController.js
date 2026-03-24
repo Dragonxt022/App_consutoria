@@ -2,6 +2,7 @@ const { Course, Enrollment, User, Product, Setting } = require('../models');
 const slugify = require('slugify');
 const { Op } = require('sequelize');
 const ProductController = require('./ProductController');
+const { buildAppUrl } = require('../utils/url');
 
 class CourseController {
   normalizeCertificateTopics(rawTopics) {
@@ -149,7 +150,7 @@ class CourseController {
                 confirmationExpires: new Date(Date.now() + 24 * 3600 * 1000) // 24 hours
             });
 
-            const confirmationUrl = `${req.protocol}://${req.get('host')}/confirmar-conta/${confirmationToken}`;
+            const confirmationUrl = buildAppUrl(req, `/confirmar-conta/${confirmationToken}`);
             await EmailService.sendAccountConfirmation(currentUser, tempPassword, confirmationUrl);
         }
       }

@@ -7,6 +7,11 @@ const Enrollment = require('./Enrollment');
 const CompanyCertificate = require('./CompanyCertificate');
 const Product = require('./Product');
 
+function parseBoolean(value, fallback = false) {
+  if (value === undefined) return fallback;
+  return ['1', 'true', 'yes', 'on'].includes(String(value).toLowerCase());
+}
+
 const models = {
   User,
   Course,
@@ -59,13 +64,17 @@ const syncDatabase = async () => {
     // Desabilita verificações de foreign key temporariamente no SQLite
     // para permitir que o processo de alteração (que cria/dropa tabelas)
     // funcione sem falhar em restrições externas. Reativa após sync.
+    const isProduction = process.env.NODE_ENV === 'production';
+    const defaultAlter = sequelize.getDialect() === 'sqlite' && !isProduction;
+    const syncAlter = parseBoolean(process.env.DB_SYNC_ALTER, defaultAlter);
+    const syncForce = parseBoolean(process.env.DB_SYNC_FORCE, false);
     let fkDisabled = false;
     try {
       if (sequelize.getDialect && sequelize.getDialect() === 'sqlite') {
         await sequelize.query('PRAGMA foreign_keys = OFF;');
         fkDisabled = true;
       }
-      await sequelize.sync({ alter: true });
+      await sequelize.sync({ alter: syncAlter, force: syncForce });
     } finally {
       if (fkDisabled) {
         try {
@@ -75,7 +84,7 @@ const syncDatabase = async () => {
         }
       }
     }
-    console.log('Banco de dados sincronizado');
+    console.log(`Banco de dados sincronizado (alter=${syncAlter}, force=${syncForce})`);
   } catch (error) {
     console.error('Erro na sincronização:', error);
     throw error;

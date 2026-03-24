@@ -1,5 +1,6 @@
 const { User } = require('../models');
 const { generateToken } = require('../middleware/jwt');
+const { buildAppUrl } = require('../utils/url');
 
 class AuthController {
   async showLogin(req, res) {
@@ -128,7 +129,7 @@ class AuthController {
       user.resetPasswordExpires = new Date(Date.now() + 3600000); // 1 hour
       await user.save();
 
-      const resetUrl = `${req.protocol}://${req.get('host')}/redefinir-senha/${token}`;
+      const resetUrl = buildAppUrl(req, `/redefinir-senha/${token}`);
       await EmailService.sendPasswordReset(user, token, resetUrl);
 
       res.redirect('/login?success=Se o e-mail estiver cadastrado, você receberá as instruções em breve.');
