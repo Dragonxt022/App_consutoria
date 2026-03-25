@@ -15,6 +15,26 @@ const ProductController = require('../controllers/ProductController');
 const { authMiddleware, guestMiddleware, publicMiddleware } = require('../middleware/auth'); // Adicione publicMiddleware
 const upload = require('../config/multer');
 
+const uploadSettingsFiles = (req, res, next) => {
+  const settingUploadFields = [
+    { name: 'logo', maxCount: 1 },
+    { name: 'cert_signature', maxCount: 1 }
+  ];
+
+  for (let index = 0; index < 6; index += 1) {
+    settingUploadFields.push({ name: `banner_image_${index}`, maxCount: 1 });
+  }
+
+  upload.fields(settingUploadFields)(req, res, (error) => {
+    if (!error) return next();
+
+    console.error('Erro no upload de configuracoes:', error);
+
+    const message = error.message || 'Erro ao processar upload dos arquivos.';
+    return res.redirect(`/admin/configuracoes?error=${encodeURIComponent(message)}`);
+  });
+};
+
 // Rotas públicas do site institucional - use publicMiddleware
 router.get('/', publicMiddleware, (req, res) => CourseController.index(req, res));
 router.get('/cursos', publicMiddleware, (req, res) => CourseController.publicList(req, res));
@@ -69,6 +89,7 @@ router.get('/admin/vendas', authMiddleware('admin'), (req, res) => SalesControll
 
 // Admin User Routes
 router.get('/admin/usuarios', authMiddleware('admin'), (req, res) => UserController.index(req, res));
+router.post('/admin/usuarios/criar', authMiddleware('admin'), (req, res) => UserController.store(req, res));
 router.get('/admin/usuarios/:id/editar', authMiddleware('admin'), (req, res) => UserController.edit(req, res));
 router.post('/admin/usuarios/:id/editar', authMiddleware('admin'), (req, res) => UserController.update(req, res));
 router.post('/admin/usuarios/:id/reenviar-acesso', authMiddleware('admin'), (req, res) => UserController.resendAccess(req, res));
@@ -76,18 +97,15 @@ router.post('/admin/usuarios/:id/reenviar-acesso', authMiddleware('admin'), (req
 // Admin Store Routes
 router.get('/admin/loja', authMiddleware('admin'), (req, res) => ProductController.adminList(req, res));
 router.get('/admin/loja/criar', authMiddleware('admin'), (req, res) => ProductController.adminCreateForm(req, res));
-router.post('/admin/loja/criar', authMiddleware('admin'), (req, res) => ProductController.adminStore(req, res));
+router.post('/admin/loja/criar', authMiddleware('admin'), upload.array('product_images', 5), (req, res) => ProductController.adminStore(req, res));
 router.get('/admin/loja/:id/editar', authMiddleware('admin'), (req, res) => ProductController.adminEditForm(req, res));
-router.post('/admin/loja/:id/editar', authMiddleware('admin'), (req, res) => ProductController.adminUpdate(req, res));
+router.post('/admin/loja/:id/editar', authMiddleware('admin'), upload.array('product_images', 5), (req, res) => ProductController.adminUpdate(req, res));
 router.post('/admin/loja/:id/status', authMiddleware('admin'), (req, res) => ProductController.adminToggleStatus(req, res));
 router.post('/admin/loja/:id/deletar', authMiddleware('admin'), (req, res) => ProductController.adminDelete(req, res));
 
 // Admin Settings Routes
 router.get('/admin/configuracoes', authMiddleware('admin'), (req, res) => SettingController.index(req, res));
-router.post('/admin/configuracoes', authMiddleware('admin'), upload.fields([
-  { name: 'logo', maxCount: 1 },
-  { name: 'cert_signature', maxCount: 1 }
-]), (req, res) => SettingController.update(req, res));
+router.post('/admin/configuracoes', authMiddleware('admin'), uploadSettingsFiles, (req, res) => SettingController.update(req, res));
 
 // Admin Course Routes
 router.get('/admin/cursos', authMiddleware('admin'), (req, res) => CourseController.adminList(req, res));
@@ -110,10 +128,10 @@ router.get('/aluno/dashboard', authMiddleware('aluno'), (req, res) => HomeContro
 
 // Adicione também as rotas de login/registro
 router.get('/login', guestMiddleware, (req, res) => AuthController.showLogin(req, res));
-
-router.get('/register', guestMiddleware, (req, res) => {
-  res.render('register', { title: 'Registro' });
-});
+router.get('/cadastro', guestMiddleware, (req, res) => AuthController.showRegister(req, res));
+router.post('/cadastro', guestMiddleware, (req, res) => AuthController.register(req, res));
+router.get('/register', guestMiddleware, (req, res) => AuthController.showRegister(req, res));
+router.post('/register', guestMiddleware, (req, res) => AuthController.register(req, res));
 
 // Rotas de Perfil do Aluno
 router.get('/perfil', authMiddleware('aluno'), (req, res) => ProfileController.show(req, res));

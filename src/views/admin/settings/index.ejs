@@ -1,28 +1,35 @@
-<div class="max-w-5xl mx-auto" x-data="{ activeConfigTab: 'identidade' }">
+<div class="max-w-5xl mx-auto" x-data="{ activeConfigTab: '<%= activeTab %>' }">
     <div class="bg-white shadow-xl rounded-2xl overflow-hidden">
         <div class="bg-slate-50 p-6 border-b border-slate-100">
             <h2 class="text-xl font-bold text-slate-800">Configurações de Cabeçalho e Rodapé</h2>
             <p class="text-slate-500 text-sm">Gerencie a identidade visual e as informações de contato do site.</p>
         </div>
 
-        <form action="/admin/configuracoes" method="POST" enctype="multipart/form-data" class="p-8 space-y-10">
+        <form id="settings-form" action="/admin/configuracoes" method="POST" enctype="multipart/form-data" class="p-8 space-y-10">
+            <input type="hidden" name="active_tab" :value="activeConfigTab">
             <section class="sticky top-4 z-20 rounded-2xl border border-slate-200 bg-white/95 p-3 shadow-sm backdrop-blur">
-                <div class="grid grid-cols-2 gap-2 md:grid-cols-5">
-                    <button type="button" @click="activeConfigTab = 'identidade'" :class="activeConfigTab === 'identidade' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" class="rounded-xl px-4 py-3 text-sm font-semibold transition-all">
+                <div class="mb-3">
+                    <p class="text-xs font-black uppercase tracking-[0.24em] text-slate-400">Submenu de Configurações</p>
+                </div>
+                <div class="grid grid-cols-2 gap-2 md:grid-cols-3 xl:grid-cols-6">
+                    <a href="/admin/configuracoes?tab=identidade" @click.prevent="activeConfigTab = 'identidade'; window.history.replaceState({}, '', '/admin/configuracoes?tab=identidade')" :class="activeConfigTab === 'identidade' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" class="rounded-xl px-4 py-3 text-center text-sm font-semibold transition-all">
                         Identidade
-                    </button>
-                    <button type="button" @click="activeConfigTab = 'loja'" :class="activeConfigTab === 'loja' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" class="rounded-xl px-4 py-3 text-sm font-semibold transition-all">
+                    </a>
+                    <a href="/admin/configuracoes?tab=loja" @click.prevent="activeConfigTab = 'loja'; window.history.replaceState({}, '', '/admin/configuracoes?tab=loja')" :class="activeConfigTab === 'loja' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" class="rounded-xl px-4 py-3 text-center text-sm font-semibold transition-all">
                         Loja
-                    </button>
-                    <button type="button" @click="activeConfigTab = 'certificados'" :class="activeConfigTab === 'certificados' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" class="rounded-xl px-4 py-3 text-sm font-semibold transition-all">
+                    </a>
+                    <a href="/admin/configuracoes?tab=certificados" @click.prevent="activeConfigTab = 'certificados'; window.history.replaceState({}, '', '/admin/configuracoes?tab=certificados')" :class="activeConfigTab === 'certificados' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" class="rounded-xl px-4 py-3 text-center text-sm font-semibold transition-all">
                         Certificados
-                    </button>
-                    <button type="button" @click="activeConfigTab = 'rodape'" :class="activeConfigTab === 'rodape' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" class="rounded-xl px-4 py-3 text-sm font-semibold transition-all">
+                    </a>
+                    <a href="/admin/configuracoes?tab=rodape" @click.prevent="activeConfigTab = 'rodape'; window.history.replaceState({}, '', '/admin/configuracoes?tab=rodape')" :class="activeConfigTab === 'rodape' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" class="rounded-xl px-4 py-3 text-center text-sm font-semibold transition-all">
                         Rodapé
-                    </button>
-                    <button type="button" @click="activeConfigTab = 'email'" :class="activeConfigTab === 'email' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" class="rounded-xl px-4 py-3 text-sm font-semibold transition-all">
+                    </a>
+                    <a href="/admin/configuracoes?tab=banners" @click.prevent="activeConfigTab = 'banners'; window.history.replaceState({}, '', '/admin/configuracoes?tab=banners')" :class="activeConfigTab === 'banners' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" class="rounded-xl px-4 py-3 text-center text-sm font-semibold transition-all">
+                        Banners
+                    </a>
+                    <a href="/admin/configuracoes?tab=email" @click.prevent="activeConfigTab = 'email'; window.history.replaceState({}, '', '/admin/configuracoes?tab=email')" :class="activeConfigTab === 'email' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" class="rounded-xl px-4 py-3 text-center text-sm font-semibold transition-all">
                         SMTP
-                    </button>
+                    </a>
                 </div>
             </section>
             
@@ -65,12 +72,12 @@
             <hr x-show="activeConfigTab === 'identidade'" class="border-slate-100">
 
             <section x-show="activeConfigTab === 'loja'" x-transition.opacity class="space-y-6">
-                <h3 class="text-sm font-bold text-indigo-600 uppercase tracking-wider">Configuracoes da Loja</h3>
+                <h3 class="text-sm font-bold text-indigo-600 uppercase tracking-wider">Configurações da Loja</h3>
 
                 <div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
                     <div>
                         <span class="block font-bold text-slate-700">Ofertas abaixo dos cursos</span>
-                        <span class="text-xs text-slate-500">Exibe uma linha com ate 4 produtos da loja no final da pagina de detalhes do curso.</span>
+                        <span class="text-xs text-slate-500">Exibe uma linha com até 4 produtos da loja no final da página de detalhes do curso.</span>
                     </div>
 
                     <label class="relative inline-flex items-center cursor-pointer">
@@ -189,6 +196,98 @@
                     <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Direitos Autorais (Copyright)</label>
                     <input type="text" name="footer_copyright" value="<%= settings.footer_copyright %>" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all">
                 </div>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Instagram</label>
+                        <input type="url" name="social_instagram" value="<%= settings.social_instagram %>" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" placeholder="https://instagram.com/...">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Facebook</label>
+                        <input type="url" name="social_facebook" value="<%= settings.social_facebook %>" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" placeholder="https://facebook.com/...">
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">LinkedIn</label>
+                        <input type="url" name="social_linkedin" value="<%= settings.social_linkedin %>" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" placeholder="https://linkedin.com/company/...">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">YouTube</label>
+                        <input type="url" name="social_youtube" value="<%= settings.social_youtube %>" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" placeholder="https://youtube.com/...">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">WhatsApp</label>
+                    <input type="url" name="social_whatsapp" value="<%= settings.social_whatsapp %>" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" placeholder="https://wa.me/55...">
+                </div>
+            </section>
+
+            <section x-show="activeConfigTab === 'banners'" x-transition.opacity class="space-y-6">
+                <div>
+                    <h3 class="text-sm font-bold text-indigo-600 uppercase tracking-wider">Banners da Home</h3>
+                    <p class="mt-2 text-xs text-slate-500">Cadastre até 6 banners para a página inicial. Tamanho recomendado: 1920 x 700 px. O layout será responsivo no desktop e mobile.</p>
+                </div>
+
+                <div id="banner-list" class="grid gap-5">
+                    <% for (let i = 0; i < 6; i++) { const banner = (settings.home_banners && settings.home_banners[i]) ? settings.home_banners[i] : null; %>
+                        <div class="banner-card rounded-2xl border border-slate-200 bg-white p-5 shadow-sm" draggable="true" data-banner-card>
+                            <div class="flex flex-col gap-5 xl:flex-row">
+                                <div class="xl:w-80">
+                                    <div class="mb-3 flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <button type="button" class="cursor-grab rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold uppercase tracking-[0.2em] text-slate-500 active:cursor-grabbing" title="Arraste para reordenar">Mover</button>
+                                            <h4 class="text-sm font-bold text-slate-800">Banner <span data-banner-position><%= i + 1 %></span></h4>
+                                        </div>
+                                        <% if (banner && banner.imageUrl) { %>
+                                            <label class="flex items-center gap-2 text-xs font-semibold text-rose-600">
+                                                <input type="checkbox" name="banner_remove_<%= i %>" data-field-template="banner_remove_INDEX" value="1" class="rounded border-slate-300 text-rose-600 focus:ring-rose-500">
+                                                Remover
+                                            </label>
+                                        <% } %>
+                                    </div>
+                                    <div class="overflow-hidden rounded-2xl border border-slate-200 bg-slate-100 aspect-[1920/700]" data-banner-preview-frame>
+                                        <% if (banner && banner.imageUrl) { %>
+                                            <img src="<%= banner.imageUrl %>" alt="<%= banner.name || ('Banner ' + (i + 1)) %>" class="h-full w-full object-cover" data-banner-preview-image>
+                                        <% } else { %>
+                                            <div class="flex h-full items-center justify-center px-4 text-center text-xs font-semibold uppercase tracking-[0.2em] text-slate-400" data-banner-preview-empty>
+                                                Nenhum banner enviado
+                                            </div>
+                                        <% } %>
+                                    </div>
+                                </div>
+
+                                <div class="flex-1 space-y-4">
+                                    <input type="hidden" name="banner_existing_image_<%= i %>" data-field-template="banner_existing_image_INDEX" value="<%= banner ? banner.imageUrl : '' %>">
+                                    <div class="grid gap-4 md:grid-cols-2">
+                                        <div>
+                                            <label class="mb-2 block text-xs font-bold uppercase tracking-[0.24em] text-slate-400">Nome do banner</label>
+                                            <input type="text" name="banner_name_<%= i %>" data-field-template="banner_name_INDEX" value="<%= banner ? banner.name : '' %>" class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500" placeholder="Ex: Banner principal de cursos">
+                                        </div>
+                                        <div>
+                                            <label class="mb-2 block text-xs font-bold uppercase tracking-[0.24em] text-slate-400">Link opcional</label>
+                                            <input type="text" name="banner_link_<%= i %>" data-field-template="banner_link_INDEX" value="<%= banner ? banner.link : '' %>" class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500" placeholder="https://... ou /cursos">
+                                        </div>
+                                    </div>
+
+                                    <label class="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700">
+                                        <input type="hidden" name="banner_new_tab_<%= i %>" data-field-template="banner_new_tab_INDEX" value="0">
+                                        <input type="checkbox" name="banner_new_tab_<%= i %>" data-field-template="banner_new_tab_INDEX" value="1" <%= banner && banner.newTab ? 'checked' : '' %> class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
+                                        Abrir link em nova aba
+                                    </label>
+
+                                    <div>
+                                        <label class="mb-2 block text-xs font-bold uppercase tracking-[0.24em] text-slate-400">Imagem do banner</label>
+                                        <input type="file" name="banner_image_<%= i %>" data-field-template="banner_image_INDEX" data-banner-file-input accept="image/png,image/jpeg,image/webp,image/gif" class="w-full text-xs text-slate-500 file:mr-4 file:rounded-full file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-xs file:font-semibold file:text-indigo-700 hover:file:bg-indigo-100">
+                                        <p class="mt-2 text-xs text-slate-400">Recomendado: 1920 x 700 px. Formatos aceitos: JPG, PNG, WEBP e GIF.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <% } %>
+                </div>
             </section>
 
             <!-- Configurações de E-mail -->
@@ -222,10 +321,28 @@
                     <label class="block text-xs font-bold text-slate-500 uppercase mb-2">E-mail de Remetente (From)</label>
                     <input type="email" name="smtp_from" value="<%= settings.smtp_from %>" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" placeholder="no-reply@empresa.com.br">
                 </div>
+
+                <div class="rounded-2xl border border-indigo-100 bg-indigo-50 px-4 py-4">
+                    <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                        <div>
+                            <p class="text-sm font-bold text-indigo-900">Teste de conexão SMTP</p>
+                            <p class="mt-1 text-xs text-indigo-700">Salva as configurações atuais e envia um e-mail de teste para o administrador logado.</p>
+                        </div>
+                        <button
+                            type="submit"
+                            name="submit_action"
+                            value="test_email"
+                            @click="activeConfigTab = 'email'"
+                            class="inline-flex items-center justify-center rounded-xl border border-indigo-200 bg-white px-5 py-3 text-sm font-bold text-indigo-700 transition hover:bg-indigo-100"
+                        >
+                            Testar conexão de e-mail
+                        </button>
+                    </div>
+                </div>
             </section>
 
             <div class="flex justify-end pt-4">
-                <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-10 py-4 rounded-xl text-sm font-bold shadow-lg shadow-indigo-100 transform active:scale-95 transition-all">
+                <button type="submit" name="submit_action" value="save" class="bg-indigo-600 hover:bg-indigo-700 text-white px-10 py-4 rounded-xl text-sm font-bold shadow-lg shadow-indigo-100 transform active:scale-95 transition-all">
                     Salvar Alterações
                 </button>
             </div>
@@ -235,6 +352,100 @@
 
 <script>
 (() => {
+    const settingsForm = document.getElementById('settings-form');
+    const bannerList = document.getElementById('banner-list');
+
+    if (settingsForm && bannerList) {
+        let draggingCard = null;
+
+        const syncBannerFieldNames = () => {
+            const cards = Array.from(bannerList.querySelectorAll('[data-banner-card]'));
+            cards.forEach((card, index) => {
+                const position = card.querySelector('[data-banner-position]');
+                if (position) position.textContent = String(index + 1);
+
+                card.querySelectorAll('[data-field-template]').forEach((field) => {
+                    const template = field.getAttribute('data-field-template');
+                    if (!template) return;
+                    field.name = template.replace('INDEX', index);
+                });
+            });
+        };
+
+        syncBannerFieldNames();
+
+        bannerList.querySelectorAll('[data-banner-card]').forEach((card) => {
+            card.addEventListener('dragstart', () => {
+                draggingCard = card;
+                card.classList.add('opacity-60');
+            });
+
+            card.addEventListener('dragend', () => {
+                card.classList.remove('opacity-60');
+                draggingCard = null;
+                syncBannerFieldNames();
+            });
+
+            card.addEventListener('dragover', (event) => {
+                event.preventDefault();
+            });
+
+            card.addEventListener('drop', (event) => {
+                event.preventDefault();
+                if (!draggingCard || draggingCard === card) return;
+
+                const cards = Array.from(bannerList.querySelectorAll('[data-banner-card]'));
+                const draggingIndex = cards.indexOf(draggingCard);
+                const targetIndex = cards.indexOf(card);
+
+                if (draggingIndex < targetIndex) {
+                    bannerList.insertBefore(draggingCard, card.nextSibling);
+                } else {
+                    bannerList.insertBefore(draggingCard, card);
+                }
+
+                syncBannerFieldNames();
+            });
+        });
+
+        settingsForm.addEventListener('submit', () => {
+            syncBannerFieldNames();
+        });
+
+        bannerList.querySelectorAll('[data-banner-card]').forEach((card) => {
+            const input = card.querySelector('[data-banner-file-input]');
+            let image = card.querySelector('[data-banner-preview-image]');
+            const empty = card.querySelector('[data-banner-preview-empty]');
+            const frame = card.querySelector('[data-banner-preview-frame]');
+
+            if (!input) return;
+
+            input.addEventListener('change', () => {
+                const file = input.files && input.files[0];
+                if (!file || !file.type.startsWith('image/')) return;
+
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    if (empty) empty.remove();
+
+                    if (image) {
+                        image.src = event.target.result;
+                        return;
+                    }
+
+                    const previewImage = document.createElement('img');
+                    previewImage.src = event.target.result;
+                    previewImage.alt = 'Preview do banner';
+                    previewImage.className = 'h-full w-full object-cover';
+                    previewImage.setAttribute('data-banner-preview-image', '');
+                    frame && frame.appendChild(previewImage);
+                    image = previewImage;
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+    }
+
     const SIGNATURE_WIDTH = 1200;
     const SIGNATURE_HEIGHT = 360;
 

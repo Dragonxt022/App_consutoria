@@ -25,6 +25,9 @@ const sequelize = new Sequelize(
     port: isSqlite ? undefined : Number(process.env.DB_PORT || 3306),
     dialect,
     storage: isSqlite ? storage : undefined,
+    dialectOptions: isSqlite ? undefined : {
+      decimalNumbers: true
+    },
     logging,
   }
 );

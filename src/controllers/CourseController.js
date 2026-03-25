@@ -3,8 +3,96 @@ const slugify = require('slugify');
 const { Op } = require('sequelize');
 const ProductController = require('./ProductController');
 const { buildAppUrl } = require('../utils/url');
+const { formatCurrency } = require('../utils/currencyFormatter');
+const { parseMoneyValue } = require('../utils/money');
+const fs = require('fs');
+const path = require('path');
 
 class CourseController {
+  resolvePublicFilePath(fileUrl) {
+    if (!fileUrl || typeof fileUrl !== 'string' || !fileUrl.startsWith('/uploads/')) {
+      return null;
+    }
+
+    return path.join(__dirname, '..', 'public', fileUrl.replace(/^\/+/, ''));
+  }
+
+  removeFileIfExists(fileUrl) {
+    const filePath = this.resolvePublicFilePath(fileUrl);
+
+    if (!filePath || !fs.existsSync(filePath)) {
+      return;
+    }
+
+    try {
+      fs.unlinkSync(filePath);
+    } catch (error) {
+      console.error(`Erro ao remover arquivo antigo: ${filePath}`, error);
+    }
+  }
+
+  cleanupUploadedFiles(req) {
+    const uploadedFiles = Object.values(req.files || {}).flat();
+
+    uploadedFiles.forEach((file) => {
+      if (!file?.path) return;
+
+      try {
+        if (fs.existsSync(file.path)) {
+          fs.unlinkSync(file.path);
+        }
+      } catch (error) {
+        console.error(`Erro ao limpar upload temporario: ${file.path}`, error);
+      }
+    });
+  }
+
+  async generateUniqueSlug(title, excludeId = null) {
+    const baseSlug = slugify(title || 'curso', { lower: true, strict: true }) || 'curso';
+    let candidateSlug = baseSlug;
+    let counter = 2;
+
+    while (true) {
+      const where = { slug: candidateSlug };
+
+      if (excludeId) {
+        where.id = { [Op.ne]: excludeId };
+      }
+
+      const existingCourse = await Course.findOne({ where });
+
+      if (!existingCourse) {
+        return candidateSlug;
+      }
+
+      candidateSlug = `${baseSlug}-${counter}`;
+      counter += 1;
+    }
+  }
+
+  parseHomeBanners(rawValue) {
+    if (!rawValue) return [];
+
+    try {
+      const parsed = typeof rawValue === 'string' ? JSON.parse(rawValue) : rawValue;
+      if (!Array.isArray(parsed)) return [];
+
+      return parsed
+        .filter((banner) => banner && banner.imageUrl)
+        .map((banner, index) => ({
+          id: banner.id || `banner-${index + 1}`,
+          name: banner.name || `Banner ${index + 1}`,
+          imageUrl: banner.imageUrl,
+          link: banner.link || '',
+          newTab: banner.newTab === true || banner.newTab === 'true'
+        }))
+        .slice(0, 6);
+    } catch (error) {
+      console.error('Erro ao carregar banners da home:', error);
+      return [];
+    }
+  }
+
   normalizeCertificateTopics(rawTopics) {
     const normalizedInput = Array.isArray(rawTopics) ? rawTopics.join('\n') : (rawTopics || '');
 
@@ -15,30 +103,43 @@ class CourseController {
       .filter(Boolean);
   }
 
+  serializeCourse(course, now = new Date()) {
+    const data = course.toJSON();
+    const priceValue = parseMoneyValue(data.price);
+
+    return {
+      ...data,
+      price: priceValue,
+      priceValue,
+      priceDisplay: formatCurrency(priceValue),
+      priceInputValue: priceValue.toFixed(2),
+      isExpired: new Date(data.startDate) < now
+    };
+  }
+
   // Public Methods
   async index(req, res) {
-    const courses = await Course.findAll({
-      where: { active: true },
-      order: [['startDate', 'ASC']]
-    });
-
-    const featuredProducts = await Product.findAll({
-      where: { active: true, featured: true },
-      order: [['createdAt', 'DESC']],
-      limit: 3
-    });
+    const [courses, featuredProducts, homeBannersSetting] = await Promise.all([
+      Course.findAll({
+        where: { active: true },
+        order: [['startDate', 'ASC']]
+      }),
+      Product.findAll({
+        where: { active: true, featured: true },
+        order: [['createdAt', 'DESC']],
+        limit: 3
+      }),
+      Setting.findOne({ where: { key: 'home_banners' } })
+    ]);
 
     const now = new Date();
-    const formattedCourses = courses.map(course => {
-      const data = course.toJSON();
-      data.isExpired = new Date(data.startDate) < now;
-      return data;
-    });
+    const formattedCourses = courses.map((course) => this.serializeCourse(course, now));
 
     res.render('public/home', {
       title: 'Consultoria Profissional | Início',
       courses: formattedCourses,
       featuredProducts: featuredProducts.map((product) => ProductController.formatProduct(product)),
+      homeBanners: this.parseHomeBanners(homeBannersSetting ? homeBannersSetting.value : '[]'),
       layout: 'public/layout'
     });
   }
@@ -50,11 +151,7 @@ class CourseController {
     });
 
     const now = new Date();
-    const formattedCourses = courses.map(course => {
-      const data = course.toJSON();
-      data.isExpired = new Date(data.startDate) < now;
-      return data;
-    });
+    const formattedCourses = courses.map((course) => this.serializeCourse(course, now));
 
     res.render('public/courses', {
       title: 'Todos os Cursos | Consultoria',
@@ -73,8 +170,7 @@ class CourseController {
       where: { key: 'show_course_store_offers' }
     });
 
-    const data = course.toJSON();
-    data.isExpired = new Date(data.startDate) < new Date();
+    const data = this.serializeCourse(course, new Date());
 
     let courseStoreOffers = [];
     const showCourseStoreOffers = showCourseStoreOffersSetting && showCourseStoreOffersSetting.value === 'true';
@@ -114,7 +210,7 @@ class CourseController {
 
     res.render('public/enroll', {
       title: `Inscrição - ${course.title}`,
-      course,
+      course: this.serializeCourse(course, new Date()),
       lastEnrollment,
       layout: 'public/layout'
     });
@@ -161,13 +257,7 @@ class CourseController {
         return res.redirect('/?error=Curso não encontrado');
       }
 
-      // Parse price logic: assuming price is string like "R$ 100,00" or simple number
-      let priceValue = 0;
-      if (course.price) {
-        // Remove 'R$', dots, replace comma with dot
-        const cleanPrice = course.price.toString().replace(/[^\d,]/g, '').replace(',', '.');
-        priceValue = parseFloat(cleanPrice) || 0;
-      }
+      const priceValue = parseMoneyValue(course.price);
 
       await Enrollment.create({
         studentName: name,
@@ -219,11 +309,7 @@ class CourseController {
     const totalPages = Math.ceil(count / limit);
     const now = new Date();
 
-    const formattedCourses = courses.map(course => {
-      const data = course.toJSON();
-      data.isExpired = new Date(data.startDate) < now;
-      return data;
-    });
+    const formattedCourses = courses.map((course) => this.serializeCourse(course, now));
 
     res.render('admin/courses/list', {
       title: 'Listagem de Cursos',
@@ -240,7 +326,7 @@ class CourseController {
 
   async adminCreateForm(req, res) {
     res.render('admin/courses/create', {
-      title: 'Cadastrar Novo Curso',
+      title: 'Cadastrar Curso',
       user: req.user,
       layout: 'admin/layout'
     });
@@ -249,8 +335,7 @@ class CourseController {
   async adminStore(req, res) {
     try {
       const { title, description, location, workload, price, startDate, spots, certificateTopics } = req.body;
-      
-      const slug = slugify(title, { lower: true, strict: true });
+      const slug = await this.generateUniqueSlug(title);
       
       // Support itemsIncluded[] coming from the form (dynamic list)
       let itemsIncluded = req.body.itemsIncluded || [];
@@ -272,8 +357,8 @@ class CourseController {
 
       const normalizedCertificateTopics = this.normalizeCertificateTopics(certificateTopics);
 
-      const imageUrl = req.files['image'] ? `/uploads/courses/images/${req.files['image'][0].filename}` : null;
-      const docUrl = req.files['proposalDoc'] ? `/uploads/courses/documents/${req.files['proposalDoc'][0].filename}` : null;
+      const imageUrl = req.files?.image?.[0] ? `/uploads/courses/images/${req.files.image[0].filename}` : null;
+      const docUrl = req.files?.proposalDoc?.[0] ? `/uploads/courses/documents/${req.files.proposalDoc[0].filename}` : null;
 
       await Course.create({
         title,
@@ -281,7 +366,7 @@ class CourseController {
         description,
         location,
         workload,
-        price,
+        price: parseMoneyValue(price),
         startDate,
         spots,
         itemsIncluded,
@@ -293,6 +378,7 @@ class CourseController {
       res.redirect('/admin/cursos?success=Curso cadastrado com sucesso!');
     } catch (error) {
       console.error(error);
+      this.cleanupUploadedFiles(req);
       res.redirect('/admin/cursos/criar?error=Erro ao salvar o curso');
     }
   }
@@ -305,8 +391,8 @@ class CourseController {
       }
 
       res.render('admin/courses/edit', {
-        title: `Editar Curso: ${course.title}`,
-        course,
+        title: 'Editar Curso',
+        course: this.serializeCourse(course, new Date()),
         user: req.user,
         layout: 'admin/layout'
       });
@@ -325,7 +411,7 @@ class CourseController {
         return res.redirect('/admin/cursos?error=Curso não encontrado');
       }
 
-      const slug = slugify(title, { lower: true, strict: true });
+      const slug = await this.generateUniqueSlug(title, course.id);
       
       let itemsIncluded = req.body.itemsIncluded || [];
       if (typeof itemsIncluded === 'string') itemsIncluded = [itemsIncluded];
@@ -347,7 +433,7 @@ class CourseController {
         description,
         location,
         workload,
-        price,
+        price: parseMoneyValue(price),
         startDate,
         spots,
         itemsIncluded,
@@ -355,18 +441,30 @@ class CourseController {
         active: active === 'on' || active === true
       };
 
-      if (req.files['image']) {
-        updateData.image = `/uploads/courses/images/${req.files['image'][0].filename}`;
+      const previousImage = course.image;
+      const previousProposalDoc = course.proposalDoc;
+
+      if (req.files?.image?.[0]) {
+        updateData.image = `/uploads/courses/images/${req.files.image[0].filename}`;
       }
-      if (req.files['proposalDoc']) {
-        updateData.proposalDoc = `/uploads/courses/documents/${req.files['proposalDoc'][0].filename}`;
+      if (req.files?.proposalDoc?.[0]) {
+        updateData.proposalDoc = `/uploads/courses/documents/${req.files.proposalDoc[0].filename}`;
       }
 
       await course.update(updateData);
 
+      if (updateData.image && previousImage && previousImage !== updateData.image) {
+        this.removeFileIfExists(previousImage);
+      }
+
+      if (updateData.proposalDoc && previousProposalDoc && previousProposalDoc !== updateData.proposalDoc) {
+        this.removeFileIfExists(previousProposalDoc);
+      }
+
       res.redirect('/admin/cursos?success=Curso atualizado com sucesso!');
     } catch (error) {
       console.error(error);
+      this.cleanupUploadedFiles(req);
       res.redirect(`/admin/cursos/${req.params.id}/editar?error=Erro ao atualizar o curso`);
     }
   }

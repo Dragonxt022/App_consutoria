@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
+const { parseMoneyValue, toMoneyStorage } = require('../utils/money');
 
 const Enrollment = sequelize.define('Enrollment', {
   id: {
@@ -63,17 +64,35 @@ const Enrollment = sequelize.define('Enrollment', {
   coursePrice: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: true,
-    defaultValue: 0.00
+    defaultValue: 0.00,
+    get() {
+      return parseMoneyValue(this.getDataValue('coursePrice'));
+    },
+    set(value) {
+      this.setDataValue('coursePrice', toMoneyStorage(value));
+    }
   },
   discount: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: true,
-    defaultValue: 0.00
+    defaultValue: 0.00,
+    get() {
+      return parseMoneyValue(this.getDataValue('discount'));
+    },
+    set(value) {
+      this.setDataValue('discount', toMoneyStorage(value));
+    }
   },
   finalPrice: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: true,
-    defaultValue: 0.00
+    defaultValue: 0.00,
+    get() {
+      return parseMoneyValue(this.getDataValue('finalPrice'));
+    },
+    set(value) {
+      this.setDataValue('finalPrice', toMoneyStorage(value));
+    }
   },
   certificateJson: {
     type: DataTypes.JSON,

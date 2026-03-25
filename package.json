@@ -9,6 +9,7 @@
     "build-css": "postcss src/public/css/input.css -o src/public/css/output.css --watch",
     "build-css-once": "postcss src/public/css/input.css -o src/public/css/output.css",
     "seed": "node scripts/seedCourses.js",
+    "migrate:course-prices-decimal": "node scripts/migrateCoursePricesToDecimal.js",
     "test": "node --test"
   },
   "keywords": [],
@@ -23,11 +24,13 @@
     "ejs": "^4.0.1",
     "express": "^5.2.1",
     "express-ejs-layouts": "^2.5.1",
+    "express-mysql-session": "^3.0.3",
     "express-session": "^1.19.0",
     "jsonwebtoken": "^9.0.3",
     "multer": "^2.0.2",
     "mysql2": "^3.16.2",
     "nodemailer": "^7.0.13",
+    "numeral": "^2.0.6",
     "sequelize": "^6.37.7",
     "slugify": "^1.6.6",
     "sqlite3": "^5.0.2"

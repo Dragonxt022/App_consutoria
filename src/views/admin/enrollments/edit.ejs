@@ -1,3 +1,14 @@
+<%
+    const toNumber = (value) => {
+        const numericValue = Number(value);
+        return Number.isFinite(numericValue) ? numericValue : 0;
+    };
+
+    const currentCoursePrice = toNumber(enrollment.coursePrice);
+    const currentDiscount = toNumber(enrollment.discount);
+    const currentFinalPrice = toNumber(enrollment.finalPrice);
+    const currentDiscountPercent = currentCoursePrice > 0 ? ((currentDiscount / currentCoursePrice) * 100).toFixed(2) : '0.00';
+%>
 <div class="bg-white shadow-xl rounded-2xl overflow-hidden max-w-4xl mx-auto">
     <div class="p-6 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
         <h2 class="text-xl font-bold text-gray-800">Editar Inscrição #<%= enrollment.id %></h2>
@@ -103,7 +114,7 @@
                         <label class="block text-sm font-medium text-gray-700 mb-1">Curso</label>
                         <select name="courseId" id="courseSelect" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
                             <% courses.forEach(course => { %>
-                                <option value="<%= course.id %>" data-price="<%= course.price %>" <%= enrollment.courseId === course.id ? 'selected' : '' %>><%= course.title %></option>
+                                <option value="<%= course.id %>" data-price="<%= course.priceValue %>" <%= enrollment.courseId === course.id ? 'selected' : '' %>><%= course.title %></option>
                             <% }) %>
                         </select>
                     </div>
@@ -123,18 +134,18 @@
                 <div class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Valor do Curso (R$)</label>
-                        <input type="number" step="0.01" name="coursePrice" id="coursePrice" value="<%= enrollment.coursePrice || 0 %>" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                            <input type="text" name="coursePrice" id="coursePrice" value="<%= currentCoursePrice %>" data-currency-input data-currency-prefix="R$ " data-currency-storage="decimal" inputmode="numeric" autocomplete="off" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
                     </div>
 
                     <div class="grid grid-cols-2 gap-3 items-end">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Desconto (R$)</label>
-                            <input type="number" step="0.01" name="discount" id="discount" value="<%= enrollment.discount || 0 %>" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                            <input type="text" name="discount" id="discount" value="<%= currentDiscount %>" data-currency-input data-currency-prefix="R$ " data-currency-storage="decimal" inputmode="numeric" autocomplete="off" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
                         </div>
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Desconto (%)</label>
-                            <input type="number" step="0.01" name="discountPercent" id="discountPercent" value="<%= enrollment.discount && enrollment.coursePrice ? ((enrollment.discount / enrollment.coursePrice) * 100).toFixed(2) : 0 %>" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                            <input type="number" step="0.01" name="discountPercent" id="discountPercent" value="<%= currentDiscountPercent %>" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
                         </div>
                     </div>
 
@@ -152,15 +163,15 @@
                     <div class="bg-gray-50 p-4 rounded-lg flex flex-col h-full justify-between">
                         <div>
                             <p class="text-sm text-gray-500">Valor Original</p>
-                            <p class="text-lg font-semibold text-slate-800" id="originalPriceDisplay">R$ <%= (enrollment.coursePrice || 0).toFixed(2) %></p>
+                            <p class="text-lg font-semibold text-slate-800" id="originalPriceDisplay">R$ <%= currentCoursePrice.toFixed(2) %></p>
 
                             <p class="mt-3 text-sm text-gray-500">Desconto</p>
-                            <p class="text-lg font-medium text-red-600" id="discountDisplay">R$ <%= (enrollment.discount || 0).toFixed(2) %> (<span id="discountPercentDisplay"><%= enrollment.coursePrice && enrollment.coursePrice > 0 ? ((enrollment.discount || 0) / enrollment.coursePrice * 100).toFixed(2) : '0.00' %></span>%)</p>
+                            <p class="text-lg font-medium text-red-600" id="discountDisplay">R$ <%= currentDiscount.toFixed(2) %> (<span id="discountPercentDisplay"><%= currentDiscountPercent %></span>%)</p>
                         </div>
 
                         <div class="mt-4 pt-4 border-t">
                             <p class="text-sm text-gray-500">Valor Final</p>
-                            <p class="text-2xl font-bold text-green-600" id="finalPriceDisplay">R$ <%= (enrollment.finalPrice || 0).toFixed(2) %></p>
+                            <p class="text-2xl font-bold text-green-600" id="finalPriceDisplay">R$ <%= currentFinalPrice.toFixed(2) %></p>
                         </div>
                     </div>
                 </div>
@@ -193,11 +204,21 @@
     const discountDisplay = document.getElementById('discountDisplay');
     const discountPercentDisplay = document.getElementById('discountPercentDisplay');
 
-    function toNumber(v) {
+    function toCurrencyNumber(v) {
+        if (window.currencyFields) {
+            return window.currencyFields.parse(v);
+        }
+        return parseFloat(v) || 0;
+    }
+
+    function toPercentNumber(v) {
         return parseFloat(v) || 0;
     }
 
     function formatBRL(v) {
+        if (window.currencyFields) {
+            return window.currencyFields.format(v, 'R$ ');
+        }
         return 'R$ ' + Number(v).toFixed(2);
     }
 
@@ -210,18 +231,22 @@
     }
 
     function syncFromPriceAndDiscount() {
-        const price = toNumber(coursePriceInput.value);
-        const discount = toNumber(discountInput.value);
+        const price = toCurrencyNumber(coursePriceInput.value);
+        const discount = toCurrencyNumber(discountInput.value);
         const percent = price > 0 ? (discount / price) * 100 : 0;
         discountPercentInput.value = percent.toFixed(2);
         updateDisplays(price, discount);
     }
 
     function syncFromPercent() {
-        const price = toNumber(coursePriceInput.value);
-        const percent = toNumber(discountPercentInput.value);
+        const price = toCurrencyNumber(coursePriceInput.value);
+        const percent = toPercentNumber(discountPercentInput.value);
         const discount = Math.max(0, (percent / 100) * price);
-        discountInput.value = discount.toFixed(2);
+        if (window.currencyFields) {
+            window.currencyFields.setValue(discountInput, discount);
+        } else {
+            discountInput.value = discount.toFixed(2);
+        }
         updateDisplays(price, discount);
     }
 
@@ -229,23 +254,26 @@
     courseSelect.addEventListener('change', function() {
         const selectedOption = this.options[this.selectedIndex];
         const priceString = selectedOption.getAttribute('data-price');
-        let price = 0;
-        if (priceString !== null && priceString !== undefined) {
-            // Accept numbers or strings like "100" or "100.00" or "R$ 100,00"
-            const cleaned = priceString.toString().replace(/[^\d.,-]/g, '').replace(',', '.');
-            price = parseFloat(cleaned) || 0;
+        const price = priceString ? toCurrencyNumber(priceString) : 0;
+        if (window.currencyFields) {
+            window.currencyFields.setValue(coursePriceInput, price);
+        } else {
+            coursePriceInput.value = price.toFixed(2);
         }
-        coursePriceInput.value = price.toFixed(2);
         syncFromPriceAndDiscount();
     });
 
     // Quick discount buttons
     document.querySelectorAll('[data-percent]').forEach(btn => {
         btn.addEventListener('click', function() {
-            const pct = toNumber(this.getAttribute('data-percent'));
-            const price = toNumber(coursePriceInput.value);
+            const pct = toPercentNumber(this.getAttribute('data-percent'));
+            const price = toCurrencyNumber(coursePriceInput.value);
             const discount = Math.max(0, (pct / 100) * price);
-            discountInput.value = discount.toFixed(2);
+            if (window.currencyFields) {
+                window.currencyFields.setValue(discountInput, discount);
+            } else {
+                discountInput.value = discount.toFixed(2);
+            }
             discountPercentInput.value = pct.toFixed(2);
             updateDisplays(price, discount);
         });
@@ -262,8 +290,8 @@
 
     // Inicializa displays
     (function init() {
-        const price = toNumber(coursePriceInput.value);
-        const discount = toNumber(discountInput.value);
+        const price = toCurrencyNumber(coursePriceInput.value);
+        const discount = toCurrencyNumber(discountInput.value);
         updateDisplays(price, discount);
     })();
 </script>

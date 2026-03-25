@@ -1,6 +1,8 @@
 const { Product } = require('../models');
 const slugify = require('slugify');
 const { redirectWithFlash } = require('../utils/flash');
+const fs = require('fs');
+const path = require('path');
 
 class ProductController {
   normalizeGalleryImages(rawImages, fallbackImage = '') {
@@ -17,6 +19,46 @@ class ProductController {
     return normalized.slice(0, 5);
   }
 
+  resolveProductImageUrls(files = []) {
+    return files
+      .filter((file) => file && file.filename)
+      .map((file) => `/uploads/products/${file.filename}`)
+      .slice(0, 5);
+  }
+
+  resolvePublicFilePath(fileUrl) {
+    if (!fileUrl || typeof fileUrl !== 'string' || !fileUrl.startsWith('/uploads/')) {
+      return null;
+    }
+
+    return path.join(__dirname, '..', 'public', fileUrl.replace(/^\/+/, ''));
+  }
+
+  removeFileIfExists(fileUrl) {
+    const filePath = this.resolvePublicFilePath(fileUrl);
+    if (!filePath || !fs.existsSync(filePath)) return;
+
+    try {
+      fs.unlinkSync(filePath);
+    } catch (error) {
+      console.error(`Erro ao remover arquivo do produto: ${filePath}`, error);
+    }
+  }
+
+  cleanupUploadedFiles(req) {
+    (req.files || []).forEach((file) => {
+      if (!file?.path) return;
+
+      try {
+        if (fs.existsSync(file.path)) {
+          fs.unlinkSync(file.path);
+        }
+      } catch (error) {
+        console.error(`Erro ao limpar upload temporario do produto: ${file.path}`, error);
+      }
+    });
+  }
+
   formatProduct(product) {
     const data = product.toJSON ? product.toJSON() : { ...product };
     const galleryImages = this.normalizeGalleryImages(data.galleryImages, data.imageUrl || '');
@@ -28,10 +70,11 @@ class ProductController {
     };
   }
 
-  buildPayload(body, existingSlug = null) {
+  buildPayload(body, uploadedImages = [], existingSlug = null) {
     const name = (body.name || '').trim();
-    const imageUrl = (body.imageUrl || '').trim() || null;
-    const galleryImages = this.normalizeGalleryImages(body.galleryImages, imageUrl || '');
+    const existingGalleryImages = this.normalizeGalleryImages(body.existingGalleryImages || [], body.existingImageUrl || '');
+    const galleryImages = uploadedImages.length ? uploadedImages : existingGalleryImages;
+    const imageUrl = galleryImages[0] || null;
 
     return {
       name,
@@ -55,6 +98,7 @@ class ProductController {
     if (!payload.shortDescription) return 'Informe uma descricao curta.';
     if (!payload.description) return 'Informe a descricao completa.';
     if (!payload.affiliateUrl) return 'Informe o link de afiliado.';
+    if (!payload.galleryImages.length) return 'Envie pelo menos uma imagem do produto.';
 
     try {
       new URL(payload.affiliateUrl);
@@ -62,24 +106,8 @@ class ProductController {
       return 'Informe uma URL valida para o link de afiliado.';
     }
 
-    if (payload.imageUrl) {
-      try {
-        new URL(payload.imageUrl);
-      } catch (error) {
-        return 'Informe uma URL valida para a imagem do produto.';
-      }
-    }
-
     if (payload.galleryImages.length > 5) {
       return 'Informe no maximo 5 imagens por produto.';
-    }
-
-    for (const imageUrl of payload.galleryImages) {
-      try {
-        new URL(imageUrl);
-      } catch (error) {
-        return 'Uma das imagens da galeria possui URL invalida.';
-      }
     }
 
     return null;
@@ -144,10 +172,12 @@ class ProductController {
 
   async adminStore(req, res) {
     try {
-      const payload = this.buildPayload(req.body);
+      const uploadedImages = this.resolveProductImageUrls(req.files);
+      const payload = this.buildPayload(req.body, uploadedImages);
       const validationError = this.validatePayload(payload) || await this.ensureUniqueSlug(payload);
 
       if (validationError) {
+        this.cleanupUploadedFiles(req);
         return redirectWithFlash(req, res, '/admin/loja/criar', 'error', validationError);
       }
 
@@ -155,6 +185,7 @@ class ProductController {
       redirectWithFlash(req, res, '/admin/loja', 'success', 'Produto cadastrado com sucesso!');
     } catch (error) {
       console.error(error);
+      this.cleanupUploadedFiles(req);
       redirectWithFlash(req, res, '/admin/loja/criar', 'error', 'Erro ao cadastrar produto');
     }
   }
@@ -187,17 +218,30 @@ class ProductController {
         return redirectWithFlash(req, res, '/admin/loja', 'error', 'Produto nao encontrado');
       }
 
-      const payload = this.buildPayload(req.body, product.slug);
+      const previousGalleryImages = this.normalizeGalleryImages(product.galleryImages, product.imageUrl || '');
+      const uploadedImages = this.resolveProductImageUrls(req.files);
+      const payload = this.buildPayload(req.body, uploadedImages, product.slug);
       const validationError = this.validatePayload(payload) || await this.ensureUniqueSlug(payload, product.id);
 
       if (validationError) {
+        this.cleanupUploadedFiles(req);
         return redirectWithFlash(req, res, `/admin/loja/${product.id}/editar`, 'error', validationError);
       }
 
       await product.update(payload);
+
+      if (uploadedImages.length) {
+        previousGalleryImages.forEach((imageUrl) => {
+          if (!payload.galleryImages.includes(imageUrl)) {
+            this.removeFileIfExists(imageUrl);
+          }
+        });
+      }
+
       redirectWithFlash(req, res, '/admin/loja', 'success', 'Produto atualizado com sucesso!');
     } catch (error) {
       console.error(error);
+      this.cleanupUploadedFiles(req);
       redirectWithFlash(req, res, `/admin/loja/${req.params.id}/editar`, 'error', 'Erro ao atualizar produto');
     }
   }
@@ -225,6 +269,10 @@ class ProductController {
       if (!product) {
         return redirectWithFlash(req, res, '/admin/loja', 'error', 'Produto nao encontrado');
       }
+
+      this.normalizeGalleryImages(product.galleryImages, product.imageUrl || '').forEach((imageUrl) => {
+        this.removeFileIfExists(imageUrl);
+      });
 
       await product.destroy();
       redirectWithFlash(req, res, '/admin/loja', 'success', 'Produto excluido com sucesso!');

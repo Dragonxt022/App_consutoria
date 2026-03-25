@@ -1,10 +1,10 @@
 const nodemailer = require('nodemailer');
-const SettingController = require('../controllers/SettingController');
+const SiteSettingsService = require('./SiteSettingsService');
 
 class EmailService {
   async sendEmail(to, subject, html) {
     try {
-      const settings = await SettingController.getSettings();
+      const settings = await SiteSettingsService.getSettings();
 
       // Skip if no SMTP user is configured (prevent errors during initial setup)
       if (!settings.smtp_user) {
@@ -80,6 +80,26 @@ class EmailService {
     `;
 
     return await this.sendEmail(user.email, 'Ativacao de Conta', html);
+  }
+  async sendRegistrationConfirmation(user, url) {
+    const html = `
+      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
+        <h2 style="color: #4f46e5;">Confirmação de e-mail</h2>
+        <p>Olá <strong>${user.name}</strong>,</p>
+        <p>Recebemos o seu cadastro e agora precisamos confirmar o seu e-mail para liberar o acesso à área do aluno.</p>
+
+        <p>Clique no botão abaixo para validar sua conta:</p>
+
+        <a href="${url}" style="display: inline-block; background: #4f46e5; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 20px 0;">Confirmar meu e-mail</a>
+
+        <p style="font-size: 12px; color: #999;">Este link expira em 24 horas.</p>
+
+        <hr style="border: 0; border-top: 1px solid #eee; margin: 30px 0;">
+        <p style="font-size: 11px; color: #999;">Se o botão não funcionar, copie e cole o link abaixo no navegador:<br>${url}</p>
+      </div>
+    `;
+
+    return await this.sendEmail(user.email, 'Confirme seu e-mail', html);
   }
   async sendPasswordReset(user, token, url) {
     const html = `

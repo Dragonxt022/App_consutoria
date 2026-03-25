@@ -44,7 +44,7 @@
                 <tr>
                     <th class="px-4 py-3 md:px-6 md:py-4">Estudante</th>
                     <th class="hidden px-4 py-3 md:px-6 md:py-4 xl:table-cell">Curso Inscrito</th>
-                    <th class="hidden px-4 py-3 md:px-6 md:py-4 xl:table-cell">Data Inscricao</th>
+                    <th class="hidden px-4 py-3 md:px-6 md:py-4 xl:table-cell">Data Inscrição</th>
                     <th class="px-4 py-3 md:px-6 md:py-4">Status</th>
                     <th class="px-4 py-3 text-right md:px-6 md:py-4">Mudar Status</th>
                 </tr>
@@ -66,7 +66,7 @@
                             <div class="text-sm font-medium text-gray-700"><%= enroll.Course ? enroll.Course.title : 'Curso Removido' %></div>
                             <div class="text-xs text-gray-400"><%= enroll.Course ? enroll.Course.location : 'N/A' %></div>
                         </td>
-                        <td class="hidden px-4 py-3 text-sm text-gray-500 md:px-6 md:py-4 xl:table-cell" data-label="Data Inscricao">
+                        <td class="hidden px-4 py-3 text-sm text-gray-500 md:px-6 md:py-4 xl:table-cell" data-label="Data Inscrição">
                             <%= new Date(enroll.createdAt).toLocaleDateString('pt-BR') %>
                         </td>
                         <td class="px-4 py-3 md:px-6 md:py-4" data-label="Status">
@@ -91,15 +91,15 @@
                                 </a>
                             <% } %>
                         </td>
-                        <td class="px-4 py-3 text-right md:px-6 md:py-4" data-label="Acoes">
+                        <td class="px-4 py-3 text-right md:px-6 md:py-4" data-label="Ações">
                             <div class="actions flex items-center justify-end gap-3">
                                 <button
                                     type="button"
                                     class="js-enroll-details rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50"
                                     data-student="<%= enroll.studentName %>"
-                                    data-email="<%= enroll.studentEmail || 'Nao informado' %>"
-                                    data-phone="<%= enroll.studentPhone || 'Nao informado' %>"
-                                    data-company="<%= enroll.company || 'Nao informado' %>"
+                                    data-email="<%= enroll.studentEmail || 'Não informado' %>"
+                                    data-phone="<%= enroll.studentPhone || 'Não informado' %>"
+                                    data-company="<%= enroll.company || 'Não informado' %>"
                                     data-course="<%= enroll.Course ? enroll.Course.title : 'Curso Removido' %>"
                                     data-location="<%= enroll.Course ? enroll.Course.location : 'N/A' %>"
                                     data-date="<%= new Date(enroll.createdAt).toLocaleDateString('pt-BR') %>"
@@ -108,7 +108,7 @@
                                 >
                                     Detalhes
                                 </button>
-                                <a href="/admin/inscricoes/<%= enroll.id %>/comprovante" title="Baixar Comprovante de Inscricao" target="_blank" class="text-green-600 transition-colors hover:text-green-800">
+                                <a href="/admin/inscricoes/<%= enroll.id %>/comprovante" title="Baixar Comprovante de Inscrição" target="_blank" class="text-green-600 transition-colors hover:text-green-800">
                                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
                                 </a>
                                 <% if (enroll.status === 'completo') { %>
@@ -124,11 +124,11 @@
                                         <option value="cancelado" <%= enroll.status === 'cancelado' ? 'selected' : '' %>>Cancelado</option>
                                     </select>
                                 </form>
-                                <a href="/admin/inscricoes/<%= enroll.id %>/editar" title="Editar Inscricao" class="text-blue-600 transition-colors hover:text-blue-800">
+                                <a href="/admin/inscricoes/<%= enroll.id %>/editar" title="Editar Inscrição" class="text-blue-600 transition-colors hover:text-blue-800">
                                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                 </a>
-                                <form action="/admin/inscricoes/<%= enroll.id %>/deletar" method="POST" class="inline" onsubmit="return confirm('Tem certeza que deseja excluir esta inscricao? Esta acao nao pode ser desfeita.')">
-                                    <button type="submit" title="Excluir Inscricao" class="text-red-600 transition-colors hover:text-red-800">
+                                <form action="/admin/inscricoes/<%= enroll.id %>/deletar" method="POST" class="inline" onsubmit="return confirm('Tem certeza que deseja excluir esta inscrição? Esta ação não pode ser desfeita.')">
+                                    <button type="submit" title="Excluir Inscrição" class="text-red-600 transition-colors hover:text-red-800">
                                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                     </button>
                                 </form>
@@ -138,7 +138,7 @@
                 <% }) %>
                 <% if (enrollments.length === 0) { %>
                     <tr>
-                        <td colspan="5" class="px-6 py-10 text-center italic text-gray-500">Nenhuma inscricao encontrada para a pesquisa informada.</td>
+                        <td colspan="5" class="px-6 py-10 text-center italic text-gray-500">Nenhuma inscrição encontrada para a pesquisa informada.</td>
                     </tr>
                 <% } %>
             </tbody>
@@ -162,7 +162,7 @@
 <div id="enrollment-details-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/60 p-4">
     <div class="w-full max-w-xl rounded-2xl bg-white shadow-2xl">
         <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4">
-            <h3 class="text-base font-bold text-slate-800">Detalhes da Inscricao</h3>
+            <h3 class="text-base font-bold text-slate-800">Detalhes da Inscrição</h3>
             <button type="button" class="js-close-enroll-modal text-slate-400 hover:text-slate-700" aria-label="Fechar modal">
                 <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>

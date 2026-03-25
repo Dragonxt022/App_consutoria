@@ -1,39 +1,41 @@
 <div class="max-w-6xl mx-auto">
     <div class="bg-white shadow-xl rounded-2xl overflow-hidden">
-        <div class="bg-slate-50 p-6 border-b border-slate-100 flex items-center justify-between">
-            <div>
-                <h2 class="text-xl font-bold text-slate-800">Editar Curso</h2>
-                <p class="text-slate-500 text-sm">Atualize os detalhes do treinamento com melhor leitura para conteudo e certificado.</p>
-            </div>
-            <div class="flex items-center space-x-2">
-                <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Status Atual:</span>
-                <% if(course.active) { %>
-                    <span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-emerald-200">Ativo</span>
-                <% } else { %>
-                    <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-red-200">Desativado</span>
-                <% } %>
-            </div>
-        </div>
-
         <form action="/admin/cursos/<%= course.id %>/editar" method="POST" enctype="multipart/form-data" class="p-8 space-y-8">
+            <div class="rounded-2xl border border-slate-200 bg-slate-50/80 px-5 py-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                <div>
+                    <p class="text-sm font-semibold text-slate-800">Editando: <span class="text-slate-950"><%= course.title %></span></p>
+                    <p class="text-sm text-slate-500">Revise o conteúdo, os dados do treinamento e os arquivos de apoio sem repetir informações no topo da página.</p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="inline-flex items-center rounded-full bg-white px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-slate-600 border border-slate-200">
+                        Campos com * são obrigatórios
+                    </span>
+                    <% if(course.active) { %>
+                        <span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-emerald-200">Ativo</span>
+                    <% } else { %>
+                        <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-red-200">Desativado</span>
+                    <% } %>
+                </div>
+            </div>
+
             <div class="grid gap-8 xl:grid-cols-[1.45fr_0.95fr]">
                 <section class="space-y-8">
                     <div class="rounded-2xl border border-slate-200 bg-slate-50/70 p-6">
                         <div class="mb-5">
-                            <h3 class="text-lg font-bold text-slate-800">Conteudo principal</h3>
-                            <p class="text-sm text-slate-500">Area ampliada para revisar a apresentacao comercial e tecnica do curso.</p>
+                            <h3 class="text-lg font-bold text-slate-800">Conteúdo principal</h3>
+                            <p class="text-sm text-slate-500">Área ampliada para revisar a apresentação comercial e técnica do curso.</p>
                         </div>
 
                         <div class="space-y-6">
                             <div>
-                                <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Nome do Curso</label>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Nome do Curso *</label>
                                 <input type="text" name="title" value="<%= course.title %>" required class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" placeholder="Ex: Gestão Estratégica 4.0">
                             </div>
 
                             <div>
-                                <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Descricao do Curso</label>
-                                <p class="text-xs text-slate-400 mb-3">Revise com calma o texto exibido na vitrine e na pagina do curso. Este campo agora tem mais espaco para edicao.</p>
-                                <textarea name="description" rows="12" required class="w-full min-h-[280px] px-4 py-4 rounded-2xl border border-slate-200 bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all resize-y" placeholder="Resumo do que sera abordado no curso..."><%= course.description %></textarea>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Descrição do Curso *</label>
+                                <p class="text-xs text-slate-400 mb-3">Revise com calma o texto exibido na vitrine e na página do curso. Este campo agora tem mais espaço para edição.</p>
+                                <textarea name="description" rows="12" required class="w-full min-h-[280px] px-4 py-4 rounded-2xl border border-slate-200 bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all resize-y" placeholder="Resumo do que será abordado no curso..."><%= course.description %></textarea>
                             </div>
                         </div>
                     </div>
@@ -42,15 +44,15 @@
                         <div class="mb-5 flex items-start justify-between gap-4">
                             <div>
                                 <h3 class="text-lg font-bold text-slate-800">Verso do certificado</h3>
-                                <p class="text-sm text-slate-500">Edite o conteudo em uma area maior para validar a estrutura antes de salvar.</p>
+                                <p class="text-sm text-slate-500">Edite o conteúdo em uma área maior para validar a estrutura antes de salvar.</p>
                             </div>
                             <span class="inline-flex items-center rounded-full bg-indigo-50 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-indigo-700">1 item por linha</span>
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Lista de Conteudos</label>
-                            <p class="text-xs text-slate-400 mb-3">Mantenha topicos curtos e objetivos para melhorar a leitura no verso.</p>
-                            <textarea name="certificateTopics" rows="13" class="w-full min-h-[340px] px-4 py-4 rounded-2xl border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all resize-y" placeholder="Um conteudo por linha"><%= Array.isArray(course.certificateTopics) ? course.certificateTopics.join('\n') : '' %></textarea>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Lista de Conteúdos</label>
+                            <p class="text-xs text-slate-400 mb-3">Mantenha tópicos curtos e objetivos para melhorar a leitura no verso.</p>
+                            <textarea name="certificateTopics" rows="13" class="w-full min-h-[340px] px-4 py-4 rounded-2xl border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all resize-y" placeholder="Um conteúdo por linha"><%= Array.isArray(course.certificateTopics) ? course.certificateTopics.join('\n') : '' %></textarea>
                         </div>
                     </div>
                 </section>
@@ -64,13 +66,13 @@
 
                         <div class="space-y-6">
                             <div>
-                                <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Local do Treinamento</label>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Local do Treinamento *</label>
                                 <input type="text" name="location" value="<%= course.location %>" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" placeholder="Ex: Hotel Hilton, São Paulo - SP">
                             </div>
 
                             <div class="grid sm:grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Data de Inicio</label>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Data de Início *</label>
                                     <% 
                                         let dateVal = '';
                                         if(course.startDate) {
@@ -81,18 +83,18 @@
                                     <input type="date" name="startDate" value="<%= dateVal %>" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Carga Horaria</label>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Carga Horária *</label>
                                     <input type="text" name="workload" value="<%= course.workload %>" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" placeholder="Ex: 40 horas">
                                 </div>
                             </div>
 
                             <div class="grid sm:grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Investimento (R$)</label>
-                                    <input type="text" name="price" value="<%= course.price %>" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" placeholder="R$ 1.200,00">
+                                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Investimento (R$) *</label>
+                                    <input type="text" name="price" value="<%= course.priceInputValue %>" required data-currency-input data-currency-prefix="R$ " data-currency-storage="decimal" inputmode="numeric" autocomplete="off" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" placeholder="R$ 1.200,00">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Vagas Disponiveis</label>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Vagas Disponíveis *</label>
                                     <input type="number" name="spots" value="<%= course.spots %>" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" placeholder="20">
                                 </div>
                             </div>
@@ -100,9 +102,9 @@
                             <div class="pt-2">
                                 <label class="flex items-center space-x-3 text-sm font-bold text-slate-700 cursor-pointer p-4 bg-slate-50 rounded-xl border border-slate-100 hover:bg-slate-100 transition-all">
                                     <input type="checkbox" name="active" <%= course.active ? 'checked' : '' %> class="w-5 h-5 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500">
-                                    <span>Curso visivel e aberto para inscricoes</span>
+                                    <span>Curso visível e aberto para inscrições</span>
                                 </label>
-                                <p class="text-[10px] text-slate-400 mt-2 px-1">Ao desmarcar, o curso deixa de aparecer na pagina inicial e nos detalhes.</p>
+                                <p class="text-[10px] text-slate-400 mt-2 px-1">Ao desmarcar, o curso deixa de aparecer na página inicial e nos detalhes.</p>
                             </div>
                         </div>
                     </div>
@@ -110,10 +112,10 @@
                     <div class="rounded-2xl border border-slate-200 bg-white p-6">
                         <div class="mb-5">
                             <h3 class="text-lg font-bold text-slate-800">Itens inclusos</h3>
-                            <p class="text-sm text-slate-500">Ajuste a lista de beneficios entregues ao participante.</p>
+                            <p class="text-sm text-slate-500">Ajuste a lista de benefícios entregues ao participante.</p>
                         </div>
 
-                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">O que esta incluso?</label>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">O que está incluso?</label>
                         <p class="text-xs text-slate-400 mb-3">Digite um item e aperte <span class="font-semibold">Enter</span> para adicionar.</p>
 
                         <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
@@ -170,7 +172,7 @@
                         <input type="file" name="image" id="imageInput" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
                         <div id="imagePreview" class="<%= course.image ? '' : 'hidden' %> mb-4">
                             <div class="relative inline-block">
-                                <img id="previewImage" class="max-h-48 mx-auto rounded-lg shadow-md" src="<%= course.image ? course.image : '#' %>" alt="Pre-visualizacao da imagem">
+                                <img id="previewImage" class="max-h-48 mx-auto rounded-lg shadow-md" src="<%= course.image ? course.image : '#' %>" alt="Pré-visualização da imagem">
                                 <button type="button" id="removeImage" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors">
                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -189,9 +191,9 @@
                 </div>
 
                 <div class="flex-1">
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Proposta do Curso (PDF/DOC)</label>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Proposta do Curso (PDF/DOC/DOCX)</label>
                     <div class="relative border-2 border-dashed border-slate-200 rounded-2xl p-6 text-center hover:border-indigo-400 transition-all">
-                        <input type="file" name="proposalDoc" id="pdfInput" accept=".pdf,.doc,.docx,.txt" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                        <input type="file" name="proposalDoc" id="pdfInput" accept=".pdf,.doc,.docx" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
                         <div id="pdfPreview" class="<%= course.proposalDoc ? '' : 'hidden' %> mb-4">
                             <div class="bg-slate-50 rounded-lg p-4">
                                 <div class="flex items-center justify-between">
@@ -219,7 +221,7 @@
                                 <path d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
                             </svg>
                             <p class="text-xs text-slate-500">Selecione o documento da proposta</p>
-                            <p class="text-xs text-slate-400 mt-1">Formatos aceitos: PDF, DOC, DOCX, TXT</p>
+                            <p class="text-xs text-slate-400 mt-1">Formatos aceitos: PDF, DOC e DOCX até 8MB</p>
                         </div>
                     </div>
                 </div>
@@ -228,7 +230,7 @@
             <div class="flex justify-end space-x-4 pt-4">
                 <a href="/admin/cursos" class="px-6 py-3 text-slate-600 font-bold text-sm">Cancelar</a>
                 <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-10 py-3 rounded-xl text-sm font-bold shadow-lg shadow-indigo-100 transform active:scale-95 transition-all">
-                    Salvar Alteracoes
+                    Salvar Alterações
                 </button>
             </div>
         </form>
@@ -258,7 +260,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             if (file.size > 5 * 1024 * 1024) {
-                alert('A imagem nao pode ter mais de 5MB.');
+                alert('A imagem não pode ter mais de 5MB.');
                 imageInput.value = '';
                 return;
             }
@@ -282,16 +284,16 @@ document.addEventListener('DOMContentLoaded', function() {
     pdfInput.addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
-            const validExtensions = ['.pdf', '.doc', '.docx', '.txt'];
+            const validExtensions = ['.pdf', '.doc', '.docx'];
             const fileName = file.name.toLowerCase();
             const isValid = validExtensions.some((ext) => fileName.endsWith(ext));
             if (!isValid) {
-                alert('Por favor, selecione apenas arquivos PDF, DOC, DOCX ou TXT.');
+                alert('Por favor, selecione apenas arquivos PDF, DOC ou DOCX.');
                 pdfInput.value = '';
                 return;
             }
-            if (file.size > 10 * 1024 * 1024) {
-                alert('O documento nao pode ter mais de 10MB.');
+            if (file.size > 8 * 1024 * 1024) {
+                alert('O documento não pode ter mais de 8MB.');
                 pdfInput.value = '';
                 return;
             }

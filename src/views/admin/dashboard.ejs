@@ -30,7 +30,7 @@
                 <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Pendencias</span>
             </div>
             <div class="text-3xl font-black text-slate-900"><%= stats.enrollments %></div>
-            <p class="mt-1 text-sm text-slate-500">Pre-inscricoes aguardando acao</p>
+            <p class="mt-1 text-sm text-slate-500">Pré-inscrições aguardando ação</p>
         </div>
 
         <div class="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
@@ -66,7 +66,7 @@
     </section>
 
     <section>
-        <h2 class="mb-5 text-xl font-bold text-slate-800">Acoes Rapidas</h2>
+        <h2 class="mb-5 text-xl font-bold text-slate-800">Ações Rápidas</h2>
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
             <a href="/admin/cursos/criar" class="group flex items-center rounded-2xl border border-slate-100 bg-white p-4 transition-all hover:border-indigo-300 hover:shadow-sm">
                 <div class="mr-4 rounded-xl bg-indigo-600 p-3 text-white"><svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"></path></svg></div>
@@ -78,14 +78,14 @@
             <a href="/admin/inscricoes" class="group flex items-center rounded-2xl border border-slate-100 bg-white p-4 transition-all hover:border-indigo-300 hover:shadow-sm">
                 <div class="mr-4 rounded-xl bg-amber-100 p-3 text-amber-600"><svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2"></path></svg></div>
                 <div>
-                    <div class="font-bold text-slate-800 group-hover:text-indigo-600">Revisar inscricoes</div>
+                    <div class="font-bold text-slate-800 group-hover:text-indigo-600">Revisar inscrições</div>
                     <div class="text-sm text-slate-500">Atender pendencias rapidamente</div>
                 </div>
             </a>
             <a href="/admin/usuarios" class="group flex items-center rounded-2xl border border-slate-100 bg-white p-4 transition-all hover:border-indigo-300 hover:shadow-sm">
                 <div class="mr-4 rounded-xl bg-emerald-100 p-3 text-emerald-600"><svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-1a3 3 0 00-5.196-2.079M17 20H7"></path></svg></div>
                 <div>
-                    <div class="font-bold text-slate-800 group-hover:text-indigo-600">Gerenciar usuarios</div>
+                    <div class="font-bold text-slate-800 group-hover:text-indigo-600">Gerenciar usuários</div>
                     <div class="text-sm text-slate-500">Editar acessos e status</div>
                 </div>
             </a>
@@ -106,7 +106,7 @@
             <a href="/admin/configuracoes" class="group flex items-center rounded-2xl border border-slate-100 bg-white p-4 transition-all hover:border-indigo-300 hover:shadow-sm">
                 <div class="mr-4 rounded-xl bg-slate-200 p-3 text-slate-700"><svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0"></path></svg></div>
                 <div>
-                    <div class="font-bold text-slate-800 group-hover:text-indigo-600">Configuracoes</div>
+                    <div class="font-bold text-slate-800 group-hover:text-indigo-600">Configurações</div>
                     <div class="text-sm text-slate-500">Identidade, SMTP e loja</div>
                 </div>
             </a>
@@ -125,7 +125,7 @@
                         <div class="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50 px-4 py-3">
                             <div>
                                 <div class="font-semibold text-slate-800"><%= item.studentName %></div>
-                                <div class="text-sm text-slate-500"><%= item.Course ? item.Course.title : 'Curso nao encontrado' %></div>
+                                <div class="text-sm text-slate-500"><%= item.Course ? item.Course.title : 'Curso não encontrado' %></div>
                             </div>
                             <div class="text-right">
                                 <div class="text-sm font-bold text-slate-700"><%= item.status %></div>
@@ -135,7 +135,7 @@
                     <% }) %>
                 <% } else { %>
                     <div class="rounded-xl border border-dashed border-slate-200 px-4 py-8 text-center text-sm text-slate-500">
-                        Nenhuma inscricao recente encontrada.
+                        Nenhuma inscrição recente encontrada.
                     </div>
                 <% } %>
             </div>
@@ -156,7 +156,7 @@
                     <div class="mt-1 text-2xl font-black"><%= stats.featuredProducts %></div>
                 </div>
                 <div class="rounded-xl bg-white/5 p-4">
-                    <div class="text-sm text-slate-400">Pre-inscricoes pendentes</div>
+                    <div class="text-sm text-slate-400">Pré-inscrições pendentes</div>
                     <div class="mt-1 text-2xl font-black"><%= stats.enrollments %></div>
                 </div>
             </div>

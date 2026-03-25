@@ -2,15 +2,20 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
+const publicRoot = path.join(__dirname, '..', 'public');
+const uploadPaths = {
+  courseImages: path.join(publicRoot, 'uploads', 'courses', 'images'),
+  courseDocuments: path.join(publicRoot, 'uploads', 'courses', 'documents'),
+  productImages: path.join(publicRoot, 'uploads', 'products'),
+  logos: path.join(publicRoot, 'uploads', 'logos'),
+  banners: path.join(publicRoot, 'uploads', 'banners'),
+  certificateSignatures: path.join(publicRoot, 'uploads', 'certificates', 'signatures'),
+  avatars: path.join(publicRoot, 'uploads', 'avatars'),
+  companyCertificates: path.join(publicRoot, 'uploads', 'company-certificates')
+};
+
 // Ensure upload directories exist
-const uploadDirs = [
-  'src/public/uploads/courses/images',
-  'src/public/uploads/courses/documents',
-  'src/public/uploads/logos',
-  'src/public/uploads/certificates/signatures',
-  'src/public/uploads/avatars',
-  'src/public/uploads/company-certificates'
-];
+const uploadDirs = Object.values(uploadPaths);
 
 uploadDirs.forEach((dir) => {
   if (!fs.existsSync(dir)) {
@@ -21,17 +26,21 @@ uploadDirs.forEach((dir) => {
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     if (file.fieldname === 'image') {
-      cb(null, 'src/public/uploads/courses/images');
+      cb(null, uploadPaths.courseImages);
+    } else if (file.fieldname === 'product_images') {
+      cb(null, uploadPaths.productImages);
     } else if (file.fieldname === 'logo') {
-      cb(null, 'src/public/uploads/logos');
+      cb(null, uploadPaths.logos);
+    } else if (file.fieldname.startsWith('banner_image_')) {
+      cb(null, uploadPaths.banners);
     } else if (file.fieldname === 'avatar') {
-      cb(null, 'src/public/uploads/avatars');
+      cb(null, uploadPaths.avatars);
     } else if (file.fieldname === 'cert_signature') {
-      cb(null, 'src/public/uploads/certificates/signatures');
+      cb(null, uploadPaths.certificateSignatures);
     } else if (file.fieldname === 'certificateFile') {
-      cb(null, 'src/public/uploads/company-certificates');
+      cb(null, uploadPaths.companyCertificates);
     } else {
-      cb(null, 'src/public/uploads/courses/documents');
+      cb(null, uploadPaths.courseDocuments);
     }
   },
   filename: (req, file, cb) => {
@@ -46,7 +55,7 @@ const upload = multer({
     fileSize: 8 * 1024 * 1024
   },
   fileFilter: (req, file, cb) => {
-    if (file.fieldname === 'image' || file.fieldname === 'logo' || file.fieldname === 'cert_signature' || file.fieldname === 'avatar') {
+    if (file.fieldname === 'image' || file.fieldname === 'product_images' || file.fieldname === 'logo' || file.fieldname === 'cert_signature' || file.fieldname === 'avatar' || file.fieldname.startsWith('banner_image_')) {
       if (!file.originalname.match(/\.(jpg|jpeg|png|webp|gif)$/i)) {
         return cb(new Error('Apenas arquivos de imagem sao permitidos!'), false);
       }

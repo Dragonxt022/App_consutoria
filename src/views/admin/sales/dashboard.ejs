@@ -95,7 +95,7 @@
             </div>
         <% } else { %>
             <div class="rounded-2xl border border-dashed border-slate-200 px-6 py-16 text-center text-slate-500">
-                Ainda nao ha vendas suficientes para montar a linha de receita neste periodo.
+                Ainda não há vendas suficientes para montar a linha de receita neste período.
             </div>
         <% } %>
     </div>
@@ -154,7 +154,7 @@
                                 <tr class="hover:bg-slate-50/60">
                                     <td class="px-4 py-4 md:px-6">
                                         <div class="font-medium text-slate-800"><%= sale.studentName %></div>
-                                        <div class="max-w-[220px] truncate text-xs text-slate-500"><%= sale.Course ? sale.Course.title : 'Curso nao encontrado' %></div>
+                                        <div class="max-w-[220px] truncate text-xs text-slate-500"><%= sale.Course ? sale.Course.title : 'Curso não encontrado' %></div>
                                     </td>
                                     <td class="px-4 py-4 text-right md:px-6">
                                         <div class="font-bold text-emerald-600">R$ <%= sale.finalPrice ? sale.finalPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) : '0,00' %></div>

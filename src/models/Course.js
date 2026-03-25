@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
+const { parseMoneyValue, toMoneyStorage } = require('../utils/money');
 
 const Course = sequelize.define('Course', {
   id: {
@@ -41,8 +42,15 @@ const Course = sequelize.define('Course', {
     allowNull: false
   },
   price: {
-    type: DataTypes.STRING,
-    allowNull: false
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: false,
+    defaultValue: 0.00,
+    get() {
+      return parseMoneyValue(this.getDataValue('price'));
+    },
+    set(value) {
+      this.setDataValue('price', toMoneyStorage(value));
+    }
   },
   startDate: {
     type: DataTypes.DATE,

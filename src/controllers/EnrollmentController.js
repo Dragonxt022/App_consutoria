@@ -2,6 +2,7 @@ const { Enrollment, Course, User } = require('../models');
 const { Op } = require('sequelize');
 const crypto = require('crypto');
 const { formatCurrency } = require('../utils/currencyFormatter');
+const { parseMoneyValue } = require('../utils/money');
 
 class EnrollmentController {
   buildAdminFilters(search) {
@@ -231,11 +232,15 @@ class EnrollmentController {
       }
 
       const courses = await Course.findAll({ attributes: ['id', 'title', 'price'] });
+      const normalizedCourses = courses.map((course) => ({
+        ...course.toJSON(),
+        priceValue: parseMoneyValue(course.price)
+      }));
 
       res.render('admin/enrollments/edit', {
         title: 'Editar Inscrição',
         enrollment,
-        courses,
+        courses: normalizedCourses,
         user: req.user,
         layout: 'admin/layout'
       });
@@ -256,8 +261,8 @@ class EnrollmentController {
       }
 
       // Calculate final price
-      const price = parseFloat(coursePrice) || 0;
-      const disc = parseFloat(discount) || 0;
+      const price = parseMoneyValue(coursePrice);
+      const disc = parseMoneyValue(discount);
       const final = price - disc;
 
       enrollment.studentName = studentName;

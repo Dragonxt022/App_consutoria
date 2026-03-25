@@ -3,6 +3,23 @@ const { generateToken } = require('../middleware/jwt');
 const { buildAppUrl } = require('../utils/url');
 
 class AuthController {
+  renderRegister(res, payload = {}) {
+    return res.render('auth/register', {
+      title: 'Criar Conta',
+      layout: 'public/layout',
+      ...payload
+    });
+  }
+
+  async showRegister(req, res) {
+    try {
+      this.renderRegister(res);
+    } catch (error) {
+      console.error(error);
+      res.redirect('/login?error=Erro ao abrir cadastro.');
+    }
+  }
+
   async showLogin(req, res) {
     try {
       // Verificar se há usuários no sistema
@@ -26,16 +43,20 @@ class AuthController {
 
   async login(req, res) {
     try {
-      const { email, password } = req.body;
+      const email = (req.body.email || '').trim().toLowerCase();
+      const { password } = req.body;
 
-      const user = await User.findOne({ 
-        where: { 
-          email, 
-          active: true 
-        } 
-      });
+      const user = await User.findOne({ where: { email } });
 
-      if (!user || !(await user.checkPassword(password))) {
+      if (!user) {
+        return res.redirect('/login?error=Credenciais inválidas');
+      }
+
+      if (!user.active) {
+        return res.redirect('/login?error=Sua conta ainda não foi confirmada. Verifique seu e-mail para ativar o acesso.');
+      }
+
+      if (!(await user.checkPassword(password))) {
         return res.redirect(`/login?error=Credenciais inválidas`);
       }
 
@@ -47,6 +68,84 @@ class AuthController {
     } catch (error) {
       console.error('Login error:', error);
       res.redirect('/login?error=Ocorreu um erro no servidor');
+    }
+  }
+
+  async register(req, res) {
+    try {
+      const name = (req.body.name || '').trim();
+      const email = (req.body.email || '').trim().toLowerCase();
+      const { password, confirmPassword } = req.body;
+      const cryptoRandomString = (await import('crypto-random-string')).default;
+      const EmailService = require('../services/EmailService');
+
+      if (!name || !email || !password || !confirmPassword) {
+        return this.renderRegister(res, {
+          error: 'Preencha todos os campos obrigatórios.',
+          name,
+          email
+        });
+      }
+
+      if (password !== confirmPassword) {
+        return this.renderRegister(res, {
+          error: 'As senhas não coincidem.',
+          name,
+          email
+        });
+      }
+
+      if (password.length < 6) {
+        return this.renderRegister(res, {
+          error: 'A senha deve ter no mínimo 6 caracteres.',
+          name,
+          email
+        });
+      }
+
+      const existingUser = await User.findOne({ where: { email } });
+
+      if (existingUser) {
+        return this.renderRegister(res, {
+          error: existingUser.active
+            ? 'Este e-mail já está cadastrado.'
+            : 'Este e-mail já foi cadastrado, mas ainda aguarda confirmação. Verifique sua caixa de entrada.',
+          name,
+          email
+        });
+      }
+
+      const user = await User.create({
+        name,
+        email,
+        password,
+        role: 'aluno',
+        active: false,
+        confirmationToken: `activate_${cryptoRandomString({ length: 32, type: 'url-safe' })}`,
+        confirmationExpires: new Date(Date.now() + 24 * 3600 * 1000)
+      });
+
+      const confirmationUrl = buildAppUrl(req, `/confirmar-conta/${user.confirmationToken}`);
+      const emailSent = await EmailService.sendRegistrationConfirmation(user, confirmationUrl);
+
+      if (!emailSent) {
+        await user.destroy();
+
+        return this.renderRegister(res, {
+          error: 'Não foi possível enviar o e-mail de confirmação. Verifique as configurações de envio e tente novamente.',
+          name,
+          email
+        });
+      }
+
+      return res.redirect('/login?success=Cadastro realizado com sucesso. Confirme seu e-mail para ativar a conta.');
+    } catch (error) {
+      console.error('Register error:', error);
+      return this.renderRegister(res, {
+        error: 'Erro ao criar conta. Tente novamente.',
+        name: req.body.name,
+        email: req.body.email
+      });
     }
   }
 
@@ -68,6 +167,7 @@ class AuthController {
       title: 'Confirmar Conta',
       token,
       email: user.email,
+      requiresPasswordSetup: !String(user.confirmationToken || '').startsWith('activate_'),
       layout: 'public/layout'
     });
   }
@@ -87,7 +187,16 @@ class AuthController {
         return res.redirect('/login?error=Link de confirmação inválido ou expirado.');
       }
 
-      user.password = password;
+      const requiresPasswordSetup = !String(user.confirmationToken || '').startsWith('activate_');
+
+      if (requiresPasswordSetup) {
+        if (!password || password.length < 6) {
+          return res.redirect(`/confirmar-conta/${token}?error=A senha deve ter no mínimo 6 caracteres.`);
+        }
+
+        user.password = password;
+      }
+
       user.active = true;
       user.confirmationToken = null;
       user.confirmationExpires = null;
@@ -96,7 +205,11 @@ class AuthController {
       const tokenJwt = generateToken(user);
       req.session.token = tokenJwt;
 
-      res.redirect('/aluno/dashboard?success=Conta ativada com sucesso! Bem-vindo.');
+      if (requiresPasswordSetup) {
+        return res.redirect('/aluno/dashboard?success=Conta ativada com sucesso! Bem-vindo.');
+      }
+
+      return res.redirect('/perfil?success=E-mail confirmado com sucesso. Agora complete e valide seu perfil.');
     } catch (error) {
       console.error(error);
       res.redirect('/login?error=Erro ao ativar conta.');

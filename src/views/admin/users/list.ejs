@@ -1,4 +1,4 @@
-<div class="space-y-6">
+<div class="space-y-6" x-data="{ showCreateUser: false }">
     <% if (success) { %>
         <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm font-medium text-emerald-800">
             <%= success %>
@@ -15,7 +15,7 @@
         <div class="border-b border-gray-100 bg-gray-50/50 p-6">
             <div class="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
                 <div>
-                    <h2 class="text-xl font-bold text-gray-800">Controle de Usuarios</h2>
+                    <h2 class="text-xl font-bold text-gray-800">Controle de Usuários</h2>
                     <p class="mt-1 text-sm text-slate-500">Gerencie acessos, acompanhe o status da conta e reenvie o email de ativacao ou redefinicao de senha.</p>
                 </div>
 
@@ -52,6 +52,63 @@
             </div>
         </div>
 
+        <div class="border-b border-gray-100 bg-white p-6">
+            <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-800">Novo Usuario</h3>
+                    <p class="mt-1 text-sm text-slate-500">Cadastre um novo aluno ou administrador sem sair desta tela.</p>
+                </div>
+                <button type="button" @click="showCreateUser = !showCreateUser" class="inline-flex items-center justify-center rounded-xl bg-indigo-600 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-indigo-700">
+                    <span x-text="showCreateUser ? 'Fechar cadastro' : 'Cadastrar usuário'"></span>
+                </button>
+            </div>
+
+            <div x-show="showCreateUser" x-cloak x-transition class="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                <form action="/admin/usuarios/criar" method="POST" class="space-y-5">
+                    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                        <div>
+                            <label class="mb-2 block text-xs font-bold uppercase tracking-[0.24em] text-slate-400">Nome</label>
+                            <input type="text" name="name" required class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500" placeholder="Nome completo">
+                        </div>
+                        <div>
+                            <label class="mb-2 block text-xs font-bold uppercase tracking-[0.24em] text-slate-400">Email</label>
+                            <input type="email" name="email" required class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500" placeholder="email@empresa.com">
+                        </div>
+                        <div>
+                            <label class="mb-2 block text-xs font-bold uppercase tracking-[0.24em] text-slate-400">Senha</label>
+                            <input type="password" name="password" required minlength="6" class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500" placeholder="Minimo 6 caracteres">
+                        </div>
+                        <div>
+                            <label class="mb-2 block text-xs font-bold uppercase tracking-[0.24em] text-slate-400">Perfil</label>
+                            <select name="role" class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500">
+                                <option value="aluno">Aluno</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="mb-2 block text-xs font-bold uppercase tracking-[0.24em] text-slate-400">Telefone</label>
+                            <input type="text" name="phone" class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500" placeholder="Opcional">
+                        </div>
+                        <div>
+                            <label class="mb-2 block text-xs font-bold uppercase tracking-[0.24em] text-slate-400">Empresa</label>
+                            <input type="text" name="company" class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500" placeholder="Opcional">
+                        </div>
+                    </div>
+
+                    <label class="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700">
+                        <input type="checkbox" name="active" checked class="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
+                        Criar conta ja ativa para login
+                    </label>
+
+                    <div class="flex justify-end">
+                        <button type="submit" class="rounded-xl bg-slate-900 px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-slate-800">
+                            Salvar usuario
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
         <div class="overflow-x-auto">
             <style>
             @media (max-width: 1024px) {
@@ -71,7 +128,7 @@
                         <th class="hidden px-4 py-3 md:px-6 md:py-4 lg:table-cell">Perfil</th>
                         <th class="px-4 py-3 md:px-6 md:py-4">Status</th>
                         <th class="hidden px-4 py-3 md:px-6 md:py-4 xl:table-cell">Cadastro</th>
-                        <th class="px-4 py-3 text-right md:px-6 md:py-4">Acoes</th>
+                        <th class="px-4 py-3 text-right md:px-6 md:py-4">Ações</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
@@ -105,7 +162,7 @@
                             <td class="hidden px-4 py-3 text-sm text-gray-500 md:px-6 md:py-4 xl:table-cell" data-label="Cadastro">
                                 <%= new Date(managedUser.createdAt).toLocaleDateString('pt-BR') %>
                             </td>
-                            <td class="px-4 py-3 text-right md:px-6 md:py-4" data-label="Acoes">
+                            <td class="px-4 py-3 text-right md:px-6 md:py-4" data-label="Ações">
                                 <div class="actions flex items-center justify-end gap-3">
                                     <form action="/admin/usuarios/<%= managedUser.id %>/reenviar-acesso" method="POST" class="inline" onsubmit="return confirm('Deseja reenviar o email de acesso para este usuario?')">
                                         <button type="submit" class="rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-1.5 text-xs font-semibold text-indigo-700 transition-colors hover:bg-indigo-100">

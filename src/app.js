@@ -1,5 +1,6 @@
 const express = require('express');
 const session = require('express-session');
+const MySQLStoreFactory = require('express-mysql-session');
 const path = require('path');
 require('dotenv').config();
 
@@ -19,10 +20,40 @@ const app = express();
 const isProduction = process.env.NODE_ENV === 'production';
 const trustProxy = process.env.TRUST_PROXY || (isProduction ? '1' : '0');
 const sessionSecret = process.env.SESSION_SECRET || process.env.JWT_SECRET || 'secret';
+const sessionStoreDialect = (process.env.DB_DIALECT || (process.env.DB_HOST ? 'mysql' : 'sqlite')).toLowerCase();
 
 function parseBoolean(value, fallback = false) {
   if (value === undefined) return fallback;
   return ['1', 'true', 'yes', 'on'].includes(String(value).toLowerCase());
+}
+
+function buildSessionStore() {
+  const shouldUseMySqlStore = sessionStoreDialect === 'mysql' && parseBoolean(process.env.SESSION_USE_DB_STORE, true);
+
+  if (!shouldUseMySqlStore) {
+    return null;
+  }
+
+  const MySQLStore = MySQLStoreFactory(session);
+  return new MySQLStore({
+    host: process.env.DB_HOST,
+    port: Number(process.env.DB_PORT || 3306),
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    clearExpired: true,
+    checkExpirationInterval: Number(process.env.SESSION_CHECK_EXPIRATION_MS || 15 * 60 * 1000),
+    expiration: Number(process.env.SESSION_MAX_AGE_MS || 1000 * 60 * 60 * 24 * 7),
+    createDatabaseTable: true,
+    schema: {
+      tableName: process.env.SESSION_TABLE_NAME || 'user_sessions',
+      columnNames: {
+        session_id: 'session_id',
+        expires: 'expires',
+        data: 'data'
+      }
+    }
+  });
 }
 
 app.set('trust proxy', trustProxy);
@@ -57,12 +88,14 @@ app.use(express.json());
 const secureCookie = parseBoolean(process.env.SESSION_COOKIE_SECURE, isProduction);
 const sameSite = process.env.SESSION_COOKIE_SAME_SITE || 'lax';
 const sessionMaxAge = Number(process.env.SESSION_MAX_AGE_MS || 1000 * 60 * 60 * 24 * 7);
+const sessionStore = buildSessionStore();
 
 app.use(session({
   name: process.env.SESSION_COOKIE_NAME || 'consultoria.sid',
   secret: sessionSecret,
   resave: false,
   saveUninitialized: false,
+  store: sessionStore || undefined,
   proxy: parseBoolean(trustProxy, isProduction),
   cookie: {
     httpOnly: true,

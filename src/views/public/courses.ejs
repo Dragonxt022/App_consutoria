@@ -24,9 +24,9 @@
                 </div>
             <% } else { %>
                 <% courses.forEach(course => { %>
-                    <div class="flex flex-col rounded-2xl shadow-lg overflow-hidden bg-white transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl border border-slate-100 group">
-                        <div class="relative overflow-hidden aspect-video">
-                            <%- imgTag(course.image, course.title, 'w-full h-full object-cover transition-transform duration-500 group-hover:scale-110', 'course') %>
+                    <div class="flex flex-col rounded-2xl shadow-lg bg-white transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl border border-slate-100 group">
+                        <div class="relative aspect-video border-b border-slate-100 bg-slate-50">
+                            <%- imgTag(course.image, course.title, 'w-full h-full object-contain object-center p-3 transition-transform duration-500 group-hover:scale-[1.02]', 'course') %>
                             <div class="absolute top-4 right-4">
                                 <span class="bg-white/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider text-indigo-600 shadow-sm border border-indigo-50">
                                     Presencial
@@ -59,7 +59,7 @@
                             <div class="mt-8 pt-6 border-t border-slate-50 flex items-center justify-between">
                                 <div>
                                     <p class="text-[10px] uppercase font-bold text-slate-400 tracking-tighter">Investimento</p>
-                                    <p class="text-lg font-black text-indigo-600"><%= course.price %></p>
+                                    <p class="text-lg font-black text-indigo-600"><%= course.priceDisplay %></p>
                                 </div>
                                 <% if (course.isExpired) { %>
                                     <span class="px-4 py-2 bg-slate-100 text-slate-400 text-xs font-black rounded-xl uppercase tracking-widest">Encerrado</span>

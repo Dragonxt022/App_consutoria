@@ -72,6 +72,14 @@ class UserController {
         title: 'Usuarios',
         users,
         filters,
+        formData: {
+          name: '',
+          email: '',
+          role: 'aluno',
+          active: true,
+          phone: '',
+          company: ''
+        },
         pagination: {
           currentPage: page,
           totalPages: Math.max(1, Math.ceil(count / limit)),
@@ -105,6 +113,51 @@ class UserController {
     } catch (error) {
       console.error(error);
       redirectWithFlash(req, res, '/admin/usuarios', 'error', 'Erro ao carregar usuario');
+    }
+  }
+
+  async store(req, res) {
+    try {
+      const name = (req.body.name || '').trim();
+      const email = (req.body.email || '').trim().toLowerCase();
+      const password = req.body.password || '';
+      const role = req.body.role;
+      const active = req.body.active === 'on';
+      const phone = (req.body.phone || '').trim();
+      const company = (req.body.company || '').trim();
+
+      if (!name || !email || !password) {
+        return redirectWithFlash(req, res, '/admin/usuarios', 'error', 'Nome, email e senha sao obrigatorios');
+      }
+
+      if (!['admin', 'aluno'].includes(role)) {
+        return redirectWithFlash(req, res, '/admin/usuarios', 'error', 'Perfil de acesso invalido');
+      }
+
+      if (password.length < 6) {
+        return redirectWithFlash(req, res, '/admin/usuarios', 'error', 'A senha deve ter no minimo 6 caracteres');
+      }
+
+      const existingUser = await User.findOne({ where: { email } });
+
+      if (existingUser) {
+        return redirectWithFlash(req, res, '/admin/usuarios', 'error', 'Este email ja esta em uso');
+      }
+
+      await User.create({
+        name,
+        email,
+        password,
+        role,
+        active,
+        phone: phone || null,
+        company: company || null
+      });
+
+      return redirectWithFlash(req, res, '/admin/usuarios', 'success', 'Usuario cadastrado com sucesso');
+    } catch (error) {
+      console.error(error);
+      return redirectWithFlash(req, res, '/admin/usuarios', 'error', 'Erro ao cadastrar usuario');
     }
   }
 

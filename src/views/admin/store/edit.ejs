@@ -10,7 +10,7 @@
             </span>
         </div>
 
-        <form action="/admin/loja/<%= product.id %>/editar" method="POST" class="p-8 space-y-8">
+        <form action="/admin/loja/<%= product.id %>/editar" method="POST" enctype="multipart/form-data" class="p-8 space-y-8">
             <div class="grid md:grid-cols-2 gap-8">
                 <div class="space-y-6">
                     <div>
@@ -18,13 +18,13 @@
                         <input type="text" name="name" required value="<%= product.name %>" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Descricao Curta</label>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Descrição Curta</label>
                         <textarea name="shortDescription" rows="4" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"><%= product.shortDescription %></textarea>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Preco</label>
-                            <input type="text" name="price" value="<%= product.price || '' %>" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Preço</label>
+                            <input type="text" name="price" value="<%= product.price || '' %>" data-currency-input data-currency-prefix="R$ " data-currency-storage="formatted" inputmode="numeric" autocomplete="off" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Plataforma</label>
@@ -40,11 +40,24 @@
                 <div class="space-y-6">
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Galeria de Imagens</label>
-                        <p class="mb-3 text-xs text-slate-400">Informe ate 5 URLs. A primeira imagem sera usada como capa principal.</p>
-                        <div class="space-y-3">
-                            <% for (let i = 0; i < 5; i++) { %>
-                                <input type="url" name="galleryImages" value="<%= Array.isArray(product.galleryImages) && product.galleryImages[i] ? product.galleryImages[i] : '' %>" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="URL da imagem <%= i + 1 %>">
+                        <p class="mb-3 text-xs text-slate-400">As imagens atuais aparecem abaixo. Se enviar novas imagens, a galeria será substituída.</p>
+                        <div class="space-y-4">
+                            <% if (Array.isArray(product.galleryImages) && product.galleryImages.length) { %>
+                                <div id="product-images-current" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                                    <% product.galleryImages.forEach((image, index) => { %>
+                                        <div class="overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
+                                            <input type="hidden" name="existingGalleryImages" value="<%= image %>">
+                                            <div class="aspect-video bg-white">
+                                                <img src="<%= image %>" alt="<%= product.name %> <%= index + 1 %>" class="h-full w-full object-cover">
+                                            </div>
+                                            <div class="px-3 py-2 text-xs font-semibold text-slate-500"><%= index === 0 ? 'Capa atual' : `Imagem ${index + 1}` %></div>
+                                        </div>
+                                    <% }) %>
+                                </div>
                             <% } %>
+                            <input id="product-images-input" type="file" name="product_images" accept="image/png,image/jpeg,image/webp,image/gif" multiple class="w-full text-xs text-slate-500 file:mr-4 file:rounded-full file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-xs file:font-semibold file:text-indigo-700 hover:file:bg-indigo-100">
+                            <div id="product-images-preview" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"></div>
+                            <p class="text-xs text-slate-400">Formatos aceitos: JPG, PNG, WEBP e GIF. Limite de 5 imagens.</p>
                         </div>
                     </div>
                     <div>
@@ -54,29 +67,68 @@
                     <div class="pt-4">
                         <label class="flex items-center space-x-3 text-sm font-bold text-slate-700 cursor-pointer p-4 bg-slate-50 rounded-xl border border-slate-100">
                             <input type="checkbox" name="active" <%= product.active ? 'checked' : '' %> class="w-5 h-5 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500">
-                            <span>Produto visivel na loja</span>
+                            <span>Produto visível na loja</span>
                         </label>
                     </div>
                     <div>
                         <label class="flex items-center space-x-3 text-sm font-bold text-slate-700 cursor-pointer p-4 bg-amber-50 rounded-xl border border-amber-100">
                             <input type="checkbox" name="featured" <%= product.featured ? 'checked' : '' %> class="w-5 h-5 text-amber-600 rounded border-slate-300 focus:ring-amber-500">
-                            <span>Destacar na pagina inicial</span>
+                            <span>Destacar na página inicial</span>
                         </label>
                     </div>
                 </div>
             </div>
 
             <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Descricao Completa</label>
+                <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Descrição Completa</label>
                 <textarea name="description" rows="8" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"><%= product.description %></textarea>
             </div>
 
             <div class="flex justify-end space-x-4 pt-4">
                 <a href="/admin/loja" class="px-6 py-3 text-slate-600 font-bold text-sm">Cancelar</a>
                 <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-10 py-3 rounded-xl text-sm font-bold shadow-lg shadow-indigo-100">
-                    Salvar Alteracoes
+                    Salvar Alterações
                 </button>
             </div>
         </form>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const input = document.getElementById('product-images-input');
+    const preview = document.getElementById('product-images-preview');
+    const current = document.getElementById('product-images-current');
+
+    if (!input || !preview) return;
+
+    input.addEventListener('change', function () {
+        preview.innerHTML = '';
+        const files = Array.from(input.files || []).slice(0, 5);
+
+        if (files.length && current) {
+            current.classList.add('opacity-40');
+        } else if (current) {
+            current.classList.remove('opacity-40');
+        }
+
+        files.forEach((file, index) => {
+            if (!file.type.startsWith('image/')) return;
+
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                const card = document.createElement('div');
+                card.className = 'overflow-hidden rounded-2xl border border-indigo-200 bg-indigo-50';
+                card.innerHTML = `
+                    <div class="aspect-video bg-white">
+                        <img src="${event.target.result}" alt="Preview ${index + 1}" class="h-full w-full object-cover">
+                    </div>
+                    <div class="px-3 py-2 text-xs font-semibold text-indigo-700">${index === 0 ? 'Nova capa' : `Nova imagem ${index + 1}`}</div>
+                `;
+                preview.appendChild(card);
+            };
+            reader.readAsDataURL(file);
+        });
+    });
+});
+</script>
