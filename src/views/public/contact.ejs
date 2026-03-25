@@ -1,4 +1,14 @@
 <div class="bg-white min-h-screen">
+    <%
+        const socialIconVersion = '20260325b';
+        const contactSocialLinks = [
+            { key: 'social_instagram', label: 'Instagram', icon: `/uploads/icons/icon-instagram.png?v=${socialIconVersion}` },
+            { key: 'social_facebook', label: 'Facebook', icon: `/uploads/icons/icon-Facebook.png?v=${socialIconVersion}` },
+            { key: 'social_linkedin', label: 'LinkedIn', icon: `/uploads/icons/icon-LinkedIn.png?v=${socialIconVersion}` },
+            { key: 'social_youtube', label: 'YouTube', icon: `/uploads/icons/icon-youtuber.png?v=${socialIconVersion}` },
+            { key: 'social_whatsapp', label: 'WhatsApp', icon: `/uploads/icons/icon-whastapp.png?v=${socialIconVersion}` }
+        ].filter((item) => siteSettings[item.key] && String(siteSettings[item.key]).trim() !== '');
+    %>
     <!-- Hero / Header -->
     <div class="relative bg-slate-900 py-24 px-4 overflow-hidden">
         <div class="absolute inset-0 opacity-20">
@@ -55,6 +65,19 @@
                                 </div>
                             </div>
                         </div>
+
+                        <% if (contactSocialLinks.length) { %>
+                            <div class="mt-10 pt-8 border-t border-slate-100">
+                                <p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Redes Sociais</p>
+                                <div class="flex flex-wrap gap-3">
+                                    <% contactSocialLinks.forEach((social) => { %>
+                                        <a href="<%= siteSettings[social.key] %>" target="_blank" rel="noreferrer" class="social-nav-link shadow-sm hover:shadow-md" aria-label="<%= social.label %>">
+                                            <img src="<%= social.icon %>" alt="<%= social.label %>" class="social-nav-icon">
+                                        </a>
+                                    <% }) %>
+                                </div>
+                            </div>
+                        <% } %>
                     </div>
 
                     <div class="mt-12 pt-12 border-t border-slate-50">
