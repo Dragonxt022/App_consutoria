@@ -155,4 +155,8 @@ tmp/
 temp/
 
 # Outras Pastas
-public/uploads/
+public/uploads/avatars
+public/uploads/certificates
+public/uploads/company-certificates
+public/uploads/courses
+public/uploads/logos
