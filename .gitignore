@@ -153,3 +153,6 @@ Thumbs.db
 # Temporary folders
 tmp/
 temp/
+
+# Outras Pastas
+public/uploads/
