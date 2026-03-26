@@ -1,13 +1,46 @@
-﻿const { User } = require('../models');
+﻿const { User, Enrollment, Course } = require('../models');
 const { Op } = require('sequelize');
 const path = require('path');
 const fs = require('fs');
 const EmailService = require('../services/EmailService');
 const { generateToken } = require('../middleware/jwt');
 const { buildAppUrl } = require('../utils/url');
+const { formatCurrency } = require('../utils/currencyFormatter');
 
 class ProfileController {
-  // Perfil do aluno (fluxo existente)
+  removeAvatarIfNeeded(avatarUrl) {
+    if (!avatarUrl || !avatarUrl.startsWith('/uploads/avatars/')) {
+      return;
+    }
+
+    const avatarPath = path.join(__dirname, '..', 'public', avatarUrl.replace('/uploads/', 'uploads/'));
+    if (!fs.existsSync(avatarPath)) {
+      return;
+    }
+
+    try {
+      fs.unlinkSync(avatarPath);
+    } catch (error) {
+      console.warn('Não foi possível remover avatar antigo:', error.message || error);
+    }
+  }
+
+  async getStudentEnrollments(userId) {
+    return Enrollment.findAll({
+      where: { userId },
+      include: [{ model: Course }],
+      order: [['createdAt', 'DESC']]
+    });
+  }
+
+  getStudentStats(enrollments) {
+    return {
+      totalCourses: enrollments.length,
+      totalCertificates: enrollments.filter((enrollment) => enrollment.status === 'completo').length,
+      totalInProgress: enrollments.filter((enrollment) => ['pendente', 'confirmado'].includes(enrollment.status)).length
+    };
+  }
+
   async show(req, res) {
     try {
       const user = await User.findByPk(req.user.id);
@@ -15,9 +48,12 @@ class ProfileController {
         return res.status(404).render('error', { title: 'Usuário não encontrado', layout: false });
       }
 
+      const enrollments = await this.getStudentEnrollments(user.id);
+
       res.render('aluno/profile', {
         title: 'Meu Perfil',
         user,
+        stats: this.getStudentStats(enrollments),
         layout: 'public/layout'
       });
     } catch (error) {
@@ -28,38 +64,29 @@ class ProfileController {
 
   async update(req, res) {
     try {
-      const { name, phone, cpfCnpj, company, entePublico, pais, endereco, cidade, estado, cep } = req.body;
       const user = await User.findByPk(req.user.id);
 
       if (!user) {
-        return res.status(404).json({ success: false, message: 'Usuário não encontrado' });
+        return res.redirect('/perfil?error=Usuário não encontrado');
       }
 
-      user.name = name || user.name;
-      user.phone = phone || user.phone;
-      user.cpfCnpj = cpfCnpj || user.cpfCnpj;
-      user.company = company || user.company;
-      user.entePublico = entePublico !== undefined ? entePublico : user.entePublico;
-      user.pais = pais || user.pais;
-      user.endereco = endereco || user.endereco;
-      user.cidade = cidade || user.cidade;
-      user.estado = estado || user.estado;
-      user.cep = cep || user.cep;
+      const oldAvatar = user.avatar;
+
+      if (req.file) {
+        user.avatar = `/uploads/avatars/${req.file.filename}`;
+      }
 
       await user.save();
       req.session.token = generateToken(user);
 
-      return res.json({
-        success: true,
-        message: 'Perfil atualizado com sucesso',
-        user: user.toJSON()
-      });
+      if (req.file && oldAvatar && oldAvatar !== user.avatar) {
+        this.removeAvatarIfNeeded(oldAvatar);
+      }
+
+      return res.redirect('/perfil?success=Foto de perfil atualizada com sucesso');
     } catch (error) {
       console.error(error);
-      return res.status(500).json({
-        success: false,
-        message: 'Erro ao atualizar perfil'
-      });
+      return res.redirect('/perfil?error=Erro ao atualizar a foto de perfil');
     }
   }
 
@@ -69,44 +96,76 @@ class ProfileController {
       const user = await User.findByPk(req.user.id);
 
       if (!user) {
-        return res.status(404).json({ success: false, message: 'Usuário não encontrado' });
+        return res.redirect('/perfil?error=Usuário não encontrado');
       }
 
       const isPasswordCorrect = await user.checkPassword(currentPassword);
       if (!isPasswordCorrect) {
-        return res.status(401).json({
-          success: false,
-          message: 'Senha atual incorreta'
-        });
+        return res.redirect('/perfil?error=Senha atual incorreta');
       }
 
       if (newPassword !== confirmPassword) {
-        return res.status(400).json({
-          success: false,
-          message: 'As senhas não coincidem'
-        });
+        return res.redirect('/perfil?error=As senhas não coincidem');
       }
 
       if (newPassword.length < 6) {
-        return res.status(400).json({
-          success: false,
-          message: 'A nova senha deve ter no mínimo 6 caracteres'
-        });
+        return res.redirect('/perfil?error=A nova senha deve ter no mínimo 6 caracteres');
       }
 
       user.password = newPassword;
       await user.save();
+      req.session.token = generateToken(user);
 
-      return res.json({
-        success: true,
-        message: 'Senha alterada com sucesso'
+      return res.redirect('/perfil?success=Senha alterada com sucesso');
+    } catch (error) {
+      console.error(error);
+      return res.redirect('/perfil?error=Erro ao alterar senha');
+    }
+  }
+
+  async studentCourses(req, res) {
+    try {
+      const user = await User.findByPk(req.user.id);
+      if (!user) {
+        return res.redirect('/login?error=Usuário não encontrado');
+      }
+
+      const enrollments = await this.getStudentEnrollments(user.id);
+
+      return res.render('aluno/courses', {
+        title: 'Meus Cursos',
+        user,
+        enrollments,
+        stats: this.getStudentStats(enrollments),
+        formatCurrency,
+        layout: 'public/layout'
       });
     } catch (error) {
       console.error(error);
-      return res.status(500).json({
-        success: false,
-        message: 'Erro ao alterar senha'
+      return res.redirect('/aluno/dashboard?error=Erro ao carregar seus cursos');
+    }
+  }
+
+  async studentCertificates(req, res) {
+    try {
+      const user = await User.findByPk(req.user.id);
+      if (!user) {
+        return res.redirect('/login?error=Usuário não encontrado');
+      }
+
+      const enrollments = await this.getStudentEnrollments(user.id);
+      const certificates = enrollments.filter((enrollment) => enrollment.status === 'completo');
+
+      return res.render('aluno/certificates', {
+        title: 'Meus Certificados',
+        user,
+        certificates,
+        stats: this.getStudentStats(enrollments),
+        layout: 'public/layout'
       });
+    } catch (error) {
+      console.error(error);
+      return res.redirect('/aluno/dashboard?error=Erro ao carregar seus certificados');
     }
   }
 

@@ -1,4 +1,4 @@
-const { User, Enrollment } = require('../models');
+const { User, Enrollment, BlogPost } = require('../models');
 const { Op } = require('sequelize');
 const { redirectWithFlash } = require('../utils/flash');
 const { buildAppUrl } = require('../utils/url');
@@ -272,6 +272,41 @@ class UserController {
     } catch (error) {
       console.error(error);
       redirectWithFlash(req, res, '/admin/usuarios', 'error', 'Erro ao reenviar email de acesso');
+    }
+  }
+
+  async delete(req, res) {
+    try {
+      const managedUser = await User.findByPk(req.params.id);
+
+      if (!managedUser) {
+        return redirectWithFlash(req, res, '/admin/usuarios', 'error', 'Usuario nao encontrado');
+      }
+
+      if (req.user.id === managedUser.id) {
+        return redirectWithFlash(req, res, '/admin/usuarios', 'error', 'Voce nao pode excluir seu proprio usuario');
+      }
+
+      const [enrollmentCount, blogPostCount] = await Promise.all([
+        Enrollment.count({ where: { userId: managedUser.id }, paranoid: false }),
+        BlogPost.count({ where: { authorId: managedUser.id }, paranoid: false })
+      ]);
+
+      if (enrollmentCount > 0 || blogPostCount > 0) {
+        return redirectWithFlash(
+          req,
+          res,
+          '/admin/usuarios',
+          'error',
+          'Este usuario possui inscricoes ou publicacoes vinculadas e nao pode ser excluido.'
+        );
+      }
+
+      await managedUser.destroy();
+      return redirectWithFlash(req, res, '/admin/usuarios', 'success', 'Usuario excluido com sucesso');
+    } catch (error) {
+      console.error(error);
+      return redirectWithFlash(req, res, '/admin/usuarios', 'error', 'Erro ao excluir usuario');
     }
   }
 }

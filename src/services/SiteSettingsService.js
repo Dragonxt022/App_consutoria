@@ -2,6 +2,9 @@ const { Setting } = require('../models');
 
 const defaultSettings = {
   site_name: 'ConsultPro',
+  seo_site_title: 'ConsultPro | Início',
+  seo_site_description: 'Treinamentos, cursos e conteúdos para capacitação profissional no setor público e privado.',
+  seo_site_keywords: 'cursos, treinamentos, capacitação, certificações',
   use_logo: 'false',
   logo_url: '',
   show_course_store_offers: 'false',

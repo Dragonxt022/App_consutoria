@@ -6,7 +6,7 @@ const SiteSettingsService = require('../services/SiteSettingsService');
 
 class SettingController {
   getAllowedTabs() {
-    return ['identidade', 'loja', 'certificados', 'rodape', 'banners', 'email'];
+    return ['identidade', 'seo', 'loja', 'certificados', 'rodape', 'banners', 'email'];
   }
 
   getDefaultSettings() {

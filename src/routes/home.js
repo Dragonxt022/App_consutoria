@@ -12,6 +12,7 @@ const ProfileController = require('../controllers/ProfileController');
 const CompanyCertificateController = require('../controllers/CompanyCertificateController');
 const UserController = require('../controllers/UserController');
 const ProductController = require('../controllers/ProductController');
+const BlogController = require('../controllers/BlogController');
 const { authMiddleware, guestMiddleware, publicMiddleware } = require('../middleware/auth'); // Adicione publicMiddleware
 const upload = require('../config/multer');
 
@@ -35,6 +36,52 @@ const uploadSettingsFiles = (req, res, next) => {
   });
 };
 
+const uploadBlogImages = (req, res, next) => {
+  upload.array('blog_image', 30)(req, res, (error) => {
+    if (!error) return next();
+
+    console.error('Erro no upload de imagens do blog:', error);
+
+    if (error.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({
+        success: false,
+        code: error.code,
+        field: error.field || null,
+        message: 'Uma das imagens excede o limite de 8MB.'
+      });
+    }
+
+    if (error.code === 'LIMIT_FILE_COUNT') {
+      return res.status(400).json({
+        success: false,
+        code: error.code,
+        field: error.field || null,
+        message: 'Voce pode enviar no maximo 30 imagens por vez.'
+      });
+    }
+
+    if (error.code === 'LIMIT_UNEXPECTED_FILE') {
+      const tooManyFiles = error.field === 'blog_image';
+
+      return res.status(400).json({
+        success: false,
+        code: error.code,
+        field: error.field || null,
+        message: tooManyFiles
+          ? 'Voce excedeu o limite de 30 imagens por envio.'
+          : `Campo de upload inesperado: ${error.field || 'desconhecido'}.`
+      });
+    }
+
+    return res.status(400).json({
+      success: false,
+      code: error.code || 'UPLOAD_ERROR',
+      field: error.field || null,
+      message: error.message || 'Erro ao processar upload das imagens.'
+    });
+  });
+};
+
 // Rotas públicas do site institucional - use publicMiddleware
 router.get('/', publicMiddleware, (req, res) => CourseController.index(req, res));
 router.get('/cursos', publicMiddleware, (req, res) => CourseController.publicList(req, res));
@@ -42,6 +89,8 @@ router.get('/loja', publicMiddleware, (req, res) => ProductController.publicList
 router.get('/loja/:slug', publicMiddleware, (req, res) => ProductController.publicDetails(req, res));
 router.get('/loja/:slug/comprar', publicMiddleware, (req, res) => ProductController.redirectToAffiliate(req, res));
 router.get('/certidoes', publicMiddleware, (req, res) => CompanyCertificateController.publicList(req, res));
+router.get('/blog', publicMiddleware, (req, res) => BlogController.publicList(req, res));
+router.get('/blog/:slug', publicMiddleware, (req, res) => BlogController.publicDetails(req, res));
 router.get('/contato', publicMiddleware, (req, res) => HomeController.contact(req, res));
 router.get('/politica-de-privacidade', publicMiddleware, (req, res) => HomeController.privacyPolicy(req, res));
 router.get('/curso/:id', publicMiddleware, (req, res) => CourseController.details(req, res));
@@ -93,6 +142,7 @@ router.post('/admin/usuarios/criar', authMiddleware('admin'), (req, res) => User
 router.get('/admin/usuarios/:id/editar', authMiddleware('admin'), (req, res) => UserController.edit(req, res));
 router.post('/admin/usuarios/:id/editar', authMiddleware('admin'), (req, res) => UserController.update(req, res));
 router.post('/admin/usuarios/:id/reenviar-acesso', authMiddleware('admin'), (req, res) => UserController.resendAccess(req, res));
+router.post('/admin/usuarios/:id/deletar', authMiddleware('admin'), (req, res) => UserController.delete(req, res));
 
 // Admin Store Routes
 router.get('/admin/loja', authMiddleware('admin'), (req, res) => ProductController.adminList(req, res));
@@ -122,9 +172,25 @@ router.post('/admin/cursos/:id/editar', authMiddleware('admin'), upload.fields([
 router.post('/admin/cursos/:id/status', authMiddleware('admin'), (req, res) => CourseController.adminToggleStatus(req, res));
 router.post('/admin/cursos/:id/deletar', authMiddleware('admin'), (req, res) => CourseController.adminDelete(req, res));
 
+// Admin Blog Routes
+router.get('/admin/blog', authMiddleware('admin'), (req, res) => BlogController.adminList(req, res));
+router.get('/admin/blog/novo', authMiddleware('admin'), (req, res) => BlogController.adminCreateForm(req, res));
+router.post('/admin/blog/criar', authMiddleware('admin'), upload.single('coverImage'), (req, res) => BlogController.adminStore(req, res));
+router.get('/admin/blog/categorias', authMiddleware('admin'), (req, res) => BlogController.adminCategories(req, res));
+router.post('/admin/blog/categorias/criar', authMiddleware('admin'), (req, res) => BlogController.storeCategory(req, res));
+router.post('/admin/blog/categorias/:id/editar', authMiddleware('admin'), (req, res) => BlogController.updateCategory(req, res));
+router.post('/admin/blog/autosave/novo', authMiddleware('admin'), (req, res) => BlogController.autosave(req, res));
+router.post('/admin/blog/autosave/:id', authMiddleware('admin'), (req, res) => BlogController.autosave(req, res));
+router.post('/admin/blog/upload-imagem', authMiddleware('admin'), uploadBlogImages, (req, res) => BlogController.uploadBodyImage(req, res));
+router.get('/admin/blog/:id/editar', authMiddleware('admin'), (req, res) => BlogController.adminEditForm(req, res));
+router.post('/admin/blog/:id/editar', authMiddleware('admin'), upload.single('coverImage'), (req, res) => BlogController.adminUpdate(req, res));
+router.post('/admin/blog/:id/deletar', authMiddleware('admin'), (req, res) => BlogController.adminDelete(req, res));
+
 // Dashboard Routes
 router.get('/admin/dashboard', authMiddleware('admin'), (req, res) => HomeController.adminDashboard(req, res));
 router.get('/aluno/dashboard', authMiddleware('aluno'), (req, res) => HomeController.alunoDashboard(req, res));
+router.get('/meus-cursos', authMiddleware('aluno'), (req, res) => ProfileController.studentCourses(req, res));
+router.get('/meus-certificados', authMiddleware('aluno'), (req, res) => ProfileController.studentCertificates(req, res));
 
 // Adicione também as rotas de login/registro
 router.get('/login', guestMiddleware, (req, res) => AuthController.showLogin(req, res));
@@ -135,7 +201,7 @@ router.post('/register', guestMiddleware, (req, res) => AuthController.register(
 
 // Rotas de Perfil do Aluno
 router.get('/perfil', authMiddleware('aluno'), (req, res) => ProfileController.show(req, res));
-router.post('/perfil/atualizar', authMiddleware('aluno'), (req, res) => ProfileController.update(req, res));
+router.post('/perfil/atualizar', authMiddleware('aluno'), upload.single('avatar'), (req, res) => ProfileController.update(req, res));
 router.post('/perfil/alterar-senha', authMiddleware('aluno'), (req, res) => ProfileController.changePassword(req, res));
 
 // Rotas de Perfil do Administrador

@@ -11,7 +11,9 @@ const uploadPaths = {
   banners: path.join(publicRoot, 'uploads', 'banners'),
   certificateSignatures: path.join(publicRoot, 'uploads', 'certificates', 'signatures'),
   avatars: path.join(publicRoot, 'uploads', 'avatars'),
-  companyCertificates: path.join(publicRoot, 'uploads', 'company-certificates')
+  companyCertificates: path.join(publicRoot, 'uploads', 'company-certificates'),
+  blogCovers: path.join(publicRoot, 'uploads', 'blog', 'covers'),
+  blogContent: path.join(publicRoot, 'uploads', 'blog', 'content')
 };
 
 // Ensure upload directories exist
@@ -39,6 +41,10 @@ const storage = multer.diskStorage({
       cb(null, uploadPaths.certificateSignatures);
     } else if (file.fieldname === 'certificateFile') {
       cb(null, uploadPaths.companyCertificates);
+    } else if (file.fieldname === 'coverImage') {
+      cb(null, uploadPaths.blogCovers);
+    } else if (file.fieldname === 'blog_image') {
+      cb(null, uploadPaths.blogContent);
     } else {
       cb(null, uploadPaths.courseDocuments);
     }
@@ -55,7 +61,7 @@ const upload = multer({
     fileSize: 8 * 1024 * 1024
   },
   fileFilter: (req, file, cb) => {
-    if (file.fieldname === 'image' || file.fieldname === 'product_images' || file.fieldname === 'logo' || file.fieldname === 'cert_signature' || file.fieldname === 'avatar' || file.fieldname.startsWith('banner_image_')) {
+    if (file.fieldname === 'image' || file.fieldname === 'product_images' || file.fieldname === 'logo' || file.fieldname === 'cert_signature' || file.fieldname === 'avatar' || file.fieldname === 'coverImage' || file.fieldname === 'blog_image' || file.fieldname.startsWith('banner_image_')) {
       if (!file.originalname.match(/\.(jpg|jpeg|png|webp|gif)$/i)) {
         return cb(new Error('Apenas arquivos de imagem sao permitidos!'), false);
       }

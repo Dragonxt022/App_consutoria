@@ -6,6 +6,8 @@ const Setting = require('./Setting');
 const Enrollment = require('./Enrollment');
 const CompanyCertificate = require('./CompanyCertificate');
 const Product = require('./Product');
+const BlogCategory = require('./BlogCategory');
+const BlogPost = require('./BlogPost');
 
 function parseBoolean(value, fallback = false) {
   if (value === undefined) return fallback;
@@ -19,6 +21,8 @@ const models = {
   Enrollment,
   CompanyCertificate,
   Product,
+  BlogCategory,
+  BlogPost,
   sequelize
 };
 
@@ -28,6 +32,12 @@ Course.hasMany(Enrollment, { foreignKey: 'courseId' });
 
 Enrollment.belongsTo(User, { foreignKey: 'userId', as: 'student' });
 User.hasMany(Enrollment, { foreignKey: 'userId' });
+
+BlogPost.belongsTo(BlogCategory, { foreignKey: 'categoryId', as: 'category' });
+BlogCategory.hasMany(BlogPost, { foreignKey: 'categoryId', as: 'posts' });
+
+BlogPost.belongsTo(User, { foreignKey: 'authorId', as: 'author' });
+User.hasMany(BlogPost, { foreignKey: 'authorId', as: 'blogPosts' });
 
 // Associations dinâmicas (caso algum model use associate)
 Object.keys(models).forEach(key => {

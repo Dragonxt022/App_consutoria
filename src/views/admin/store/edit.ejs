@@ -1,3 +1,5 @@
+<link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+
 <div class="max-w-4xl mx-auto">
     <div class="bg-white shadow-xl rounded-2xl overflow-hidden">
         <div class="bg-slate-50 p-6 border-b border-slate-100 flex items-center justify-between">
@@ -24,7 +26,7 @@
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Preço</label>
-                            <input type="text" name="price" value="<%= product.price || '' %>" data-currency-input data-currency-prefix="R$ " data-currency-storage="formatted" inputmode="numeric" autocomplete="off" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            <input type="text" name="price" value="<%= product.price || '' %>" data-currency-input data-currency-prefix="R$ " data-currency-storage="formatted" data-currency-mode="cents" inputmode="numeric" autocomplete="off" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Plataforma</label>
@@ -81,7 +83,8 @@
 
             <div>
                 <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Descrição Completa</label>
-                <textarea name="description" rows="8" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"><%= product.description %></textarea>
+                <input type="hidden" name="description" id="descriptionInput" required>
+                <div id="productDescriptionEditor" class="rounded-xl border border-slate-200 bg-white min-h-[280px]"><%- product.description || '' %></div>
             </div>
 
             <div class="flex justify-end space-x-4 pt-4">
@@ -94,8 +97,29 @@
     </div>
 </div>
 
+<script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    const descriptionEditor = new Quill('#productDescriptionEditor', {
+        theme: 'snow',
+        placeholder: 'Detalhes completos, benefícios e público-alvo do produto',
+        modules: {
+            toolbar: [
+                [{ header: [1, 2, 3, false] }],
+                ['bold', 'italic', 'underline'],
+                [{ color: [] }, { background: [] }],
+                [{ list: 'ordered' }, { list: 'bullet' }],
+                ['blockquote', 'link'],
+                ['clean']
+            ]
+        }
+    });
+    const descriptionInput = document.getElementById('descriptionInput');
+    descriptionInput.value = descriptionEditor.root.innerHTML;
+    descriptionEditor.on('text-change', function () {
+        descriptionInput.value = descriptionEditor.root.innerHTML;
+    });
+
     const input = document.getElementById('product-images-input');
     const preview = document.getElementById('product-images-preview');
     const current = document.getElementById('product-images-current');

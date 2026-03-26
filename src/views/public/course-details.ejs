@@ -2,12 +2,10 @@
     <div class="rounded-2xl bg-white shadow-2xl overflow-hidden">
         <div class="border-b border-slate-100 px-8 pt-8 pb-6 md:px-12">
             <nav class="mb-6" aria-label="Breadcrumb">
-                <ol class="flex flex-wrap items-center gap-2 text-sm">
-                    <li><a href="/" class="rounded-full bg-slate-100 px-3 py-1.5 font-medium text-slate-500 transition hover:bg-slate-200 hover:text-slate-700">Início</a></li>
+                <ol class="flex flex-wrap items-center gap-2 text-sm text-slate-500">
+                    <li><a href="/" class="font-medium transition hover:text-slate-700">Início</a></li>
                     <li class="text-slate-300">/</li>
-                    <li><a href="/cursos" class="rounded-full bg-indigo-50 px-3 py-1.5 font-semibold text-indigo-700">Cursos</a></li>
-                    <li class="text-slate-300">/</li>
-                    <li class="max-w-full truncate rounded-full bg-slate-900 px-3 py-1.5 font-semibold text-white"><%= course.title %></li>
+                    <li><a href="/cursos" class="font-medium text-indigo-600 transition hover:text-indigo-700">Cursos</a></li>
                 </ol>
             </nav>
 
@@ -26,8 +24,8 @@
 
                     <section>
                         <h2 class="mb-4 text-2xl font-bold text-slate-900">Sobre o Curso</h2>
-                        <div class="text-lg leading-relaxed text-slate-600 whitespace-pre-line">
-                            <%= course.description %>
+                        <div class="rich-content ql-editor max-w-none">
+                            <%- course.description %>
                         </div>
                     </section>
                 </div>

@@ -39,7 +39,7 @@ class EmailService {
   async sendAccountConfirmation(user, tempPassword, url) {
     const html = `
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
-        <h2 style="color: #4f46e5;">Bem-vindo ao ConsultPro!</h2>
+        <h2 style="color: #e57846;">Bem-vindo ao CIP ILIMITADA!</h2>
         <p>Olá <strong>${user.name}</strong>,</p>
         <p>Sua inscrição foi recebida com sucesso. Para garantir sua vaga e acessar sua área do aluno, você precisa confirmar sua conta.</p>
         
@@ -50,7 +50,7 @@ class EmailService {
 
         <p>Clique no botão abaixo para definir sua senha definitiva e ativar seu acesso:</p>
         
-        <a href="${url}" style="display: inline-block; background: #4f46e5; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 20px 0;">Ativar Minha Conta</a>
+        <a href="${url}" style="display: inline-block; background: #e57846; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 20px 0;">Ativar Minha Conta</a>
         
         <p style="font-size: 12px; color: #999;">Esta confirmação deve ser realizada em até 24 horas, ou sua inscrição será automaticamente cancelada.</p>
         
@@ -64,13 +64,13 @@ class EmailService {
   async sendAccountActivationLink(user, url) {
     const html = `
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
-        <h2 style="color: #4f46e5;">Ativacao de Conta</h2>
+        <h2 style="color: #e57846;">Ativacao de Conta</h2>
         <p>Ola <strong>${user.name}</strong>,</p>
         <p>Seu acesso ja esta cadastrado, mas a conta ainda precisa ser validada para liberar a entrada na plataforma.</p>
 
         <p>Para concluir a ativacao e definir sua senha, clique no botao abaixo:</p>
 
-        <a href="${url}" style="display: inline-block; background: #4f46e5; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 20px 0;">Ativar Minha Conta</a>
+        <a href="${url}" style="display: inline-block; background: #e57846; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 20px 0;">Ativar Minha Conta</a>
 
         <p style="font-size: 12px; color: #999;">Este link expira em 24 horas.</p>
 
@@ -84,13 +84,13 @@ class EmailService {
   async sendRegistrationConfirmation(user, url) {
     const html = `
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
-        <h2 style="color: #4f46e5;">Confirmação de e-mail</h2>
+        <h2 style="color: #e57846;">Confirmação de e-mail</h2>
         <p>Olá <strong>${user.name}</strong>,</p>
         <p>Recebemos o seu cadastro e agora precisamos confirmar o seu e-mail para liberar o acesso à área do aluno.</p>
 
         <p>Clique no botão abaixo para validar sua conta:</p>
 
-        <a href="${url}" style="display: inline-block; background: #4f46e5; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 20px 0;">Confirmar meu e-mail</a>
+        <a href="${url}" style="display: inline-block; background: #e57846; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 20px 0;">Confirmar meu e-mail</a>
 
         <p style="font-size: 12px; color: #999;">Este link expira em 24 horas.</p>
 
@@ -104,7 +104,7 @@ class EmailService {
   async sendPasswordReset(user, token, url) {
     const html = `
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
-        <h2 style="color: #4f46e5;">Recuperação de Senha</h2>
+        <h2 style="color: #e57846;">Recuperação de Senha</h2>
         <p>Olá <strong>${user.name}</strong>,</p>
         <p>Recebemos uma solicitação para redefinir a senha da sua conta no ConsultPro.</p>
         
@@ -112,7 +112,7 @@ class EmailService {
         
         <p>Para criar uma nova senha, clique no botão abaixo:</p>
         
-        <a href="${url}" style="display: inline-block; background: #4f46e5; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 20px 0;">Redefinir Minha Senha</a>
+        <a href="${url}" style="display: inline-block; background: #e57846; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 20px 0;">Redefinir Minha Senha</a>
         
         <p style="font-size: 12px; color: #999;">Este link expira em 1 hora.</p>
         
@@ -126,12 +126,12 @@ class EmailService {
   async sendEmailChangeConfirmation(user, newEmail, url) {
     const html = `
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
-        <h2 style="color: #4f46e5;">Confirmação de novo e-mail</h2>
+        <h2 style="color: #e57846;">Confirmação de novo e-mail</h2>
         <p>Olá <strong>${user.name}</strong>,</p>
         <p>Recebemos uma solicitação para alterar o e-mail da conta administrativa para:</p>
         <p style="font-weight: 700; font-size: 16px;">${newEmail}</p>
         <p>Para concluir a troca, clique no botão abaixo:</p>
-        <a href="${url}" style="display: inline-block; background: #4f46e5; color: white; padding: 12px 22px; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 20px 0;">Confirmar novo e-mail</a>
+        <a href="${url}" style="display: inline-block; background: #e57846; color: white; padding: 12px 22px; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 20px 0;">Confirmar novo e-mail</a>
         <p style="font-size: 12px; color: #999;">Este link expira em 1 hora.</p>
         <hr style="border: 0; border-top: 1px solid #eee; margin: 24px 0;">
         <p style="font-size: 11px; color: #999;">Se você não solicitou essa alteração, ignore este e-mail.</p>

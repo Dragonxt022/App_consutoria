@@ -45,7 +45,7 @@
         }
     </style>
 </head>
-<body class="bg-slate-100 min-h-screen" x-data="{ mobileSidebarOpen: false, desktopSidebarCollapsed: localStorage.getItem('adminSidebarCollapsed') === 'true', toastVisible: <%= toast ? 'true' : 'false' %> }" x-init="$watch('mobileSidebarOpen', value => document.body.classList.toggle('overflow-hidden', value)); $watch('desktopSidebarCollapsed', value => localStorage.setItem('adminSidebarCollapsed', value)); if (toastVisible) { setTimeout(() => toastVisible = false, 3500); }" @keydown.window.escape="mobileSidebarOpen = false">
+<body class="bg-slate-100 min-h-screen" x-data="{ mobileSidebarOpen: false, desktopSidebarCollapsed: localStorage.getItem('adminSidebarCollapsed') === 'true', sidebarCollapsed: window.innerWidth >= 768 ? (localStorage.getItem('adminSidebarCollapsed') === 'true') : false, toastVisible: <%= toast ? 'true' : 'false' %> }" x-init="window.addEventListener('resize', () => { const isDesktop = window.innerWidth >= 768; sidebarCollapsed = isDesktop ? desktopSidebarCollapsed : false; if (isDesktop) mobileSidebarOpen = false; }); $watch('mobileSidebarOpen', value => document.body.classList.toggle('overflow-hidden', value)); $watch('desktopSidebarCollapsed', value => { localStorage.setItem('adminSidebarCollapsed', value); if (window.innerWidth >= 768) sidebarCollapsed = value; }); if (toastVisible) { setTimeout(() => toastVisible = false, 3500); }" @keydown.window.escape="mobileSidebarOpen = false">
     <div class="flex min-h-screen">
         <div
             x-cloak
@@ -56,74 +56,122 @@
         ></div>
 
         <aside
-            class="fixed inset-y-0 left-0 z-50 flex w-72 max-w-[86vw] flex-col bg-white text-slate-600 shadow-2xl transition-all duration-300 md:max-w-none md:translate-x-0 md:shadow-none md:border-r md:border-slate-200"
-            :class="mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'"
-            x-bind:class="desktopSidebarCollapsed ? 'md:w-24' : 'md:w-64'"
+            x-cloak
+            x-show="mobileSidebarOpen || window.innerWidth >= 768"
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="-translate-x-full opacity-0"
+            x-transition:enter-end="translate-x-0 opacity-100"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="translate-x-0 opacity-100"
+            x-transition:leave-end="-translate-x-full opacity-0"
+            class="fixed inset-y-0 left-0 z-50 flex w-[18.5rem] max-w-[88vw] flex-col border-r border-slate-200 bg-white text-slate-600 shadow-2xl md:max-w-none md:translate-x-0 md:shadow-none"
+            x-bind:class="sidebarCollapsed ? 'md:w-24' : 'md:w-64'"
         >
-            <div class="border-b border-slate-200 bg-white p-4">
-                <div class="flex items-center">
-                    <a href="/" class="group flex min-w-0 items-center space-x-3 rounded-2xl bg-slate-50 px-3 py-2 shadow-sm ring-1 ring-slate-200">
+            <div class="border-b border-slate-200 bg-white px-4 py-4">
+                <div class="flex items-center justify-between gap-3 md:justify-center">
+                    <a href="/" class="group flex min-w-0 items-center justify-center">
                     <% if (siteSettings.use_logo === 'true' && siteSettings.logo_url) { %>
-                        <img src="<%= siteSettings.logo_url %>" alt="<%= siteSettings.site_name %>" class="h-10 w-auto max-w-[120px] object-contain transform transition duration-200 group-hover:scale-110" onerror="this.style.display='none'">
+                        <img
+                            src="<%= siteSettings.logo_url %>"
+                            alt="<%= siteSettings.site_name %>"
+                            class="h-10 w-auto object-contain transition duration-200 group-hover:scale-105"
+                            :class="sidebarCollapsed ? 'max-w-[48px]' : 'max-w-[144px]'"
+                            onerror="this.style.display='none'"
+                        >
                     <% } else { %>
                         <div class="bg-indigo-600 p-2 rounded transform transition duration-200 group-hover:rotate-6 group-hover:scale-110">
                             <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                         </div>
-                        <span x-show="!desktopSidebarCollapsed" x-transition.opacity class="text-xl font-bold text-slate-900 uppercase tracking-wider group-hover:text-indigo-600 transition-colors"><%= siteSettings.site_name %></span>
+                        <span x-show="!sidebarCollapsed" x-transition.opacity class="ml-3 text-xl font-bold text-slate-900 uppercase tracking-wider group-hover:text-indigo-600 transition-colors"><%= siteSettings.site_name %></span>
                     <% } %>
                     </a>
+                    <button
+                        type="button"
+                        class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-600 transition hover:bg-slate-100 md:hidden"
+                        @click="mobileSidebarOpen = false"
+                        aria-label="Fechar menu lateral"
+                    >
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
                 </div>
             </div>
 
             <nav class="mt-6 flex-1 overflow-y-auto px-4 pb-8 scrollbar-hide">
-                <p class="sidebar-group-title" x-show="!desktopSidebarCollapsed">Início</p>
+                <p class="sidebar-group-title" x-show="!sidebarCollapsed">Início</p>
                 <div class="space-y-1 mb-4">
-                    <a href="/admin/dashboard" class="group flex items-center rounded-lg px-3 py-3 text-sm font-medium transition-colors hover:bg-slate-100 hover:text-slate-900 <%= title === 'Dashboard' ? 'sidebar-link-active' : '' %>" :class="desktopSidebarCollapsed ? 'justify-center' : ''" :title="desktopSidebarCollapsed ? 'Dashboard' : ''">
-                        <svg class="h-6 w-6 <%= title === 'Dashboard' ? 'text-indigo-600' : 'text-slate-400 group-hover:text-indigo-600' %>" :class="desktopSidebarCollapsed ? '' : 'mr-3'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <a href="/admin/dashboard" class="group flex items-center rounded-lg px-3 py-3 text-sm font-medium transition-colors hover:bg-slate-100 hover:text-slate-900 <%= title === 'Dashboard' ? 'sidebar-link-active' : '' %>" :class="sidebarCollapsed ? 'justify-center' : ''" :title="sidebarCollapsed ? 'Dashboard' : ''">
+                        <svg class="h-6 w-6 <%= title === 'Dashboard' ? 'text-indigo-600' : 'text-slate-400 group-hover:text-indigo-600' %>" :class="sidebarCollapsed ? '' : 'mr-3'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                         </svg>
-                        <span x-show="!desktopSidebarCollapsed">Dashboard</span>
+                        <span x-show="!sidebarCollapsed">Dashboard</span>
                     </a>
                 </div>
 
-                <p class="sidebar-group-title" x-show="!desktopSidebarCollapsed">Gestão</p>
+                <p class="sidebar-group-title" x-show="!sidebarCollapsed">Gestão</p>
                 <div class="space-y-1 mb-4">
-                    <a href="/admin/inscricoes" class="group flex items-center rounded-lg px-3 py-3 text-sm font-medium transition-colors hover:bg-slate-100 hover:text-slate-900 <%= title === 'Gestão de Inscrições' ? 'sidebar-link-active' : '' %>" :class="desktopSidebarCollapsed ? 'justify-center' : ''" :title="desktopSidebarCollapsed ? 'Inscrições' : ''">
-                        <svg class="h-6 w-6 <%= title === 'Gestão de Inscrições' ? 'text-indigo-600' : 'text-slate-400 group-hover:text-indigo-600' %>" :class="desktopSidebarCollapsed ? '' : 'mr-3'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <a href="/admin/inscricoes" class="group flex items-center rounded-lg px-3 py-3 text-sm font-medium transition-colors hover:bg-slate-100 hover:text-slate-900 <%= title === 'Gestão de Inscrições' ? 'sidebar-link-active' : '' %>" :class="sidebarCollapsed ? 'justify-center' : ''" :title="sidebarCollapsed ? 'Inscrições' : ''">
+                        <svg class="h-6 w-6 <%= title === 'Gestão de Inscrições' ? 'text-indigo-600' : 'text-slate-400 group-hover:text-indigo-600' %>" :class="sidebarCollapsed ? '' : 'mr-3'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                         </svg>
-                        <span x-show="!desktopSidebarCollapsed">Inscrições</span>
+                        <span x-show="!sidebarCollapsed">Inscrições</span>
                     </a>
 
-                    <a href="/admin/vendas" class="group flex items-center rounded-lg px-3 py-3 text-sm font-medium transition-colors hover:bg-slate-100 hover:text-slate-900 <%= title === 'Dashboard de Vendas' ? 'sidebar-link-active' : '' %>" :class="desktopSidebarCollapsed ? 'justify-center' : ''" :title="desktopSidebarCollapsed ? 'Vendas' : ''">
-                        <svg class="h-6 w-6 <%= title === 'Dashboard de Vendas' ? 'text-indigo-600' : 'text-slate-400 group-hover:text-indigo-600' %>" :class="desktopSidebarCollapsed ? '' : 'mr-3'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <a href="/admin/vendas" class="group flex items-center rounded-lg px-3 py-3 text-sm font-medium transition-colors hover:bg-slate-100 hover:text-slate-900 <%= title === 'Dashboard de Vendas' ? 'sidebar-link-active' : '' %>" :class="sidebarCollapsed ? 'justify-center' : ''" :title="sidebarCollapsed ? 'Vendas' : ''">
+                        <svg class="h-6 w-6 <%= title === 'Dashboard de Vendas' ? 'text-indigo-600' : 'text-slate-400 group-hover:text-indigo-600' %>" :class="sidebarCollapsed ? '' : 'mr-3'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
-                        <span x-show="!desktopSidebarCollapsed">Vendas</span>
+                        <span x-show="!sidebarCollapsed">Vendas</span>
                     </a>
 
-                    <a href="/admin/usuarios" class="group flex items-center rounded-lg px-3 py-3 text-sm font-medium transition-colors hover:bg-slate-100 hover:text-slate-900 <%= ['Usuarios', 'Editar Usuario'].includes(title) ? 'sidebar-link-active' : '' %>" :class="desktopSidebarCollapsed ? 'justify-center' : ''" :title="desktopSidebarCollapsed ? 'Usuários' : ''">
-                        <svg class="h-6 w-6 <%= ['Usuarios', 'Editar Usuario'].includes(title) ? 'text-indigo-600' : 'text-slate-400 group-hover:text-indigo-600' %>" :class="desktopSidebarCollapsed ? '' : 'mr-3'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <a href="/admin/usuarios" class="group flex items-center rounded-lg px-3 py-3 text-sm font-medium transition-colors hover:bg-slate-100 hover:text-slate-900 <%= ['Usuarios', 'Editar Usuario'].includes(title) ? 'sidebar-link-active' : '' %>" :class="sidebarCollapsed ? 'justify-center' : ''" :title="sidebarCollapsed ? 'Usuários' : ''">
+                        <svg class="h-6 w-6 <%= ['Usuarios', 'Editar Usuario'].includes(title) ? 'text-indigo-600' : 'text-slate-400 group-hover:text-indigo-600' %>" :class="sidebarCollapsed ? '' : 'mr-3'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-1a3 3 0 00-5.196-2.079M17 20H7m10 0v-1c0-.653-.126-1.277-.355-1.848M7 20H2v-1a3 3 0 015.196-2.079M7 20v-1c0-.653.126-1.277.355-1.848m0 0a5.002 5.002 0 019.29 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"></path>
                         </svg>
-                        <span x-show="!desktopSidebarCollapsed">Usuários</span>
+                        <span x-show="!sidebarCollapsed">Usuários</span>
                     </a>
 
-                    <a href="/admin/loja" class="group flex items-center rounded-lg px-3 py-3 text-sm font-medium transition-colors hover:bg-slate-100 hover:text-slate-900 <%= ['Loja', 'Cadastrar Produto', 'Editar Produto'].includes(title) ? 'sidebar-link-active' : '' %>" :class="desktopSidebarCollapsed ? 'justify-center' : ''" :title="desktopSidebarCollapsed ? 'Loja' : ''">
-                        <svg class="h-6 w-6 <%= ['Loja', 'Cadastrar Produto', 'Editar Produto'].includes(title) ? 'text-indigo-600' : 'text-slate-400 group-hover:text-indigo-600' %>" :class="desktopSidebarCollapsed ? '' : 'mr-3'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <a href="/admin/loja" class="group flex items-center rounded-lg px-3 py-3 text-sm font-medium transition-colors hover:bg-slate-100 hover:text-slate-900 <%= ['Loja', 'Cadastrar Produto', 'Editar Produto'].includes(title) ? 'sidebar-link-active' : '' %>" :class="sidebarCollapsed ? 'justify-center' : ''" :title="sidebarCollapsed ? 'Loja' : ''">
+                        <svg class="h-6 w-6 <%= ['Loja', 'Cadastrar Produto', 'Editar Produto'].includes(title) ? 'text-indigo-600' : 'text-slate-400 group-hover:text-indigo-600' %>" :class="sidebarCollapsed ? '' : 'mr-3'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m1.6 8L5.4 5M7 13l-1.293 6.293A1 1 0 006.683 21h10.634a1 1 0 00.976-1.293L17 13M9 21a1 1 0 100-2 1 1 0 000 2zm8 0a1 1 0 100-2 1 1 0 000 2z"></path>
                         </svg>
-                        <span x-show="!desktopSidebarCollapsed">Loja</span>
+                        <span x-show="!sidebarCollapsed">Loja</span>
                     </a>
 
-                    <a href="/admin/certidoes" class="group flex items-center rounded-lg px-3 py-3 text-sm font-medium transition-colors hover:bg-slate-100 hover:text-slate-900 <%= ['Certidoes', 'Cadastrar Certidao', 'Editar Certidao'].includes(title) ? 'sidebar-link-active' : '' %>" :class="desktopSidebarCollapsed ? 'justify-center' : ''" :title="desktopSidebarCollapsed ? 'Certidões' : ''">
-                        <svg class="h-6 w-6 <%= ['Certidoes', 'Cadastrar Certidao', 'Editar Certidao'].includes(title) ? 'text-indigo-600' : 'text-slate-400 group-hover:text-indigo-600' %>" :class="desktopSidebarCollapsed ? '' : 'mr-3'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <a href="/admin/certidoes" class="group flex items-center rounded-lg px-3 py-3 text-sm font-medium transition-colors hover:bg-slate-100 hover:text-slate-900 <%= ['Certidoes', 'Cadastrar Certidao', 'Editar Certidao'].includes(title) ? 'sidebar-link-active' : '' %>" :class="sidebarCollapsed ? 'justify-center' : ''" :title="sidebarCollapsed ? 'Certidões' : ''">
+                        <svg class="h-6 w-6 <%= ['Certidoes', 'Cadastrar Certidao', 'Editar Certidao'].includes(title) ? 'text-indigo-600' : 'text-slate-400 group-hover:text-indigo-600' %>" :class="sidebarCollapsed ? '' : 'mr-3'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586A2 2 0 0114 3.586L18.414 8A2 2 0 0119 9.414V19a2 2 0 01-2 2z"></path>
                         </svg>
-                        <span x-show="!desktopSidebarCollapsed">Certidões</span>
+                        <span x-show="!sidebarCollapsed">Certidões</span>
                     </a>
 
-                    <div x-show="!desktopSidebarCollapsed" x-data="{ open: <%= ['Listar Cursos', 'Cadastrar Curso', 'Editar Curso'].includes(title) ? 'true' : 'false' %> }">
+                    <div x-show="!sidebarCollapsed" x-data="{ open: <%= ['Blog', 'Criar Novo Post', 'Editar Post', 'Categorias do Blog'].includes(title) ? 'true' : 'false' %> }">
+                        <button @click="open = !open" class="w-full flex items-center px-3 py-3 text-sm font-medium rounded-lg hover:bg-slate-100 hover:text-slate-900 transition-colors justify-between <%= ['Blog', 'Criar Novo Post', 'Editar Post', 'Categorias do Blog'].includes(title) ? 'sidebar-link-active' : '' %>">
+                            <div class="flex items-center">
+                                <svg class="mr-3 h-6 w-6 <%= ['Blog', 'Criar Novo Post', 'Editar Post', 'Categorias do Blog'].includes(title) ? 'text-indigo-500' : 'text-slate-400 group-hover:text-indigo-500' %>" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21H8a2 2 0 01-2-2V5a2 2 0 012-2h11m0 18a2 2 0 002-2V7m-2 14V7m0 0L15 3m4 4h-4a2 2 0 01-2-2V3m-5 6h5m-5 4h8m-8 4h8" />
+                                </svg>
+                                <span>Blog</span>
+                            </div>
+                            <svg :class="open ? 'rotate-180' : ''" class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+
+                        <div x-show="open" x-collapse class="pl-12 space-y-1 mt-1" style="display: none;">
+                            <a href="/admin/blog" class="block py-2 text-sm hover:text-indigo-400 transition-colors <%= title === 'Blog' ? 'text-indigo-400 font-medium' : '' %>">Lista</a>
+                            <a href="/admin/blog/novo" class="block py-2 text-sm hover:text-indigo-400 transition-colors <%= ['Criar Novo Post', 'Editar Post'].includes(title) ? 'text-indigo-400 font-medium' : '' %>">Criar novo</a>
+                            <a href="/admin/blog/categorias" class="block py-2 text-sm hover:text-indigo-400 transition-colors <%= title === 'Categorias do Blog' ? 'text-indigo-400 font-medium' : '' %>">Categorias</a>
+                        </div>
+                    </div>
+                    <a x-show="sidebarCollapsed" x-cloak href="/admin/blog" class="group flex items-center justify-center rounded-lg px-3 py-3 text-sm font-medium transition-colors hover:bg-slate-100 hover:text-slate-900 <%= ['Blog', 'Criar Novo Post', 'Editar Post', 'Categorias do Blog'].includes(title) ? 'sidebar-link-active' : '' %>" title="Blog">
+                        <svg class="h-6 w-6 <%= ['Blog', 'Criar Novo Post', 'Editar Post', 'Categorias do Blog'].includes(title) ? 'text-indigo-600' : 'text-slate-400 group-hover:text-indigo-600' %>" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21H8a2 2 0 01-2-2V5a2 2 0 012-2h11m0 18a2 2 0 002-2V7m-2 14V7m0 0L15 3m4 4h-4a2 2 0 01-2-2V3m-5 6h5m-5 4h8m-8 4h8" />
+                        </svg>
+                    </a>
+
+                    <div x-show="!sidebarCollapsed" x-data="{ open: <%= ['Listar Cursos', 'Cadastrar Curso', 'Editar Curso'].includes(title) ? 'true' : 'false' %> }">
                         <button @click="open = !open" class="w-full flex items-center px-3 py-3 text-sm font-medium rounded-lg hover:bg-slate-100 hover:text-slate-900 transition-colors justify-between <%= ['Listar Cursos', 'Cadastrar Curso', 'Editar Curso'].includes(title) ? 'sidebar-link-active' : '' %>">
                             <div class="flex items-center">
                                 <svg class="mr-3 h-6 w-6 <%= ['Listar Cursos', 'Cadastrar Curso', 'Editar Curso'].includes(title) ? 'text-indigo-500' : 'text-slate-400 group-hover:text-indigo-500' %>" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -145,51 +193,51 @@
                             </a>
                         </div>
                     </div>
-                    <a x-show="desktopSidebarCollapsed" x-cloak href="/admin/cursos" class="group flex items-center justify-center rounded-lg px-3 py-3 text-sm font-medium transition-colors hover:bg-slate-100 hover:text-slate-900 <%= ['Listar Cursos', 'Cadastrar Curso', 'Editar Curso'].includes(title) ? 'sidebar-link-active' : '' %>" title="Cursos">
+                    <a x-show="sidebarCollapsed" x-cloak href="/admin/cursos" class="group flex items-center justify-center rounded-lg px-3 py-3 text-sm font-medium transition-colors hover:bg-slate-100 hover:text-slate-900 <%= ['Listar Cursos', 'Cadastrar Curso', 'Editar Curso'].includes(title) ? 'sidebar-link-active' : '' %>" title="Cursos">
                         <svg class="h-6 w-6 <%= ['Listar Cursos', 'Cadastrar Curso', 'Editar Curso'].includes(title) ? 'text-indigo-600' : 'text-slate-400 group-hover:text-indigo-600' %>" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                         </svg>
                     </a>
                 </div>
 
-                <p class="sidebar-group-title" x-show="!desktopSidebarCollapsed">Ferramentas</p>
+                <p class="sidebar-group-title" x-show="!sidebarCollapsed">Ferramentas</p>
                 <div class="space-y-1 mb-4">
-                    <a href="/admin/certificados" class="group flex items-center rounded-lg px-3 py-3 text-sm font-medium transition-colors hover:bg-slate-100 hover:text-slate-900 <%= title === 'Gerador de Certificados' ? 'sidebar-link-active' : '' %>" :class="desktopSidebarCollapsed ? 'justify-center' : ''" :title="desktopSidebarCollapsed ? 'Certificados' : ''">
-                        <svg class="h-6 w-6 <%= title === 'Gerador de Certificados' ? 'text-indigo-600' : 'text-slate-400 group-hover:text-indigo-600' %>" :class="desktopSidebarCollapsed ? '' : 'mr-3'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <a href="/admin/certificados" class="group flex items-center rounded-lg px-3 py-3 text-sm font-medium transition-colors hover:bg-slate-100 hover:text-slate-900 <%= title === 'Gerador de Certificados' ? 'sidebar-link-active' : '' %>" :class="sidebarCollapsed ? 'justify-center' : ''" :title="sidebarCollapsed ? 'Certificados' : ''">
+                        <svg class="h-6 w-6 <%= title === 'Gerador de Certificados' ? 'text-indigo-600' : 'text-slate-400 group-hover:text-indigo-600' %>" :class="sidebarCollapsed ? '' : 'mr-3'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        <span x-show="!desktopSidebarCollapsed">Certificados</span>
+                        <span x-show="!sidebarCollapsed">Certificados</span>
                     </a>
-                    <a href="/admin/certificados/montar" class="group flex items-center rounded-lg px-3 py-3 text-sm font-medium transition-colors hover:bg-slate-100 hover:text-slate-900 <%= title === 'Montar Certificado' ? 'sidebar-link-active' : '' %>" :class="desktopSidebarCollapsed ? 'justify-center' : ''" :title="desktopSidebarCollapsed ? 'Montar Certificado' : ''">
-                        <svg class="h-6 w-6 <%= title === 'Montar Certificado' ? 'text-indigo-600' : 'text-slate-400 group-hover:text-indigo-600' %>" :class="desktopSidebarCollapsed ? '' : 'mr-3'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <a href="/admin/certificados/montar" class="group flex items-center rounded-lg px-3 py-3 text-sm font-medium transition-colors hover:bg-slate-100 hover:text-slate-900 <%= title === 'Montar Certificado' ? 'sidebar-link-active' : '' %>" :class="sidebarCollapsed ? 'justify-center' : ''" :title="sidebarCollapsed ? 'Montar Certificado' : ''">
+                        <svg class="h-6 w-6 <%= title === 'Montar Certificado' ? 'text-indigo-600' : 'text-slate-400 group-hover:text-indigo-600' %>" :class="sidebarCollapsed ? '' : 'mr-3'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4h10a2 2 0 012 2v12a2 2 0 01-2 2H7a2 2 0 01-2-2V6a2 2 0 012-2zm3 4h4m-5 4h6m-6 4h6" />
                         </svg>
-                        <span x-show="!desktopSidebarCollapsed">Montar Certificado</span>
+                        <span x-show="!sidebarCollapsed">Montar Certificado</span>
                     </a>
                 </div>
 
-                <p class="sidebar-group-title" x-show="!desktopSidebarCollapsed">Sistema</p>
+                <p class="sidebar-group-title" x-show="!sidebarCollapsed">Sistema</p>
                 <div class="space-y-1">
-                    <a href="/admin/configuracoes" class="group flex items-center rounded-lg px-3 py-3 text-sm font-medium transition-colors hover:bg-slate-100 hover:text-slate-900 <%= title === 'Configurações do Site' ? 'sidebar-link-active' : '' %>" :class="desktopSidebarCollapsed ? 'justify-center' : ''" :title="desktopSidebarCollapsed ? 'Configurações' : ''">
-                        <svg class="h-6 w-6 <%= title === 'Configurações do Site' ? 'text-indigo-600' : 'text-slate-400 group-hover:text-indigo-600' %>" :class="desktopSidebarCollapsed ? '' : 'mr-3'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <a href="/admin/configuracoes" class="group flex items-center rounded-lg px-3 py-3 text-sm font-medium transition-colors hover:bg-slate-100 hover:text-slate-900 <%= title === 'Configurações do Site' ? 'sidebar-link-active' : '' %>" :class="sidebarCollapsed ? 'justify-center' : ''" :title="sidebarCollapsed ? 'Configurações' : ''">
+                        <svg class="h-6 w-6 <%= title === 'Configurações do Site' ? 'text-indigo-600' : 'text-slate-400 group-hover:text-indigo-600' %>" :class="sidebarCollapsed ? '' : 'mr-3'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                         </svg>
-                        <span x-show="!desktopSidebarCollapsed">Configurações</span>
+                        <span x-show="!sidebarCollapsed">Configurações</span>
                     </a>
 
-                    <a href="/admin/perfil" class="group flex items-center rounded-lg px-3 py-3 text-sm font-medium transition-colors hover:bg-slate-100 hover:text-slate-900 <%= title === 'Perfil do Administrador' ? 'sidebar-link-active' : '' %>" :class="desktopSidebarCollapsed ? 'justify-center' : ''" :title="desktopSidebarCollapsed ? 'Meu Perfil' : ''">
-                        <svg class="h-6 w-6 <%= title === 'Perfil do Administrador' ? 'text-indigo-600' : 'text-slate-400 group-hover:text-indigo-600' %>" :class="desktopSidebarCollapsed ? '' : 'mr-3'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <a href="/admin/perfil" class="group flex items-center rounded-lg px-3 py-3 text-sm font-medium transition-colors hover:bg-slate-100 hover:text-slate-900 <%= title === 'Perfil do Administrador' ? 'sidebar-link-active' : '' %>" :class="sidebarCollapsed ? 'justify-center' : ''" :title="sidebarCollapsed ? 'Meu Perfil' : ''">
+                        <svg class="h-6 w-6 <%= title === 'Perfil do Administrador' ? 'text-indigo-600' : 'text-slate-400 group-hover:text-indigo-600' %>" :class="sidebarCollapsed ? '' : 'mr-3'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A9 9 0 1118.88 17.8M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
-                        <span x-show="!desktopSidebarCollapsed">Meu Perfil</span>
+                        <span x-show="!sidebarCollapsed">Meu Perfil</span>
                     </a>
                 </div>
             </nav>
 
             <div class="border-t border-slate-200 p-4">
-                <a href="/logout" class="flex items-center px-3 py-2 text-rose-600 transition-colors hover:bg-rose-50 hover:text-rose-700 rounded-lg" :class="desktopSidebarCollapsed ? 'justify-center' : 'space-x-3'" :title="desktopSidebarCollapsed ? 'Sair' : ''">
+                <a href="/logout" class="flex items-center px-3 py-2 text-rose-600 transition-colors hover:bg-rose-50 hover:text-rose-700 rounded-lg" :class="sidebarCollapsed ? 'justify-center' : 'space-x-3'" :title="sidebarCollapsed ? 'Sair' : ''">
                     <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
-                    <span x-show="!desktopSidebarCollapsed">Sair</span>
+                    <span x-show="!sidebarCollapsed">Sair</span>
                 </a>
             </div>
         </aside>

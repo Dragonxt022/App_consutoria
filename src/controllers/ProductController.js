@@ -5,6 +5,14 @@ const fs = require('fs');
 const path = require('path');
 
 class ProductController {
+  stripHtml(value) {
+    return String(value || '')
+      .replace(/<[^>]*>/g, ' ')
+      .replace(/&nbsp;/gi, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
   normalizeGalleryImages(rawImages, fallbackImage = '') {
     const source = Array.isArray(rawImages) ? rawImages : [rawImages];
     const normalized = source
@@ -66,7 +74,8 @@ class ProductController {
     return {
       ...data,
       galleryImages,
-      primaryImage: galleryImages[0] || null
+      primaryImage: galleryImages[0] || null,
+      descriptionPlain: this.stripHtml(data.description)
     };
   }
 

@@ -1,11 +1,34 @@
 <!DOCTYPE html>
 <html lang="pt-br" class="scroll-smooth">
 <head>
+    <%
+        const seoTitle = (typeof pageSeo !== 'undefined' && pageSeo && pageSeo.title) || title || siteSettings.seo_site_title || siteSettings.site_name;
+        const seoDescription = (typeof pageSeo !== 'undefined' && pageSeo && pageSeo.description) || siteSettings.seo_site_description || siteSettings.site_name;
+        const seoKeywords = (typeof pageSeo !== 'undefined' && pageSeo && pageSeo.keywords) || siteSettings.seo_site_keywords || '';
+        const seoImagePath = (typeof pageSeo !== 'undefined' && pageSeo && pageSeo.image) || siteSettings.logo_url || '';
+        const seoImageUrl = seoImagePath ? (seoImagePath.startsWith('http') ? seoImagePath : `${appBaseUrl}${seoImagePath.startsWith('/') ? '' : '/'}${seoImagePath}`) : '';
+        const canonicalUrl = (typeof pageSeo !== 'undefined' && pageSeo && pageSeo.url) || currentUrl || appBaseUrl;
+    %>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title %></title>
+    <title><%= seoTitle %></title>
+    <meta name="description" content="<%= seoDescription %>">
+    <% if (seoKeywords) { %><meta name="keywords" content="<%= seoKeywords %>"><% } %>
+    <link rel="canonical" href="<%= canonicalUrl %>">
+    <meta property="og:locale" content="pt_BR">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="<%= siteSettings.site_name %>">
+    <meta property="og:title" content="<%= seoTitle %>">
+    <meta property="og:description" content="<%= seoDescription %>">
+    <meta property="og:url" content="<%= canonicalUrl %>">
+    <% if (seoImageUrl) { %><meta property="og:image" content="<%= seoImageUrl %>"><% } %>
+    <meta name="twitter:card" content="<%= seoImageUrl ? 'summary_large_image' : 'summary' %>">
+    <meta name="twitter:title" content="<%= seoTitle %>">
+    <meta name="twitter:description" content="<%= seoDescription %>">
+    <% if (seoImageUrl) { %><meta name="twitter:image" content="<%= seoImageUrl %>"><% } %>
     <link rel="stylesheet" href="/css/output.css">
     <link rel="stylesheet" href="/css/theme-overrides.css">
+    <link href="https://cdn.quilljs.com/1.3.7/quill.core.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body { 
@@ -82,6 +105,122 @@
             transform: translateY(-1px);
             box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
         }
+        .blog-nav-dropdown {
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s ease;
+        }
+        .blog-nav-group:hover .blog-nav-dropdown,
+        .blog-nav-group:focus-within .blog-nav-dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .desktop-nav-link {
+            display: inline-flex;
+            align-items: center;
+            min-height: 2.75rem;
+            color: #475569;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+        .desktop-nav-link:hover {
+            color: #4f46e5;
+        }
+        .rich-content.ql-editor {
+            padding: 0;
+            color: #475569;
+            font-size: 1.05rem;
+            line-height: 1.8;
+        }
+        .rich-content.ql-editor a {
+            color: #4f46e5;
+            text-decoration: underline;
+            text-underline-offset: 0.18em;
+        }
+        .rich-content.ql-editor strong {
+            color: #0f172a;
+            font-weight: 800;
+        }
+        .rich-content.ql-editor em {
+            font-style: italic;
+        }
+        .rich-content.ql-editor u {
+            text-decoration: underline;
+            text-underline-offset: 0.18em;
+        }
+        .rich-content.ql-editor h1,
+        .rich-content.ql-editor h2,
+        .rich-content.ql-editor h3,
+        .rich-content.ql-editor h4 {
+            color: #0f172a;
+            font-weight: 800;
+        }
+        .rich-content.ql-editor h1 {
+            font-size: 2rem;
+            line-height: 1.15;
+            margin: 1.5rem 0 1rem;
+        }
+        .rich-content.ql-editor h2 {
+            font-size: 1.65rem;
+            line-height: 1.2;
+            margin: 1.35rem 0 0.95rem;
+        }
+        .rich-content.ql-editor h3 {
+            font-size: 1.35rem;
+            line-height: 1.25;
+            margin: 1.15rem 0 0.85rem;
+        }
+        .rich-content.ql-editor h4 {
+            font-size: 1.15rem;
+            line-height: 1.3;
+            margin: 1rem 0 0.75rem;
+        }
+        .rich-content.ql-editor p {
+            margin-bottom: 1rem;
+        }
+        .rich-content.ql-editor p:last-child {
+            margin-bottom: 0;
+        }
+        .rich-content.ql-editor ul,
+        .rich-content.ql-editor ol {
+            padding-left: 1.5rem;
+            margin: 1rem 0;
+        }
+        .rich-content.ql-editor blockquote {
+            border-left: 4px solid #cbd5e1;
+            margin: 1.25rem 0;
+            padding-left: 1rem;
+            color: #64748b;
+        }
+        .rich-content.ql-editor img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 2rem 0;
+        }
+        .rich-content.ql-editor li {
+            margin: 0.35rem 0;
+        }
+        .rich-content.ql-editor .ql-align-center {
+            text-align: center;
+        }
+        .rich-content.ql-editor .ql-align-right {
+            text-align: right;
+        }
+        .rich-content.ql-editor .ql-align-justify {
+            text-align: justify;
+        }
+        .rich-content.ql-editor .ql-indent-1 {
+            padding-left: 3rem;
+        }
+        .rich-content.ql-editor .ql-indent-2 {
+            padding-left: 6rem;
+        }
+        .rich-content.ql-editor .ql-indent-3 {
+            padding-left: 9rem;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <script src="/vendor/numeral.min.js"></script>
@@ -98,6 +237,11 @@
             { key: 'social_youtube', label: 'YouTube', icon: `/uploads/icons/icon-youtuber.png?v=${socialIconVersion}` },
             { key: 'social_whatsapp', label: 'WhatsApp', icon: `/uploads/icons/icon-whastapp.png?v=${socialIconVersion}` }
         ].filter((item) => siteSettings[item.key] && String(siteSettings[item.key]).trim() !== '');
+        const blogNavCategories = Array.isArray(blogMenuCategories) ? blogMenuCategories : [];
+        const blogCategoryColumns = [];
+        for (let index = 0; index < blogNavCategories.length; index += 5) {
+            blogCategoryColumns.push(blogNavCategories.slice(index, index + 5));
+        }
     %>
     <!-- Navigation -->
     <header class="bg-white/90 backdrop-blur-md sticky top-0 z-50 border-b border-slate-200/80 shadow-sm">
@@ -121,12 +265,37 @@
 
                 <!-- Desktop Menu -->
                 <div class="hidden md:flex items-center gap-8 lg:gap-10">
-                    <a href="/" class="text-slate-600 hover:text-indigo-600 font-medium transition-colors py-1">Início</a>
-                    <a href="/cursos" class="text-slate-600 hover:text-indigo-600 font-medium transition-colors py-1">Cursos</a>
-                    <a href="/loja" class="text-slate-600 hover:text-indigo-600 font-medium transition-colors py-1">Loja</a>
-                    <a href="/certidoes" class="text-slate-600 hover:text-indigo-600 font-medium transition-colors py-1">Certid&otilde;es</a>
-                    <a href="/validar-certificado" class="text-slate-600 hover:text-indigo-600 font-medium transition-colors py-1">Validar</a>
-                    <a href="/contato" class="text-slate-600 hover:text-indigo-600 font-medium transition-colors py-1">Contato</a>
+                    <a href="/" class="desktop-nav-link">Início</a>
+                    <a href="/cursos" class="desktop-nav-link">Cursos</a>
+                    <a href="/loja" class="desktop-nav-link">Loja</a>
+                    <a href="/certidoes" class="desktop-nav-link">Certid&otilde;es</a>
+                    <div class="blog-nav-group relative">
+                        <a href="/blog" class="desktop-nav-link gap-2 leading-none">
+                            Blog
+                            <% if (blogNavCategories.length) { %>
+                                <svg class="h-4 w-4 text-slate-400 transition-transform duration-200 group-hover:text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            <% } %>
+                        </a>
+                        <% if (blogNavCategories.length) { %>
+                            <div class="blog-nav-dropdown absolute left-0 top-full z-40 mt-4 min-w-[18rem] border border-slate-200 bg-white p-5 shadow-2xl">
+                                <div class="flex items-start gap-6">
+                                    <% blogCategoryColumns.forEach((column) => { %>
+                                        <div class="min-w-[10rem] space-y-2">
+                                            <% column.forEach((category) => { %>
+                                                <a href="/blog?categoria=<%= category.slug %>" class="block text-sm font-medium text-slate-600 transition hover:text-indigo-600">
+                                                    <%= category.name %>
+                                                </a>
+                                            <% }) %>
+                                        </div>
+                                    <% }) %>
+                                </div>
+                            </div>
+                        <% } %>
+                    </div>
+                    <a href="/validar-certificado" class="desktop-nav-link">Validar</a>
+                    <a href="/contato" class="desktop-nav-link">Contato</a>
 
                     <% if (socialLinks.length) { %>
                         <div class="ml-2 flex items-center gap-3">
@@ -369,6 +538,21 @@
                             </svg>
                             Certid&otilde;es
                         </a>
+                        <a href="/blog" class="flex items-center px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-lg transition-colors">
+                            <svg class="w-5 h-5 mr-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21H8a2 2 0 01-2-2V5a2 2 0 012-2h11m0 18a2 2 0 002-2V7m-2 14V7m0 0L15 3m4 4h-4a2 2 0 01-2-2V3m-5 6h5m-5 4h8m-8 4h8" />
+                            </svg>
+                            Blog
+                        </a>
+                        <% if (blogNavCategories.length) { %>
+                            <div class="ml-12 space-y-1 border-l border-slate-200 pl-4">
+                                <% blogNavCategories.forEach((category) => { %>
+                                    <a href="/blog?categoria=<%= category.slug %>" class="block py-2 text-sm text-slate-500 transition hover:text-indigo-600">
+                                        <%= category.name %>
+                                    </a>
+                                <% }) %>
+                            </div>
+                        <% } %>
                         <a href="/validar-certificado" class="flex items-center px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-lg transition-colors">
                             <svg class="w-5 h-5 mr-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                             Validar
@@ -576,6 +760,12 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586A2 2 0 0114 3.586L18.414 8A2 2 0 0119 9.414V19a2 2 0 01-2 2z" />
                             </svg>
                             Certid&otilde;es</a>
+                        </li>
+                        <li><a href="/blog" class="hover:text-white transition-colors flex items-center">
+                            <svg class="w-3 h-3 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21H8a2 2 0 01-2-2V5a2 2 0 012-2h11m0 18a2 2 0 002-2V7m-2 14V7m0 0L15 3m4 4h-4a2 2 0 01-2-2V3m-5 6h5m-5 4h8m-8 4h8" />
+                            </svg>
+                            Blog</a>
                         </li>
                         <li><a href="/politica-de-privacidade" class="hover:text-white transition-colors flex items-center">
                             <svg class="w-3 h-3 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -11,9 +11,12 @@
                 <div class="mb-3">
                     <p class="text-xs font-black uppercase tracking-[0.24em] text-slate-400">Submenu de Configurações</p>
                 </div>
-                <div class="grid grid-cols-2 gap-2 md:grid-cols-3 xl:grid-cols-6">
+                <div class="grid grid-cols-2 gap-2 md:grid-cols-3 xl:grid-cols-7">
                     <a href="/admin/configuracoes?tab=identidade" @click.prevent="activeConfigTab = 'identidade'; window.history.replaceState({}, '', '/admin/configuracoes?tab=identidade')" :class="activeConfigTab === 'identidade' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" class="rounded-xl px-4 py-3 text-center text-sm font-semibold transition-all">
                         Identidade
+                    </a>
+                    <a href="/admin/configuracoes?tab=seo" @click.prevent="activeConfigTab = 'seo'; window.history.replaceState({}, '', '/admin/configuracoes?tab=seo')" :class="activeConfigTab === 'seo' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" class="rounded-xl px-4 py-3 text-center text-sm font-semibold transition-all">
+                        SEO
                     </a>
                     <a href="/admin/configuracoes?tab=loja" @click.prevent="activeConfigTab = 'loja'; window.history.replaceState({}, '', '/admin/configuracoes?tab=loja')" :class="activeConfigTab === 'loja' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" class="rounded-xl px-4 py-3 text-center text-sm font-semibold transition-all">
                         Loja
@@ -70,6 +73,49 @@
             </section>
 
             <hr x-show="activeConfigTab === 'identidade'" class="border-slate-100">
+
+            <section x-show="activeConfigTab === 'seo'" x-transition.opacity class="space-y-6">
+                <h3 class="text-sm font-bold text-indigo-600 uppercase tracking-wider">SEO e Compartilhamento</h3>
+                <p class="text-sm text-slate-500">Defina o título e a descrição padrão do site. A logo cadastrada será usada como imagem padrão de compartilhamento.</p>
+
+                <div class="grid gap-6">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Título padrão do site</label>
+                        <input type="text" name="seo_site_title" value="<%= settings.seo_site_title || '' %>" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" placeholder="Ex: Consultoria Profissional | Início">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Descrição padrão</label>
+                        <textarea name="seo_site_description" rows="4" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" placeholder="Resumo principal do site para Google, WhatsApp e redes sociais."><%= settings.seo_site_description || '' %></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Palavras-chave</label>
+                        <input type="text" name="seo_site_keywords" value="<%= settings.seo_site_keywords || '' %>" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" placeholder="cursos, treinamentos, capacitação, certificações">
+                    </div>
+                </div>
+
+                <div class="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                    <p class="text-xs font-black uppercase tracking-[0.24em] text-slate-400">Prévia de compartilhamento</p>
+                    <div class="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-white">
+                        <div class="flex items-center gap-4 border-b border-slate-100 px-4 py-4">
+                            <% if (settings.logo_url) { %>
+                                <img src="<%= settings.logo_url %>" alt="Logo do site" class="h-14 w-14 rounded-xl bg-slate-50 object-contain p-2">
+                            <% } else { %>
+                                <div class="flex h-14 w-14 items-center justify-center rounded-xl bg-indigo-50 text-xl font-black text-indigo-600"><%= (settings.site_name || 'S').charAt(0).toUpperCase() %></div>
+                            <% } %>
+                            <div class="min-w-0">
+                                <div class="truncate text-base font-bold text-slate-900"><%= settings.seo_site_title || settings.site_name || 'Título do site' %></div>
+                                <div class="mt-1 text-sm text-slate-500 truncate"><%= settings.seo_site_description || 'A descrição padrão do site aparecerá aqui quando você salvar.' %></div>
+                                <div class="mt-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Imagem padrão: logo do site</div>
+                            </div>
+                        </div>
+                        <div class="px-4 py-3 text-xs text-slate-500">Ao compartilhar o link do site, o sistema usará esse título, essa descrição e a logo cadastrada como imagem principal.</div>
+                    </div>
+                </div>
+            </section>
+
+            <hr x-show="activeConfigTab === 'seo'" class="border-slate-100">
 
             <section x-show="activeConfigTab === 'loja'" x-transition.opacity class="space-y-6">
                 <h3 class="text-sm font-bold text-indigo-600 uppercase tracking-wider">Configurações da Loja</h3>

@@ -4,7 +4,7 @@ const MySQLStoreFactory = require('express-mysql-session');
 const path = require('path');
 require('dotenv').config();
 
-const { syncDatabase } = require('./models');
+const { syncDatabase, BlogCategory, BlogPost } = require('./models');
 const cleanupUnconfirmed = require('./utils/cleanup');
 
 const expressLayouts = require('express-ejs-layouts');
@@ -12,6 +12,7 @@ const jwt = require('jsonwebtoken');
 
 const SettingController = require('./controllers/SettingController');
 const { getSafeImage, imgTag, bgImage } = require('./utils/imageHelper.js');
+const { getBaseUrl, buildAppUrl } = require('./utils/url');
 
 const homeRoutes = require('./routes/home');
 const authRoutes = require('./routes/auth');
@@ -125,6 +126,22 @@ app.use(async (req, res, next) => {
   }
 
   res.locals.siteSettings = await SettingController.getSettings();
+  res.locals.appBaseUrl = getBaseUrl(req);
+  res.locals.currentUrl = buildAppUrl(req, req.originalUrl || req.url || '/');
+  res.locals.blogMenuCategories = await BlogCategory.findAll({
+    where: { active: true },
+    include: [{
+      model: BlogPost,
+      as: 'posts',
+      attributes: [],
+      where: { status: 'publicado' },
+      required: true
+    }],
+    attributes: ['id', 'name', 'slug'],
+    order: [['name', 'ASC']],
+    group: ['BlogCategory.id'],
+    limit: 15
+  });
   const flash = req.session.flash || null;
   delete req.session.flash;
 

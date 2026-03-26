@@ -1,0 +1,82 @@
+<div class="max-w-7xl mx-auto mt-6 px-4 md:px-6 lg:px-8">
+    <div class="bg-white shadow-2xl overflow-hidden">
+        <div class="px-6 pt-6 md:px-10 md:pt-8">
+            <nav aria-label="Breadcrumb">
+                <ol class="flex flex-wrap items-center gap-2 text-sm text-slate-500">
+                    <li><a href="/" class="font-medium transition hover:text-slate-700">Início</a></li>
+                    <li class="text-slate-300">/</li>
+                    <li><a href="/blog" class="font-medium text-indigo-600 transition hover:text-indigo-700">Blog</a></li>
+                </ol>
+            </nav>
+        </div>
+
+        <% if (post.coverImage) { %>
+            <div class="mt-6 bg-slate-100">
+                <img src="<%= post.coverImage %>" alt="<%= post.title %>" class="max-h-[34rem] w-full object-cover">
+            </div>
+        <% } %>
+
+        <div class="px-6 py-6 md:px-10 md:py-8">
+            <div class="max-w-4xl">
+                <div class="flex flex-wrap items-center gap-3 text-xs font-bold uppercase tracking-[0.18em] text-slate-500">
+                    <span><%= post.category ? post.category.name : 'Outros' %></span>
+                    <span class="h-1 w-1 rounded-full bg-slate-300"></span>
+                    <span>Escrito por <%= post.author ? post.author.name : 'Equipe' %></span>
+                    <span class="h-1 w-1 rounded-full bg-slate-300"></span>
+                    <span>Publicado em <%= new Date(post.publishedAt || post.createdAt).toLocaleDateString('pt-BR') %></span>
+                </div>
+
+                <h1 class="mt-4 text-3xl font-black leading-tight text-slate-950 md:text-5xl"><%= post.title %></h1>
+
+                <% if (post.excerpt) { %>
+                    <p class="mt-4 text-lg leading-8 text-slate-500"><%= post.excerpt %></p>
+                <% } %>
+
+            </div>
+        </div>
+
+        <div class="px-6 pb-10 md:px-10 md:pb-12">
+            <div class="max-w-4xl">
+                <div class="rich-content ql-editor max-w-none">
+                    <%- post.content || '' %>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<% if (relatedPosts && relatedPosts.length) { %>
+    <section class="max-w-7xl mx-auto mt-8 px-4 md:px-6 lg:px-8">
+        <div class="bg-white p-8 shadow-xl">
+            <div class="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+                <div>
+                    <h2 class="text-2xl font-black text-slate-900">Mais da mesma categoria</h2>
+                    <p class="text-sm text-slate-500">Seleção aleatória de publicações relacionadas para continuar a leitura.</p>
+                </div>
+                <a href="/blog?categoria=<%= post.category ? post.category.slug : 'outros' %>" class="text-sm font-bold text-indigo-600 transition hover:text-indigo-700">
+                    Ver todos desta categoria
+                </a>
+            </div>
+            <div class="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+                <% relatedPosts.forEach((relatedPost) => { %>
+                    <a href="/blog/<%= relatedPost.slug %>" class="border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
+                        <% if (relatedPost.coverImage) { %>
+                            <div class="h-44 bg-slate-100">
+                                <img src="<%= relatedPost.coverImage %>" alt="<%= relatedPost.title %>" class="h-full w-full object-cover">
+                            </div>
+                        <% } %>
+                        <div class="p-5">
+                            <div class="flex flex-wrap items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                                <span><%= relatedPost.category ? relatedPost.category.name : 'Outros' %></span>
+                                <span class="h-1 w-1 rounded-full bg-slate-300"></span>
+                                <span><%= new Date(relatedPost.publishedAt || relatedPost.createdAt).toLocaleDateString('pt-BR') %></span>
+                            </div>
+                            <div class="mt-3 line-clamp-3 text-lg font-black leading-snug text-slate-900"><%= relatedPost.title %></div>
+                            <div class="mt-4 text-sm text-slate-500">Por <%= relatedPost.author ? relatedPost.author.name : 'Equipe' %></div>
+                        </div>
+                    </a>
+                <% }) %>
+            </div>
+        </div>
+    </section>
+<% } %>

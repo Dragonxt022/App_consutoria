@@ -3,6 +3,15 @@ const { generateToken } = require('../middleware/jwt');
 const { buildAppUrl } = require('../utils/url');
 
 class AuthController {
+  isConfirmationExpired(user) {
+    if (!user || !user.confirmationExpires) {
+      return true;
+    }
+
+    const expiresAt = new Date(user.confirmationExpires);
+    return Number.isNaN(expiresAt.getTime()) || expiresAt <= new Date();
+  }
+
   renderRegister(res, payload = {}) {
     return res.render('auth/register', {
       title: 'Criar Conta',
@@ -150,40 +159,41 @@ class AuthController {
   }
 
   async showConfirmAccount(req, res) {
-    const { token } = req.params;
-    const { Op } = require('sequelize');
-    const user = await User.findOne({ 
-      where: { 
-        confirmationToken: token,
-        confirmationExpires: { [Op.gt]: new Date() }
-      } 
-    });
+    try {
+      const { token } = req.params;
+      const user = await User.findOne({
+        where: {
+          confirmationToken: token
+        }
+      });
 
-    if (!user) {
-      return res.redirect('/login?error=Link de confirmação inválido ou expirado.');
+      if (!user || this.isConfirmationExpired(user)) {
+        return res.redirect('/login?error=Link de confirmação inválido ou expirado.');
+      }
+
+      res.render('auth/confirm', {
+        title: 'Confirmar Conta',
+        token,
+        email: user.email,
+        requiresPasswordSetup: !String(user.confirmationToken || '').startsWith('activate_'),
+        layout: 'public/layout'
+      });
+    } catch (error) {
+      console.error('Show confirm account error:', error);
+      return res.redirect('/login?error=Não foi possível abrir o link de confirmação.');
     }
-
-    res.render('auth/confirm', {
-      title: 'Confirmar Conta',
-      token,
-      email: user.email,
-      requiresPasswordSetup: !String(user.confirmationToken || '').startsWith('activate_'),
-      layout: 'public/layout'
-    });
   }
 
   async handleConfirmAccount(req, res) {
     try {
-      const { token, password } = req.body;
-      const { Op } = require('sequelize');
-      const user = await User.findOne({ 
-        where: { 
-          confirmationToken: token,
-          confirmationExpires: { [Op.gt]: new Date() }
-        } 
+      const { token, password, password_confirm } = req.body;
+      const user = await User.findOne({
+        where: {
+          confirmationToken: token
+        }
       });
 
-      if (!user) {
+      if (!user || this.isConfirmationExpired(user)) {
         return res.redirect('/login?error=Link de confirmação inválido ou expirado.');
       }
 
@@ -192,6 +202,10 @@ class AuthController {
       if (requiresPasswordSetup) {
         if (!password || password.length < 6) {
           return res.redirect(`/confirmar-conta/${token}?error=A senha deve ter no mínimo 6 caracteres.`);
+        }
+
+        if (password !== password_confirm) {
+          return res.redirect(`/confirmar-conta/${token}?error=As senhas informadas não coincidem.`);
         }
 
         user.password = password;

@@ -7,13 +7,20 @@
         window.numeral.locale('pt-br');
     }
 
-    function parseCurrency(value) {
+    function parseCurrency(value, mode) {
         if (typeof value === 'number') return value;
 
         const stringValue = String(value || '').trim();
         if (!stringValue) return 0;
 
         const sanitized = stringValue.replace(/\s+/g, '').replace(/R\$/gi, '');
+
+        if (mode === 'cents') {
+            const digits = sanitized.replace(/\D/g, '');
+            if (!digits) return 0;
+            return Number(digits) / 100;
+        }
+
         const hasComma = sanitized.includes(',');
         const hasDot = sanitized.includes('.');
 
@@ -40,7 +47,7 @@
         const digits = sanitized.replace(/\D/g, '');
         if (!digits) return 0;
 
-        return Number(digits) / 100;
+        return Number(digits);
     }
 
     function formatCurrency(value, prefix) {
@@ -48,20 +55,49 @@
         return `${prefix}${window.numeral(normalized).format('0,0.00')}`.trim();
     }
 
-    function updateInputValue(input) {
+    function formatEditableValue(value) {
+        const normalized = Number.isFinite(value) ? value : 0;
+        return window.numeral(normalized).format('0,0.00');
+    }
+
+    function updateInputValue(input, options) {
+        const settings = options || {};
         const prefix = input.dataset.currencyPrefix || 'R$ ';
-        const parsed = parseCurrency(input.value);
+        const shouldFormat = settings.format !== false;
+        const mode = input.dataset.currencyMode || 'cents';
+        const parsed = parseCurrency(input.value, mode);
         input.dataset.currencyValue = String(parsed);
+
+        if (!shouldFormat) {
+            return;
+        }
+
         input.value = input.value.trim() ? formatCurrency(parsed, prefix) : '';
     }
 
     function bindCurrencyInput(input) {
         if (!input) return;
 
+        const liveFormatting = input.dataset.currencyLive !== 'false';
+
         updateInputValue(input);
 
         input.addEventListener('input', function () {
-            updateInputValue(input);
+            if (liveFormatting) {
+                updateInputValue(input);
+                return;
+            }
+
+            updateInputValue(input, { format: false });
+        });
+
+        input.addEventListener('focus', function () {
+            if (!liveFormatting) {
+                const mode = input.dataset.currencyMode || 'cents';
+                const parsed = parseCurrency(input.value, mode);
+                input.dataset.currencyValue = String(parsed);
+                input.value = input.value.trim() ? formatEditableValue(parsed) : '';
+            }
         });
 
         input.addEventListener('blur', function () {
@@ -79,7 +115,8 @@
 
     function normalizeFormCurrencyFields(form) {
         form.querySelectorAll('[data-currency-input]').forEach((input) => {
-            const parsed = parseCurrency(input.value);
+            const mode = input.dataset.currencyMode || 'cents';
+            const parsed = parseCurrency(input.value, mode);
             const storage = input.dataset.currencyStorage || 'decimal';
             input.dataset.currencyValue = String(parsed);
 

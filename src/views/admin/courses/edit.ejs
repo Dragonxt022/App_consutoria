@@ -1,3 +1,5 @@
+<link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+
 <div class="max-w-6xl mx-auto">
     <div class="bg-white shadow-xl rounded-2xl overflow-hidden">
         <form action="/admin/cursos/<%= course.id %>/editar" method="POST" enctype="multipart/form-data" class="p-8 space-y-8">
@@ -35,7 +37,8 @@
                             <div>
                                 <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Descrição do Curso *</label>
                                 <p class="text-xs text-slate-400 mb-3">Revise com calma o texto exibido na vitrine e na página do curso. Este campo agora tem mais espaço para edição.</p>
-                                <textarea name="description" rows="12" required class="w-full min-h-[280px] px-4 py-4 rounded-2xl border border-slate-200 bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all resize-y" placeholder="Resumo do que será abordado no curso..."><%= course.description %></textarea>
+                                <input type="hidden" name="description" id="descriptionInput" required>
+                                <div id="courseDescriptionEditor" class="rounded-2xl border border-slate-200 bg-white min-h-[280px]"><%- course.description || '' %></div>
                             </div>
                         </div>
                     </div>
@@ -91,7 +94,8 @@
                             <div class="grid sm:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Investimento (R$) *</label>
-                                    <input type="text" name="price" value="<%= course.priceInputValue %>" required data-currency-input data-currency-prefix="R$ " data-currency-storage="decimal" inputmode="numeric" autocomplete="off" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" placeholder="R$ 1.200,00">
+                                    <input type="text" name="price" value="<%= course.priceInputValue %>" required data-currency-input data-currency-prefix="R$ " data-currency-storage="decimal" data-currency-mode="cents" inputmode="numeric" autocomplete="off" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" placeholder="R$ 1.690,00">
+                                    <p class="mt-2 text-xs text-slate-400">Digite normalmente que o valor se ajusta automaticamente.</p>
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Vagas Disponíveis *</label>
@@ -237,8 +241,29 @@
     </div>
 </div>
 
+<script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    const descriptionEditor = new Quill('#courseDescriptionEditor', {
+        theme: 'snow',
+        placeholder: 'Resumo do que sera abordado no curso...',
+        modules: {
+            toolbar: [
+                [{ header: [1, 2, 3, false] }],
+                ['bold', 'italic', 'underline'],
+                [{ color: [] }, { background: [] }],
+                [{ list: 'ordered' }, { list: 'bullet' }],
+                ['blockquote', 'link'],
+                ['clean']
+            ]
+        }
+    });
+    const descriptionInput = document.getElementById('descriptionInput');
+    descriptionInput.value = descriptionEditor.root.innerHTML;
+    descriptionEditor.on('text-change', function() {
+        descriptionInput.value = descriptionEditor.root.innerHTML;
+    });
+
     const imageInput = document.getElementById('imageInput');
     const imagePreview = document.getElementById('imagePreview');
     const previewImage = document.getElementById('previewImage');

@@ -1,4 +1,4 @@
-const { Course, Enrollment, User, Product, Setting } = require('../models');
+const { Course, Enrollment, User, Product, Setting, BlogPost, BlogCategory } = require('../models');
 const slugify = require('slugify');
 const { Op } = require('sequelize');
 const ProductController = require('./ProductController');
@@ -9,6 +9,14 @@ const fs = require('fs');
 const path = require('path');
 
 class CourseController {
+  stripHtml(value) {
+    return String(value || '')
+      .replace(/<[^>]*>/g, ' ')
+      .replace(/&nbsp;/gi, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
   resolvePublicFilePath(fileUrl) {
     if (!fileUrl || typeof fileUrl !== 'string' || !fileUrl.startsWith('/uploads/')) {
       return null;
@@ -113,13 +121,14 @@ class CourseController {
       priceValue,
       priceDisplay: formatCurrency(priceValue),
       priceInputValue: priceValue.toFixed(2),
+      descriptionPlain: this.stripHtml(data.description),
       isExpired: new Date(data.startDate) < now
     };
   }
 
   // Public Methods
   async index(req, res) {
-    const [courses, featuredProducts, homeBannersSetting] = await Promise.all([
+    const [courses, featuredProducts, homeBannersSetting, latestBlogPosts] = await Promise.all([
       Course.findAll({
         where: { active: true },
         order: [['startDate', 'ASC']]
@@ -129,7 +138,15 @@ class CourseController {
         order: [['createdAt', 'DESC']],
         limit: 3
       }),
-      Setting.findOne({ where: { key: 'home_banners' } })
+      Setting.findOne({ where: { key: 'home_banners' } }),
+      BlogPost.findAll({
+        where: { status: 'publicado' },
+        include: [
+          { model: BlogCategory, as: 'category' }
+        ],
+        order: [['publishedAt', 'DESC'], ['createdAt', 'DESC']],
+        limit: 4
+      })
     ]);
 
     const now = new Date();
@@ -139,6 +156,7 @@ class CourseController {
       title: 'Consultoria Profissional | Início',
       courses: formattedCourses,
       featuredProducts: featuredProducts.map((product) => ProductController.formatProduct(product)),
+      latestBlogPosts,
       homeBanners: this.parseHomeBanners(homeBannersSetting ? homeBannersSetting.value : '[]'),
       layout: 'public/layout'
     });

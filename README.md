@@ -1,174 +1,201 @@
-# 📚 Consultoria Educativa - Sistema de Gestão
+# Consultoria Educativa
 
-Uma aplicação web completa para gestão de consultoria educacional, desenvolvida em Node.js com arquitetura MVC, autenticação de usuários e dashboards diferenciados para administradores e alunos.
+Plataforma web para divulgacao de cursos, matriculas, gestao administrativa, certificados, loja, conteudo de blog e area do aluno.
 
-## 🚀 Funcionalidades
+## Visao Geral
 
-- **Sistema de Autenticação** com JWT e gerenciamento de sessões
-- **Dois Níveis de Acesso**: Administrador e Aluno
-- **Dashboards Específicos** para cada perfil de usuário
-- **Site Institucional** com página inicial moderna
-- **Banco de Dados Flexível**: SQLite para desenvolvimento, MySQL para produção
-- **Interface Responsiva** com Bootstrap 5
-- **Sistema em Tempo Real** com Nodemon para desenvolvimento
+O projeto foi construido com Node.js e Express, usando arquitetura MVC no backend, EJS no frontend server-side e Sequelize para persistencia. A aplicacao atende tanto a operacao interna da consultoria quanto a experiencia publica dos alunos e visitantes.
 
-## 🛠️ Stack Tecnológico
+### Principais recursos
 
-- **Backend**: Node.js + Express.js
-- **Banco de Dados**: Sequelize ORM + SQLite/MySQL
-- **Autenticação**: JWT + bcryptjs
-- **Templates**: EJS
-- **Frontend**: Bootstrap 5
-- **Desenvolvimento**: Nodemon
-- **Ambiente**: dotenv
+- Site institucional com listagem publica de cursos
+- Fluxo de inscricao em cursos
+- Area administrativa para cursos, inscricoes, usuarios, vendas e configuracoes
+- Area do aluno com cursos e certificados
+- Validacao publica de certificados
+- Loja com produtos e redirecionamento para compra
+- Blog com categorias, capa e imagens no corpo do artigo
+- Upload de imagens e arquivos com `multer`
+- Sessao autenticada com suporte a JWT
+- Banco MySQL em producao e SQLite como opcao local
 
-## 📁 Estrutura do Projeto
+## Stack
 
+- Node.js
+- Express 5
+- EJS + `express-ejs-layouts`
+- Sequelize
+- MySQL / SQLite
+- Tailwind CSS 4 + PostCSS
+- JWT, `express-session` e `bcryptjs`
+- Nodemailer
+- Testes com `node --test`
+
+## Estrutura
+
+```text
+.
+|-- docs/
+|-- images/
+|-- scripts/
+|-- src/
+|   |-- config/
+|   |-- controllers/
+|   |-- middleware/
+|   |-- models/
+|   |-- public/
+|   |   |-- css/
+|   |   |-- js/
+|   |   `-- uploads/
+|   |-- routes/
+|   |-- services/
+|   |-- utils/
+|   `-- views/
+|-- test/
+|-- .env.example
+`-- package.json
 ```
-├── src/
-│   ├── controllers/     # Controladores da aplicação
-│   ├── models/         # Modelos de dados (Sequelize)
-│   ├── routes/         # Rotas da aplicação
-│   ├── views/          # Templates EJS
-│   │   ├── admin/      # Views do administrador
-│   │   ├── aluno/      # Views do aluno
-│   │   └── public/     # Views públicas
-│   ├── middleware/     # Middlewares personalizados
-│   ├── config/         # Configurações do banco
-│   └── app.js          # Arquivo principal da aplicação
-├── scripts/            # Scripts utilitários
-├── .env               # Variáveis de ambiente
-├── .gitignore         # Arquivos ignorados pelo Git
-└── package.json       # Dependências e scripts
-```
 
-## 🚀 Instalação e Configuração
+## Modulos do sistema
 
-### Pré-requisitos
-- Node.js (versão 16+)
-- npm ou yarn
+- Publico: home, cursos, detalhes do curso, inscricao, contato, politica de privacidade, blog, loja e validacao de certificados
+- Admin: dashboard, cursos, inscricoes, usuarios, configuracoes, vendas, certidoes, certificados e blog
+- Aluno: dashboard, meus cursos, meus certificados e comprovantes
+- Autenticacao: login, logout, primeiro administrador, confirmacao de conta e recuperacao de senha
 
-### 1. Clone o repositório
-```bash
-git clone <url-do-repositorio>
-cd app_consutoria
-```
+## Galeria do projeto
 
-### 2. Instale as dependências
+As imagens abaixo sao carregadas diretamente da pasta [`images`](images).
+
+### Tela 1
+
+![Tela 1](images/0%20%281%29.png)
+
+### Tela 2
+
+![Tela 2](images/0%20%282%29.png)
+
+### Tela 3
+
+![Tela 3](images/0%20%283%29.png)
+
+### Tela 4
+
+![Tela 4](images/0%20%284%29.png)
+
+### Tela 5
+
+![Tela 5](images/0%20%285%29.png)
+
+### Tela 6
+
+![Tela 6](images/0%20%286%29.png)
+
+## Como rodar localmente
+
+### Pre-requisitos
+
+- Node.js 18+ recomendado
+- npm
+- MySQL, se quiser usar o mesmo dialeto de producao
+
+### Instalar dependencias
+
 ```bash
 npm install
 ```
 
-### 3. Configure as variáveis de ambiente
-Copie o arquivo `.env` e ajuste conforme necessário:
+### Configurar ambiente
+
+Use o arquivo `.env.example` como base:
+
+```bash
+cp .env.example .env
+```
+
+Ajuste principalmente:
+
+- `APP_URL`
+- `SESSION_SECRET`
+- `JWT_SECRET`
+- `DB_DIALECT`
+- `DB_HOST`
+- `DB_PORT`
+- `DB_NAME`
+- `DB_USER`
+- `DB_PASSWORD`
+
+Para desenvolvimento local com SQLite, habilite:
 
 ```env
-NODE_ENV=development
-PORT=3000
-
-# Database
-DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=
-DB_NAME=app_consultoria
-
-# JWT
-JWT_SECRET=your_secret_key_here
-JWT_EXPIRE=7d
+DB_DIALECT=sqlite
+DB_STORAGE=./database.sqlite
 ```
 
-### 4. Crie o banco de dados e usuário admin
-```bash
-node scripts/createAdmin.js
-```
+### Executar em desenvolvimento
 
-### 5. Inicie a aplicação em modo desenvolvimento
 ```bash
 npm run dev
 ```
 
-Ou para produção:
+Esse comando sobe o servidor com `nodemon` e recompila o CSS em modo watch.
+
+### Executar em producao
+
 ```bash
 npm start
 ```
 
-## 🔐 Acessos Padrão
-
-### Administrador
-- **Email**: `admin@consultoria.com`
-- **Senha**: `admin123`
-- **Acesso**: [`/admin/login`](http://localhost:3000/admin/login)
-
-### Aluno
-- **Acesso**: [`/aluno/login`](http://localhost:3000/aluno/login)
-- *(Necessário cadastro prévio)*
-
-## 🌐 URLs da Aplicação
-
-- **Página Inicial**: [`http://localhost:3000`](http://localhost:3000)
-- **Login Administrador**: [`http://localhost:3000/admin/login`](http://localhost:3000/admin/login)
-- **Login Aluno**: [`http://localhost:3000/aluno/login`](http://localhost:3000/aluno/login)
-- **Dashboard Admin**: [`http://localhost:3000/admin/dashboard`](http://localhost:3000/admin/dashboard)
-- **Dashboard Aluno**: [`http://localhost:3000/aluno/dashboard`](http://localhost:3000/aluno/dashboard)
-
-## 🗄️ Banco de Dados
-
-### Desenvolvimento (SQLite)
-- Arquivo: `database.sqlite`
-- Criado automaticamente no primeiro uso
-- Ideal para desenvolvimento local
-
-### Produção (MySQL)
-- Configure as variáveis de ambiente no arquivo `.env`
-- Crie o banco de dados manualmente antes de iniciar
-- Recomendado para ambiente de produção
-
-## 📝 Scripts Disponíveis
+## Scripts uteis
 
 ```bash
-npm start          # Inicia aplicação em modo produção
-npm run dev        # Inicia com Nodemon (auto-reload)
-npm test           # Executa testes (a implementar)
+npm start
+npm run dev
+npm run build-css
+npm run build-css-once
+npm run seed
+npm run migrate:course-prices-decimal
+npm test
 ```
 
-## 🔧 Desenvolvimento
+Scripts auxiliares em [`scripts/`](scripts):
 
-### Criar Novo Usuário
+- `createAdmin.js`: cria o primeiro administrador
+- `seedCourses.js`: popula cursos de exemplo
+- `migrateCoursePricesToDecimal.js`: ajusta valores de cursos
+- `cleanupBackupTables.js`: limpeza de tabelas auxiliares
+- `fix_sqlite_backup.js`: manutencao de backup em SQLite
+
+## Rotas principais
+
+- `/`
+- `/cursos`
+- `/curso/:id`
+- `/inscrever/:id`
+- `/blog`
+- `/loja`
+- `/certificado/:code`
+- `/validar-certificado`
+- `/admin/dashboard`
+- `/aluno/dashboard`
+
+## Testes
+
+Os testes atuais cobrem partes de middleware, servicos e utilitarios.
+
 ```bash
-node scripts/createUser.js email nome senha role(admin|aluno)
+npm test
 ```
 
-### Sincronizar Banco de Dados
-O banco é sincronizado automaticamente ao iniciar a aplicação. Para forçar recriação das tabelas, altere `sync({ force: false })` para `sync({ force: true })` em `src/app.js`.
+## Documentacao relacionada
 
-## 🎯 Próximos Passos
+- [DEPLOY-CLOUDPANEL.md](DEPLOY-CLOUDPANEL.md)
+- [docs/aplicação.md](docs/aplicação.md)
 
-- [ ] Implementar sistema de cadastro de alunos
-- [ ] Criar módulo de cursos e disciplinas
-- [ ] Adicionar sistema de progresso e certificados
-- [ ] Implementar API REST para integração mobile
-- [ ] Adicionar testes unitários e de integração
-- [ ] Configurar CI/CD
-- [ ] Deploy em ambiente de produção
+## Contribuicao
 
-## 🤝 Contribuição
+As orientacoes para colaborar com o projeto estao em [CONTRIBUTING.md](CONTRIBUTING.md).
 
-1. Fork o projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/nova-funcionalidade`)
-3. Commit suas mudanças (`git commit -m 'Adiciona nova funcionalidade'`)
-4. Push para a branch (`git push origin feature/nova-funcionalidade`)
-5. Abra um Pull Request
+## Licenca
 
-## 📄 Licença
-
-Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
-
-## 👨‍💻 Autor
-
-Desenvolvido com ❤️ para gestão educacional
-
----
-
-**Status do Projeto**: 🚧 Em Desenvolvimento  
-**Versão**: 1.0.0  
-**Última Atualização**: Janeiro 2026
+Este projeto esta licenciado sob a Licenca MIT. Consulte [LICENSE](LICENSE).
