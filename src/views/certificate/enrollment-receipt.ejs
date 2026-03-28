@@ -43,31 +43,80 @@
 
         /* Header */
         .header {
-            background: linear-gradient(135deg, #4f46e5 0%, #312e81 100%);
+            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
             color: white;
-            padding: 40px 30px;
-            text-align: center;
-            border-bottom: 5px solid #f59e0b;
+            padding: 30px 34px;
+            border-bottom: 4px solid #cbd5e1;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+        }
+
+        .header-logo {
+            width: 86px;
+            height: 86px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            overflow: hidden;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+        }
+
+        .header-logo img {
+            width: calc(100% - 14px);
+            height: calc(100% - 14px);
+            object-fit: contain;
+            background: white;
+            padding: 10px;
+            border-radius: 14px;
+        }
+
+        .header-logo-fallback {
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: white;
+        }
+
+        .header-text {
+            flex: 1;
         }
 
         .header h1 {
-            font-size: 28px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            font-size: 34px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: 0.2px;
+            line-height: 1.05;
         }
 
         .header p {
+            font-size: 15px;
+            opacity: 0.88;
+            margin-bottom: 6px;
+        }
+
+        .header-document-title {
             font-size: 14px;
-            opacity: 0.95;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2.4px;
+            color: #e5e7eb;
         }
 
         .header-divider {
-            width: 100px;
-            height: 3px;
-            background: #f59e0b;
-            margin: 20px auto 0;
+            width: 100%;
+            max-width: 220px;
+            height: 2px;
+            background: #94a3b8;
+            margin-top: 16px;
         }
 
         /* Main Content */
@@ -82,12 +131,12 @@
         .section-title {
             font-size: 14px;
             font-weight: bold;
-            color: #4f46e5;
+            color: #1e293b;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.4px;
             margin-bottom: 15px;
-            padding-bottom: 8px;
-            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e2e8f0;
         }
 
         .info-grid {
@@ -155,9 +204,9 @@
 
         /* Observation */
         .observations-box {
-            background: #f3f4f6;
+            background: #f8fafc;
             padding: 15px;
-            border-left: 4px solid #4f46e5;
+            border-left: 4px solid #334155;
             border-radius: 4px;
             margin-top: 15px;
         }
@@ -173,8 +222,8 @@
             text-align: center;
             margin: 30px 0;
             padding: 20px;
-            background: #f0f9ff;
-            border: 2px dashed #4f46e5;
+            background: #f8fafc;
+            border: 2px dashed #64748b;
             border-radius: 8px;
         }
 
@@ -187,17 +236,17 @@
         .receipt-number code {
             font-size: 18px;
             font-weight: bold;
-            color: #4f46e5;
+            color: #1e293b;
             font-family: 'Courier New', monospace;
             letter-spacing: 2px;
         }
 
         /* Footer */
         .footer {
-            background: #f3f4f6;
+            background: #f8fafc;
             padding: 30px;
             text-align: center;
-            border-top: 2px solid #e5e7eb;
+            border-top: 2px solid #e2e8f0;
             color: #6b7280;
             font-size: 11px;
         }
@@ -209,8 +258,18 @@
         .footer-divider {
             width: 100px;
             height: 1px;
-            background: #d1d5db;
+            background: #cbd5e1;
             margin: 15px auto;
+        }
+
+        .footer-site-link {
+            color: #1e293b;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .footer-site-link:hover {
+            text-decoration: underline;
         }
 
         /* Print Button */
@@ -274,8 +333,12 @@
             .info-grid {
                 grid-template-columns: 1fr;
             }
+            .header-brand {
+                flex-direction: column;
+                text-align: center;
+            }
             .header h1 {
-                font-size: 20px;
+                font-size: 28px;
             }
             .container {
                 margin: 10px;
@@ -284,19 +347,33 @@
     </style>
 </head>
 <body>
+    <% const applicationUrl = (typeof appBaseUrl !== 'undefined' && appBaseUrl) ? appBaseUrl : ''; %>
+    <% const applicationUrlLabel = applicationUrl ? applicationUrl.replace(/^https?:\/\//, '') : ''; %>
     <div class="print-section no-print">
-        <button class="print-btn" onclick="window.print()">🖨️ Imprimir / Salvar como PDF</button>
+        <button class="print-btn" onclick="window.print()">Imprimir / Salvar como PDF</button>
         <% if(typeof back_url !== 'undefined') { %>
-            <a href="<%= back_url %>" class="back-btn">← Voltar</a>
+            <a href="<%= back_url %>" class="back-btn">Voltar</a>
         <% } %>
     </div>
 
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>Comprovante de Inscrição</h1>
-            <p>Documento oficial de inscrição no curso</p>
-            <div class="header-divider"></div>
+            <div class="header-brand">
+                <div class="header-logo">
+                    <% if (siteSettings && siteSettings.logo_url) { %>
+                        <img src="<%= siteSettings.logo_url %>" alt="<%= siteSettings.site_name || 'Logo da aplicação' %>">
+                    <% } else { %>
+                        <span class="header-logo-fallback"><%= ((siteSettings && siteSettings.site_name) || 'C').charAt(0).toUpperCase() %></span>
+                    <% } %>
+                </div>
+                <div class="header-text">
+                    <h1><%= (siteSettings && siteSettings.site_name) || 'Consultoria Profissional' %></h1>
+                    <p>Documento oficial de inscrição no curso</p>
+                    <div class="header-document-title">Comprovante de Inscrição</div>
+                    <div class="header-divider"></div>
+                </div>
+            </div>
         </div>
 
         <!-- Content -->
@@ -308,7 +385,7 @@
 
             <!-- Dados do Aluno -->
             <div class="section">
-                <h2 class="section-title">📋 Dados do Aluno</h2>
+                <h2 class="section-title">Dados do Aluno</h2>
                 <div class="info-grid">
                     <div class="info-item">
                         <label>Nome Completo</label>
@@ -331,7 +408,7 @@
 
             <!-- Dados da Inscrição -->
             <div class="section">
-                <h2 class="section-title">🎓 Dados da Inscrição</h2>
+                <h2 class="section-title">Dados da Inscrição</h2>
                 <div class="info-grid">
                     <div class="info-item">
                         <label>Curso</label>
@@ -358,7 +435,7 @@
 
             <!-- Dados Corporativos -->
             <div class="section">
-                <h2 class="section-title">💼 Dados Corporativos</h2>
+                <h2 class="section-title">Dados Corporativos</h2>
                 <div class="info-grid">
                     <div class="info-item">
                         <label>Empresa / Organização</label>
@@ -373,7 +450,7 @@
 
             <!-- Dados de Endereço -->
             <div class="section">
-                <h2 class="section-title">📍 Dados de Endereço</h2>
+                <h2 class="section-title">Dados de Endereço</h2>
                 <div class="info-grid">
                     <div class="info-item">
                         <label>País</label>
@@ -400,7 +477,7 @@
 
             <!-- Valor da Inscrição -->
             <div class="section">
-                <h2 class="section-title">💰 Valor da Inscrição</h2>
+                <h2 class="section-title">Valor da Inscrição</h2>
                 <div class="info-grid">
                     <div class="info-item">
                         <label>Valor do Curso</label>
@@ -420,7 +497,7 @@
             <!-- Observações -->
             <% if(enrollment.observations) { %>
                 <div class="section">
-                    <h2 class="section-title">📝 Observações</h2>
+                    <h2 class="section-title">Observações</h2>
                     <div class="observations-box">
                         <p><%= enrollment.observations %></p>
                     </div>
@@ -436,13 +513,17 @@
 
         <!-- Footer -->
         <div class="footer">
-            <p><strong>Consultoria Profissional</strong></p>
+            <p><strong><%= (siteSettings && siteSettings.site_name) || 'Consultoria Profissional' %></strong></p>
             <div class="footer-divider"></div>
             <p>Este é um comprovante oficial de inscrição no curso.</p>
             <p>Gerado em <%= new Date().toLocaleDateString('pt-BR') %> às <%= new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) %></p>
             <p>Mantenha este documento para referência futura.</p>
             <div class="footer-divider"></div>
-            <p style="margin-top: 15px;">www.consultoriaprofissional.com.br</p>
+            <% if (applicationUrl) { %>
+                <p style="margin-top: 15px;">
+                    <a href="<%= applicationUrl %>" class="footer-site-link"><%= applicationUrlLabel %></a>
+                </p>
+            <% } %>
         </div>
     </div>
 
