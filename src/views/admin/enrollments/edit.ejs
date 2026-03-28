@@ -9,110 +9,133 @@
     const currentFinalPrice = toNumber(enrollment.finalPrice);
     const currentDiscountPercent = currentCoursePrice > 0 ? ((currentDiscount / currentCoursePrice) * 100).toFixed(2) : '0.00';
 %>
-<div class="bg-white shadow-xl rounded-2xl overflow-hidden max-w-4xl mx-auto">
-    <div class="p-6 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
-        <h2 class="text-xl font-bold text-gray-800">Editar Inscrição #<%= enrollment.id %></h2>
-        <a href="/admin/inscricoes" class="text-gray-500 hover:text-gray-700 text-sm font-medium">Voltar para a lista</a>
+<div class="w-full max-w-6xl mr-auto space-y-6">
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+        <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+                <h2 class="text-xl font-bold text-slate-800">Editar Inscrição #<%= enrollment.id %></h2>
+                <p class="text-sm text-slate-500 mt-1">Atualize os dados do participante, curso vinculado, status e condições financeiras.</p>
+            </div>
+            <a href="/admin/inscricoes" class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-100">
+                Voltar para a lista
+            </a>
+        </div>
     </div>
 
-    <form action="/admin/inscricoes/<%= enrollment.id %>/edit" method="POST" class="p-6 space-y-6">
-        <!-- Dados do Aluno -->
-        <div class="border-b pb-6">
-            <h3 class="text-lg font-semibold text-gray-700 mb-4">Dados do Aluno</h3>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Nome Completo</label>
-                    <input type="text" name="studentName" value="<%= enrollment.studentName %>" required class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
-                </div>
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div class="lg:col-span-2">
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+                <form id="enrollment-edit-form" action="/admin/inscricoes/<%= enrollment.id %>/edit" method="POST" class="space-y-6">
+                    <div class="border-b border-slate-100 pb-6">
+                    <h3 class="text-lg font-semibold text-slate-800 mb-4">Dados do Aluno</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Nome Completo</label>
+                            <input type="text" name="studentName" value="<%= enrollment.studentName %>" required class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 outline-none">
+                        </div>
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
-                    <input type="email" name="studentEmail" value="<%= enrollment.studentEmail %>" required class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
-                </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">E-mail</label>
+                            <input type="email" name="studentEmail" value="<%= enrollment.studentEmail %>" required class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 outline-none">
+                        </div>
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
-                    <input type="text" name="studentPhone" value="<%= enrollment.studentPhone %>" required class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
-                </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Telefone</label>
+                            <input type="text" name="studentPhone" value="<%= enrollment.studentPhone %>" required class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 outline-none">
+                        </div>
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">CPF ou CNPJ</label>
-                    <input type="text" name="cpfCnpj" value="<%= enrollment.cpfCnpj || '' %>" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="000.000.000-00 ou 00.000.000/0000-00">
-                </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">CPF ou CNPJ</label>
+                            <input type="text" name="cpfCnpj" value="<%= enrollment.cpfCnpj || '' %>" class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="000.000.000-00 ou 00.000.000/0000-00">
+                        </div>
+                    </div>
+                    </div>
+
+                    <div class="border-b border-slate-100 pb-6">
+                    <h3 class="text-lg font-semibold text-slate-800 mb-4">Dados Corporativos</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Empresa</label>
+                            <input type="text" name="company" value="<%= enrollment.company || '' %>" class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 outline-none">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Tipo de Organização</label>
+                            <select name="entePublico" class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 outline-none">
+                                <option value="">Selecione uma opção</option>
+                                <option value="0" <%= enrollment.entePublico === false ? 'selected' : '' %>>Setor Privado</option>
+                                <option value="1" <%= enrollment.entePublico === true ? 'selected' : '' %>>Ente Público</option>
+                            </select>
+                        </div>
+                    </div>
+                    </div>
+
+                    <div class="border-b border-slate-100 pb-6">
+                    <h3 class="text-lg font-semibold text-slate-800 mb-4">Endereço</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">País</label>
+                            <input type="text" name="pais" value="<%= enrollment.pais || '' %>" class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Brasil">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">CEP</label>
+                            <input type="text" name="cep" value="<%= enrollment.cep || '' %>" class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="00000-000">
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Endereço Completo</label>
+                            <input type="text" name="endereco" value="<%= enrollment.endereco || '' %>" class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Rua, número, complemento">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Cidade</label>
+                            <input type="text" name="cidade" value="<%= enrollment.cidade || '' %>" class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="São Paulo">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Estado / UF</label>
+                            <select name="estado" class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 outline-none">
+                                <option value="">Selecione um estado</option>
+                                <option value="SP" <%= enrollment.estado === 'SP' ? 'selected' : '' %>>São Paulo</option>
+                                <option value="RJ" <%= enrollment.estado === 'RJ' ? 'selected' : '' %>>Rio de Janeiro</option>
+                                <option value="MG" <%= enrollment.estado === 'MG' ? 'selected' : '' %>>Minas Gerais</option>
+                                <option value="BA" <%= enrollment.estado === 'BA' ? 'selected' : '' %>>Bahia</option>
+                                <option value="RS" <%= enrollment.estado === 'RS' ? 'selected' : '' %>>Rio Grande do Sul</option>
+                            </select>
+                        </div>
+                    </div>
+                    </div>
+
+                    <div class="border-b border-slate-100 pb-6">
+                        <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Observações</label>
+                        <textarea name="observations" rows="4" class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 outline-none"><%= enrollment.observations || '' %></textarea>
+                    </div>
+
+                    <div class="flex justify-end gap-3 pt-2">
+                        <a href="/admin/inscricoes" class="px-6 py-3 text-sm font-bold text-slate-600">Cancelar</a>
+                        <button type="submit" class="rounded-xl bg-indigo-600 px-8 py-3 text-sm font-bold text-white transition-colors hover:bg-indigo-700">
+                            Salvar Alterações
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
 
-        <!-- Dados Corporativos -->
-        <div class="border-b pb-6">
-            <h3 class="text-lg font-semibold text-gray-700 mb-4">Dados Corporativos</h3>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Empresa</label>
-                    <input type="text" name="company" value="<%= enrollment.company || '' %>" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+        <div class="space-y-6">
+            <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-5">
+                <div class="mb-5">
+                    <h3 class="text-base font-bold text-slate-800">Curso e Valores</h3>
+                    <p class="mt-1 text-sm text-slate-500">Ajuste curso, status e desconto sem tirar o foco do cadastro principal.</p>
                 </div>
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de Organização</label>
-                    <select name="entePublico" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
-                        <option value="">Selecione uma opção</option>
-                        <option value="0" <%= enrollment.entePublico === false ? 'selected' : '' %>>Setor Privado</option>
-                        <option value="1" <%= enrollment.entePublico === true ? 'selected' : '' %>>Ente Público</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-
-        <!-- Dados de Endereço -->
-        <div class="border-b pb-6">
-            <h3 class="text-lg font-semibold text-gray-700 mb-4">Endereço</h3>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">País</label>
-                    <input type="text" name="pais" value="<%= enrollment.pais || '' %>" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Brasil">
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">CEP</label>
-                    <input type="text" name="cep" value="<%= enrollment.cep || '' %>" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="00000-000">
-                </div>
-
-                <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Endereço Completo</label>
-                    <input type="text" name="endereco" value="<%= enrollment.endereco || '' %>" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Rua, número, complemento">
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Cidade</label>
-                    <input type="text" name="cidade" value="<%= enrollment.cidade || '' %>" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="São Paulo">
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Estado / UF</label>
-                    <select name="estado" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
-                        <option value="">Selecione um estado</option>
-                        <option value="SP" <%= enrollment.estado === 'SP' ? 'selected' : '' %>>São Paulo</option>
-                        <option value="RJ" <%= enrollment.estado === 'RJ' ? 'selected' : '' %>>Rio de Janeiro</option>
-                        <option value="MG" <%= enrollment.estado === 'MG' ? 'selected' : '' %>>Minas Gerais</option>
-                        <option value="BA" <%= enrollment.estado === 'BA' ? 'selected' : '' %>>Bahia</option>
-                        <option value="RS" <%= enrollment.estado === 'RS' ? 'selected' : '' %>>Rio Grande do Sul</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-
-        <!-- Curso e Valores (melhor organizado) -->
-        <div class="border-b pb-6">
-            <h3 class="text-lg font-semibold text-gray-700 mb-4">Curso e Valores</h3>
-
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Coluna 1: seleção e status -->
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Curso</label>
-                        <select name="courseId" id="courseSelect" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                        <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Curso</label>
+                        <select name="courseId" id="courseSelect" form="enrollment-edit-form" class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 outline-none bg-white">
                             <% courses.forEach(course => { %>
                                 <option value="<%= course.id %>" data-price="<%= course.priceValue %>" <%= enrollment.courseId === course.id ? 'selected' : '' %>><%= course.title %></option>
                             <% }) %>
@@ -120,78 +143,77 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                        <select name="status" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                        <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Status</label>
+                        <select name="status" form="enrollment-edit-form" class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 outline-none bg-white">
                             <option value="pendente" <%= enrollment.status === 'pendente' ? 'selected' : '' %>>Pendente</option>
                             <option value="confirmado" <%= enrollment.status === 'confirmado' ? 'selected' : '' %>>Confirmado</option>
                             <option value="completo" <%= enrollment.status === 'completo' ? 'selected' : '' %>>Completo</option>
                             <option value="cancelado" <%= enrollment.status === 'cancelado' ? 'selected' : '' %>>Cancelado</option>
                         </select>
                     </div>
-                </div>
 
-                <!-- Coluna 2: valores editáveis -->
-                <div class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Valor do Curso (R$)</label>
-                            <input type="text" name="coursePrice" id="coursePrice" value="<%= currentCoursePrice.toFixed(2) %>" data-currency-input data-currency-prefix="R$ " data-currency-storage="decimal" inputmode="numeric" autocomplete="off" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                        <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Valor do Curso (R$)</label>
+                        <input type="text" name="coursePrice" id="coursePrice" form="enrollment-edit-form" value="<%= currentCoursePrice.toFixed(2) %>" data-currency-input data-currency-prefix="R$ " data-currency-storage="decimal" inputmode="numeric" autocomplete="off" class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 outline-none bg-white">
                     </div>
 
                     <div class="grid grid-cols-2 gap-3 items-end">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Desconto (R$)</label>
-                            <input type="text" name="discount" id="discount" value="<%= currentDiscount.toFixed(2) %>" data-currency-input data-currency-prefix="R$ " data-currency-storage="decimal" inputmode="numeric" autocomplete="off" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                            <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Desconto (R$)</label>
+                            <input type="text" name="discount" id="discount" form="enrollment-edit-form" value="<%= currentDiscount.toFixed(2) %>" data-currency-input data-currency-prefix="R$ " data-currency-storage="decimal" inputmode="numeric" autocomplete="off" class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 outline-none bg-white">
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Desconto (%)</label>
-                            <input type="number" step="0.01" name="discountPercent" id="discountPercent" value="<%= currentDiscountPercent %>" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                            <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Desconto (%)</label>
+                            <input type="number" step="0.01" name="discountPercent" id="discountPercent" form="enrollment-edit-form" value="<%= currentDiscountPercent %>" class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 outline-none bg-white">
                         </div>
                     </div>
 
-                    <div class="flex items-center gap-2">
-                        <span class="text-sm text-gray-600 mr-2">Aplicar desconto rápido:</span>
-                        <button type="button" class="px-3 py-1 bg-gray-100 rounded-md text-sm hover:bg-gray-200" data-percent="5">5%</button>
-                        <button type="button" class="px-3 py-1 bg-gray-100 rounded-md text-sm hover:bg-gray-200" data-percent="10">10%</button>
-                        <button type="button" class="px-3 py-1 bg-gray-100 rounded-md text-sm hover:bg-gray-200" data-percent="15">15%</button>
-                        <button type="button" class="px-3 py-1 bg-gray-100 rounded-md text-sm hover:bg-gray-200" data-percent="20">20%</button>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="w-full text-sm text-gray-600">Aplicar desconto rápido:</span>
+                        <button type="button" class="px-3 py-1 bg-white border border-slate-200 rounded-md text-sm hover:bg-gray-50" data-percent="5">5%</button>
+                        <button type="button" class="px-3 py-1 bg-white border border-slate-200 rounded-md text-sm hover:bg-gray-50" data-percent="10">10%</button>
+                        <button type="button" class="px-3 py-1 bg-white border border-slate-200 rounded-md text-sm hover:bg-gray-50" data-percent="15">15%</button>
+                        <button type="button" class="px-3 py-1 bg-white border border-slate-200 rounded-md text-sm hover:bg-gray-50" data-percent="20">20%</button>
                     </div>
                 </div>
+            </div>
 
-                <!-- Coluna 3: resumo e valor final -->
-                <div>
-                    <div class="bg-gray-50 p-4 rounded-lg flex flex-col h-full justify-between">
-                        <div>
-                            <p class="text-sm text-gray-500">Valor Original</p>
-                            <p class="text-lg font-semibold text-slate-800" id="originalPriceDisplay">R$ <%= currentCoursePrice.toFixed(2) %></p>
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-3 text-sm">
+                <h3 class="text-base font-bold text-slate-800">Resumo Financeiro</h3>
+                <div class="flex items-start justify-between gap-3">
+                    <span class="text-slate-500">Valor Original</span>
+                    <span class="font-semibold text-slate-700" id="originalPriceDisplay">R$ <%= currentCoursePrice.toFixed(2) %></span>
+                </div>
+                <div class="flex items-start justify-between gap-3">
+                    <span class="text-slate-500">Desconto</span>
+                    <span class="font-medium text-red-600 text-right" id="discountDisplay">R$ <%= currentDiscount.toFixed(2) %> (<span id="discountPercentDisplay"><%= currentDiscountPercent %></span>%)</span>
+                </div>
+                <div class="flex items-start justify-between gap-3 pt-3 border-t border-slate-100">
+                    <span class="text-slate-500">Valor Final</span>
+                    <span class="text-2xl font-bold text-green-600" id="finalPriceDisplay">R$ <%= currentFinalPrice.toFixed(2) %></span>
+                </div>
+            </div>
 
-                            <p class="mt-3 text-sm text-gray-500">Desconto</p>
-                            <p class="text-lg font-medium text-red-600" id="discountDisplay">R$ <%= currentDiscount.toFixed(2) %> (<span id="discountPercentDisplay"><%= currentDiscountPercent %></span>%)</p>
-                        </div>
-
-                        <div class="mt-4 pt-4 border-t">
-                            <p class="text-sm text-gray-500">Valor Final</p>
-                            <p class="text-2xl font-bold text-green-600" id="finalPriceDisplay">R$ <%= currentFinalPrice.toFixed(2) %></p>
-                        </div>
+            <div class="rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm text-amber-900">
+                <h3 class="font-bold">Resumo da Inscrição</h3>
+                <div class="mt-3 space-y-3 text-xs">
+                    <div class="flex items-start justify-between gap-3">
+                        <span class="text-amber-700/80">Criado em</span>
+                        <span class="font-semibold"><%= new Date(enrollment.createdAt).toLocaleString('pt-BR') %></span>
+                    </div>
+                    <div class="flex items-start justify-between gap-3">
+                        <span class="text-amber-700/80">Atualizado em</span>
+                        <span class="font-semibold"><%= new Date(enrollment.updatedAt).toLocaleString('pt-BR') %></span>
+                    </div>
+                    <div class="flex items-start justify-between gap-3">
+                        <span class="text-amber-700/80">Status atual</span>
+                        <span class="font-semibold capitalize"><%= enrollment.status %></span>
                     </div>
                 </div>
             </div>
         </div>
-
-        <!-- Observações -->
-        <div class="border-b pb-6">
-            <label class="block text-sm font-medium text-gray-700 mb-1">Observações</label>
-            <textarea name="observations" rows="3" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none"><%= enrollment.observations || '' %></textarea>
-        </div>
-
-        <!-- Botões de Ação -->
-        <div class="pt-4 flex justify-end gap-3">
-            <a href="/admin/inscricoes" class="px-6 py-2 border border-gray-300 rounded-lg text-gray-600 font-bold hover:bg-gray-50 transition-all">Cancelar</a>
-            <button type="submit" class="px-6 py-2 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200">
-                Salvar Alterações
-            </button>
-        </div>
-    </form>
+    </div>
 </div>
 
 <script>

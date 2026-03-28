@@ -306,13 +306,18 @@
                         </div>
                     </div>
 
-                    <div class="flex items-center space-x-3 sm:space-x-4">
+                    <a
+                        href="/admin/perfil"
+                        class="group flex items-center space-x-3 rounded-2xl px-2 py-1 transition hover:bg-white/70 sm:space-x-4"
+                        aria-label="Ir para meu perfil"
+                        title="Meu perfil"
+                    >
                         <div class="text-right hidden sm:block">
                             <p class="text-xs font-bold text-indigo-600 uppercase tracking-tighter">Administrador</p>
-                            <p class="text-slate-900 text-sm font-medium"><%= user.name %></p>
+                            <p class="text-slate-900 text-sm font-medium transition group-hover:text-indigo-700"><%= user.name %></p>
                         </div>
-                        <img class="h-10 w-10 rounded-full border-2 border-white shadow-sm object-cover" src="<%= user.avatar ? user.avatar : ('https://ui-avatars.com/api/?name=' + encodeURIComponent(user.name) + '&background=4f46e5&color=fff') %>" alt="Avatar">
-                    </div>
+                        <img class="h-10 w-10 rounded-full border-2 border-white shadow-sm object-cover transition group-hover:scale-105 group-hover:shadow-md" src="<%= user.avatar ? user.avatar : ('https://ui-avatars.com/api/?name=' + encodeURIComponent(user.name) + '&background=4f46e5&color=fff') %>" alt="Avatar de <%= user.name %>">
+                    </a>
                 </div>
             </header>
 

@@ -3,7 +3,7 @@ const { ProfileAdminService } = require('../../services');
 
 const AdminProfileHandler = {
   async show(req, res) {
-    const user = await ProfileAdminService.getAdminUser(req.user.id);
+    const user = await ProfileAdminService.getAdminUser(req.user);
 
     if (!user) {
       return res.redirect('/admin/dashboard?error=Acesso negado');
@@ -38,7 +38,7 @@ const AdminProfileHandler = {
 
   async changePassword(req, res) {
     try {
-      const result = await ProfileAdminService.changePassword(req.user.id, req.body);
+      const result = await ProfileAdminService.changePassword(req.user, req.body);
 
       if (result.accessDenied) {
         return res.redirect('/admin/dashboard?error=Acesso negado');

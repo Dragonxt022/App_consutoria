@@ -10,6 +10,14 @@ async function getCryptoRandomString() {
 }
 
 class ProfileAdminService {
+  normalizeRole(role) {
+    return String(role || '').trim().toLowerCase();
+  }
+
+  normalizeEmail(email) {
+    return String(email || '').trim().toLowerCase();
+  }
+
   removeAvatarIfNeeded(avatarUrl) {
     if (!avatarUrl || !avatarUrl.startsWith('/uploads/avatars/')) {
       return;
@@ -27,10 +35,23 @@ class ProfileAdminService {
     }
   }
 
-  async getAdminUser(userId) {
-    const user = await User.findByPk(userId);
+  async getAdminUser(identity) {
+    const id = typeof identity === 'object' && identity ? identity.id : identity;
+    const email = typeof identity === 'object' && identity ? identity.email : null;
 
-    if (!user || user.role !== 'admin') {
+    let user = null;
+
+    if (id) {
+      user = await User.findByPk(id);
+    }
+
+    if (!user && email) {
+      user = await User.findOne({
+        where: { email: this.normalizeEmail(email) }
+      });
+    }
+
+    if (!user || this.normalizeRole(user.role) !== 'admin') {
       return null;
     }
 
@@ -38,7 +59,7 @@ class ProfileAdminService {
   }
 
   async updateProfile(req) {
-    const user = await this.getAdminUser(req.user.id);
+    const user = await this.getAdminUser(req.user);
 
     if (!user) {
       return { accessDenied: true };
