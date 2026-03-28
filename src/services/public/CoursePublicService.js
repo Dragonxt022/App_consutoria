@@ -6,7 +6,7 @@ const { Course, Enrollment, User, Product, Setting } = require('../../models');
 const { buildAppUrl } = require('../../utils/Url');
 const { formatCurrency } = require('../../utils/CurrencyFormatter');
 const { parseMoneyValue } = require('../../utils/Money');
-const { ProductFormatter, EmailService } = require('../shared');
+const { ProductFormatter, EmailService, NotificationService } = require('../shared');
 const { formatProduct } = ProductFormatter;
 
 function stripHtml(value) {
@@ -224,7 +224,7 @@ class CoursePublicService {
 
     const priceValue = parseMoneyValue(course.price);
 
-    await Enrollment.create({
+    const enrollment = await Enrollment.create({
       studentName: name,
       studentEmail: email,
       studentPhone: phone,
@@ -244,6 +244,12 @@ class CoursePublicService {
       discount: 0,
       finalPrice: priceValue
     });
+
+    try {
+      await NotificationService.createEnrollmentNotification(enrollment, course);
+    } catch (error) {
+      console.error('Erro ao registrar notificação de nova inscrição:', error);
+    }
 
     return { redirectTo: '/obrigado' };
   }

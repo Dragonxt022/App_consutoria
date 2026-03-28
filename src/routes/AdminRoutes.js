@@ -6,6 +6,7 @@ const {
   AdminCompanyCertificateHandler,
   AdminCourseHandler,
   AdminEnrollmentHandler,
+  AdminNotificationHandler,
   AdminProductHandler,
   AdminProfileHandler,
   AdminSalesHandler,
@@ -86,6 +87,13 @@ router.post('/admin/blog/upload-imagem', authMiddleware('admin'), uploadBlogImag
 router.get('/admin/blog/:id/editar', authMiddleware('admin'), routeHandler(AdminBlogHandler, 'showEdit'));
 router.post('/admin/blog/:id/editar', authMiddleware('admin'), upload.single('coverImage'), routeHandler(AdminBlogHandler, 'update'));
 router.post('/admin/blog/:id/deletar', authMiddleware('admin'), routeHandler(AdminBlogHandler, 'remove'));
+
+router.get('/admin/notificacoes', authMiddleware('admin'), routeHandler(AdminNotificationHandler, 'list'));
+router.get('/admin/notificacoes/:id/abrir', authMiddleware('admin'), routeHandler(AdminNotificationHandler, 'open'));
+router.post('/admin/notificacoes/:id/ler', authMiddleware('admin'), routeHandler(AdminNotificationHandler, 'markRead'));
+router.post('/admin/notificacoes/ler-todas', authMiddleware('admin'), routeHandler(AdminNotificationHandler, 'markAllRead'));
+router.post('/admin/notificacoes/excluir-selecionadas', authMiddleware('admin'), routeHandler(AdminNotificationHandler, 'deleteSelected'));
+router.post('/admin/notificacoes/excluir-todas', authMiddleware('admin'), routeHandler(AdminNotificationHandler, 'deleteAll'));
 
 router.get('/admin/perfil', authMiddleware('admin'), routeHandler(AdminProfileHandler, 'show'));
 router.post('/admin/perfil/atualizar', authMiddleware('admin'), upload.single('avatar'), routeHandler(AdminProfileHandler, 'update'));

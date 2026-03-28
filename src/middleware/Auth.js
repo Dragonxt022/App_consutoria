@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const { User } = require('../models');
+const NotificationService = require('../services/shared/NotificationService');
 
 const normalizeRole = (role) => String(role || '').trim().toLowerCase();
 const normalizeEmail = (email) => String(email || '').trim().toLowerCase();
@@ -42,6 +43,8 @@ const findSessionUser = async (decoded) => {
 const authMiddleware = (requiredRole = null) => {
   return async (req, res, next) => {
     const token = req.session.token;
+    res.locals.adminNotificationUnreadCount = 0;
+    res.locals.adminNotificationsTray = [];
 
     if (!token) {
       return res.redirect('/login');
@@ -62,6 +65,17 @@ const authMiddleware = (requiredRole = null) => {
 
       if (requiredRole && normalizeRole(user.role) !== normalizeRole(requiredRole)) {
         return res.status(403).json({ error: 'Acesso negado' });
+      }
+
+      if (normalizeRole(user.role) === 'admin') {
+        try {
+          await NotificationService.syncExpiredCertificateNotifications();
+          const notificationSummary = await NotificationService.getNavbarNotifications();
+          res.locals.adminNotificationUnreadCount = notificationSummary.unreadCount;
+          res.locals.adminNotificationsTray = notificationSummary.latest;
+        } catch (notificationError) {
+          console.error('Erro ao carregar notificações do admin:', notificationError);
+        }
       }
 
       next();

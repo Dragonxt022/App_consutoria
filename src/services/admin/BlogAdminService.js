@@ -3,6 +3,7 @@ const path = require('path');
 const slugify = require('slugify');
 const { Op } = require('sequelize');
 const { BlogPost, BlogCategory, User } = require('../../models');
+const { NotificationService } = require('../shared');
 
 class BlogAdminService {
   extractContentImageUrls(content) {
@@ -191,6 +192,10 @@ class BlogAdminService {
       publishedAt: payload.status === 'publicado' ? new Date() : null
     });
 
+    if (post.status === 'publicado') {
+      await NotificationService.createBlogPublishedNotification(post);
+    }
+
     return post;
   }
 
@@ -218,6 +223,7 @@ class BlogAdminService {
       return { notFound: true };
     }
 
+    const wasPublished = post.status === 'publicado';
     const previousContent = post.content || '';
     const defaultCategory = await this.ensureDefaultCategory();
     const payload = this.normalizePostPayload(req.body, req.user, defaultCategory.id);
@@ -236,6 +242,10 @@ class BlogAdminService {
 
     const previousCover = post.coverImage;
     await post.update(updateData);
+
+    if (post.status === 'publicado' && !wasPublished) {
+      await NotificationService.createBlogPublishedNotification(post);
+    }
 
     await this.cleanupRemovedBodyImages(previousContent, updateData.content, post.id);
 

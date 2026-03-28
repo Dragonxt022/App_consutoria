@@ -1,5 +1,6 @@
 const { User, Enrollment, Course } = require('../models');
 const { Op } = require('sequelize');
+const { NotificationService } = require('../services');
 
 async function cleanupUnconfirmed() {
   try {
@@ -15,6 +16,9 @@ async function cleanupUnconfirmed() {
 
     if (expiredUsers.length > 0) {
       const userIds = expiredUsers.map(u => u.id);
+      const removedEnrollments = await Enrollment.count({
+        where: { userId: userIds }
+      });
       
       // Delete enrollments for these users
       await Enrollment.destroy({
@@ -26,6 +30,15 @@ async function cleanupUnconfirmed() {
       await User.destroy({
         where: { id: userIds }
       });
+
+      try {
+        await NotificationService.createAutoClosedNotification({
+          removedUsers: expiredUsers.length,
+          removedEnrollments
+        });
+      } catch (error) {
+        console.error('CLEANUP NOTIFICATION ERROR:', error);
+      }
 
       console.log(`CLEANUP: Removed ${expiredUsers.length} unconfirmed users and their enrollments.`);
     }

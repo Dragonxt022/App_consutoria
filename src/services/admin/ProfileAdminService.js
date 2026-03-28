@@ -23,7 +23,9 @@ class ProfileAdminService {
       return;
     }
 
-    const avatarPath = path.join(__dirname, '..', '..', 'public', avatarUrl.replace('/uploads/', 'uploads/'));
+    const avatarRelativePath = avatarUrl.replace('/uploads/', 'uploads/');
+    const avatarPath = path.join(__dirname, '..', '..', 'public', avatarRelativePath);
+
     if (!fs.existsSync(avatarPath)) {
       return;
     }

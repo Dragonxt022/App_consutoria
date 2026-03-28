@@ -8,6 +8,7 @@ const CompanyCertificate = require('./CompanyCertificate');
 const Product = require('./Product');
 const BlogCategory = require('./BlogCategory');
 const BlogPost = require('./BlogPost');
+const Notification = require('./Notification');
 
 function parseBoolean(value, fallback = false) {
   if (value === undefined) return fallback;
@@ -23,6 +24,7 @@ const models = {
   Product,
   BlogCategory,
   BlogPost,
+  Notification,
   sequelize
 };
 

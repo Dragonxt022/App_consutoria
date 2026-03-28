@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { Setting } = require('../../models');
-const { EmailService, SiteSettingsService } = require('../shared');
+const { EmailService, NotificationService, SiteSettingsService } = require('../shared');
 
 class SettingAdminService {
   getAllowedTabs() {
@@ -234,6 +234,11 @@ class SettingAdminService {
       );
 
       if (!sent) {
+        await NotificationService.createSmtpFailureNotification({
+          area: 'configuracoes-email',
+          details: 'O teste manual do administrador falhou com a configuração SMTP atual.'
+        });
+
         return {
           activeTab,
           redirectTo: `/admin/configuracoes?tab=${encodeURIComponent(activeTab)}&error=Falha ao enviar o e-mail de teste. Revise host, porta, usuário, senha e remetente SMTP.`

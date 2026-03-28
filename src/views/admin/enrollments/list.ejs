@@ -79,12 +79,21 @@
                         <td class="px-4 py-3 md:px-6 md:py-4" data-label="Status">
                             <%
                                 let statusClass = '';
+                                let statusSelectClass = '';
                                 switch (enroll.status) {
                                     case 'pendente': statusClass = 'bg-amber-100 text-amber-800'; break;
                                     case 'confirmado': statusClass = 'bg-blue-100 text-blue-800'; break;
                                     case 'completo': statusClass = 'bg-green-100 text-green-800'; break;
                                     case 'cancelado': statusClass = 'bg-red-100 text-red-800'; break;
                                     default: statusClass = 'bg-gray-100 text-gray-800';
+                                }
+
+                                switch (enroll.status) {
+                                    case 'pendente': statusSelectClass = 'text-amber-800'; break;
+                                    case 'confirmado': statusSelectClass = 'text-blue-700'; break;
+                                    case 'completo': statusSelectClass = 'text-emerald-700'; break;
+                                    case 'cancelado': statusSelectClass = 'text-rose-700'; break;
+                                    default: statusSelectClass = 'text-slate-700';
                                 }
                             %>
                             <span class="rounded-full px-2.5 py-0.5 text-xs font-medium uppercase tracking-wide <%= statusClass %>">
@@ -124,12 +133,19 @@
                                     </a>
                                 <% } %>
                                 <form action="/admin/inscricoes/<%= enroll.id %>/status" method="POST" class="flex items-center justify-end gap-2">
-                                    <select name="status" onchange="this.form.submit()" class="rounded-lg border border-gray-200 bg-white p-1 text-xs outline-none">
-                                        <option value="pendente" <%= enroll.status === 'pendente' ? 'selected' : '' %>>Pendente</option>
-                                        <option value="confirmado" <%= enroll.status === 'confirmado' ? 'selected' : '' %>>Confirmado</option>
-                                        <option value="completo" <%= enroll.status === 'completo' ? 'selected' : '' %>>Completo</option>
-                                        <option value="cancelado" <%= enroll.status === 'cancelado' ? 'selected' : '' %>>Cancelado</option>
-                                    </select>
+                                    <div class="relative min-w-[9.5rem]">
+                                        <select name="status" onchange="this.form.submit()" class="w-full appearance-none rounded-xl border border-slate-200 bg-white px-3 py-2 pr-9 text-sm font-medium shadow-sm transition hover:border-slate-300 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 <%= statusSelectClass %>">
+                                            <option value="pendente" <%= enroll.status === 'pendente' ? 'selected' : '' %>>Pendente</option>
+                                            <option value="confirmado" <%= enroll.status === 'confirmado' ? 'selected' : '' %>>Confirmado</option>
+                                            <option value="completo" <%= enroll.status === 'completo' ? 'selected' : '' %>>Completo</option>
+                                            <option value="cancelado" <%= enroll.status === 'cancelado' ? 'selected' : '' %>>Cancelado</option>
+                                        </select>
+                                        <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-slate-400">
+                                            <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
                                 </form>
                                 <a href="/admin/inscricoes/<%= enroll.id %>/editar" title="Editar Inscrição" class="text-blue-600 transition-colors hover:text-blue-800">
                                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>

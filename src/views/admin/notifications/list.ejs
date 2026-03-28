@@ -1,0 +1,184 @@
+<div class="w-full max-w-6xl mr-auto space-y-6">
+    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+                <p class="text-xs font-bold uppercase tracking-[0.24em] text-slate-400">Central de alertas</p>
+                <p class="mt-2 text-sm text-slate-500">Acompanhe eventos operacionais, marque como lido e limpe a bandeja quando necessário.</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-3">
+                <span class="inline-flex rounded-full bg-indigo-50 px-3 py-1 text-xs font-bold uppercase tracking-wide text-indigo-700">
+                    <%= unreadCount %> não lida(s)
+                </span>
+                <form action="/admin/notificacoes/ler-todas" method="POST">
+                    <button type="submit" class="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                        Marcar todas como lidas
+                    </button>
+                </form>
+                <% if (notifications.length > 0) { %>
+                    <button
+                        type="submit"
+                        id="notifications-delete-button"
+                        form="notifications-bulk-form"
+                        class="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700 transition hover:bg-rose-100"
+                    >
+                        Excluir todas
+                    </button>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <form id="notifications-bulk-form" action="/admin/notificacoes/excluir-todas" method="POST">
+            <div class="flex flex-col gap-4 border-b border-slate-100 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+                <label class="inline-flex items-center gap-3 text-sm font-semibold text-slate-700">
+                    <input type="checkbox" id="select-all-notifications" class="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
+                    Selecionar todas
+                </label>
+                <p id="notifications-selection-hint" class="hidden text-sm font-medium text-slate-500 sm:text-right"></p>
+            </div>
+
+            <% if (!notifications.length) { %>
+                <div class="px-6 py-14 text-center">
+                    <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
+                        <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V4a2 2 0 10-4 0v1.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                    </div>
+                    <h3 class="mt-5 text-lg font-semibold text-slate-900">Nenhuma notificação por aqui</h3>
+                    <p class="mt-2 text-sm text-slate-500">Assim que ocorrerem novos eventos operacionais, eles aparecerão nesta central.</p>
+                </div>
+            <% } else { %>
+                <div class="divide-y divide-slate-100">
+                    <% notifications.forEach((notification) => { %>
+                        <div class="px-6 py-5">
+                            <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                                <div class="flex items-start gap-4">
+                                    <input type="checkbox" name="notificationIds" value="<%= notification.id %>" class="notification-checkbox mt-1 h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
+                                    <div class="flex h-11 w-11 items-center justify-center rounded-2xl <%= notification.iconBgClass %> <%= notification.iconTextClass %>">
+                                        <% if (notification.type === 'new_enrollment') { %>
+                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                                        <% } else if (notification.type === 'expired_certificate') { %>
+                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M9 12h6m2 9H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586A2 2 0 0114 3.586L18.414 8A2 2 0 0119 9.414V19a2 2 0 01-2 2z" /></svg>
+                                        <% } else if (notification.type === 'blog_published') { %>
+                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21H8a2 2 0 01-2-2V5a2 2 0 012-2h11m0 18a2 2 0 002-2V7m-2 14V7m0 0L15 3m4 4h-4a2 2 0 01-2-2V3m-5 6h5m-5 4h8m-8 4h8" /></svg>
+                                        <% } else if (notification.type === 'smtp_failure') { %>
+                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12H8m0 0l3-3m-3 3l3 3m9-7v8a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2h12a2 2 0 012 2z" /></svg>
+                                        <% } else { %>
+                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                        <% } %>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <div class="flex flex-wrap items-center gap-2">
+                                            <h3 class="text-base font-bold text-slate-900"><%= notification.title %></h3>
+                                            <span class="inline-flex rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide <%= notification.badgeClass %>">
+                                                <%= notification.label %>
+                                            </span>
+                                            <% if (!notification.isRead) { %>
+                                                <span class="inline-flex rounded-full bg-indigo-600 px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-white">Nova</span>
+                                            <% } %>
+                                        </div>
+                                        <p class="mt-2 text-sm text-slate-600"><%= notification.message %></p>
+                                        <div class="mt-3 flex flex-wrap items-center gap-3 text-xs text-slate-400">
+                                            <span>Criada em <%= notification.createdAtLabel %></span>
+                                            <% if (notification.readAtLabel) { %>
+                                                <span>Lida em <%= notification.readAtLabel %></span>
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-wrap items-center gap-2 lg:justify-end">
+                                    <a href="/admin/notificacoes/<%= notification.id %>/abrir" class="rounded-xl border border-indigo-200 bg-indigo-50 px-4 py-2.5 text-sm font-semibold text-indigo-700 transition hover:bg-indigo-100">
+                                        Abrir
+                                    </a>
+                                    <% if (!notification.isRead) { %>
+                                        <form action="/admin/notificacoes/<%= notification.id %>/ler" method="POST">
+                                            <button type="submit" class="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                                                Marcar como lida
+                                            </button>
+                                        </form>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+            <% } %>
+        </form>
+
+        <% if (pagination.totalPages > 1) { %>
+            <div class="flex flex-col gap-3 border-t border-slate-100 px-6 py-4 md:flex-row md:items-center md:justify-between">
+                <span class="text-sm text-slate-500">Mostrando página <%= pagination.currentPage %> de <%= pagination.totalPages %></span>
+                <div class="flex flex-wrap items-center gap-2">
+                    <% for (let i = 1; i <= pagination.totalPages; i++) { %>
+                        <a href="?page=<%= i %>" class="rounded border border-slate-200 px-3 py-1 text-sm font-bold <%= pagination.currentPage === i ? 'bg-indigo-600 text-white' : 'bg-white text-slate-600 hover:bg-slate-100' %>">
+                            <%= i %>
+                        </a>
+                    <% } %>
+                </div>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<script>
+(() => {
+    const bulkForm = document.getElementById('notifications-bulk-form');
+    const deleteButton = document.getElementById('notifications-delete-button');
+    const hint = document.getElementById('notifications-selection-hint');
+    const selectAll = document.getElementById('select-all-notifications');
+    const checkboxes = Array.from(document.querySelectorAll('.notification-checkbox'));
+
+    if (!bulkForm || !deleteButton || !selectAll || !checkboxes.length) {
+        return;
+    }
+
+    const updateDeleteState = () => {
+        const selectedCount = checkboxes.filter((item) => item.checked).length;
+
+        if (selectedCount > 0) {
+            bulkForm.action = '/admin/notificacoes/excluir-selecionadas';
+            deleteButton.textContent = `Excluir selecionadas (${selectedCount})`;
+            if (hint) {
+                hint.textContent = `${selectedCount} notificação(ões) selecionada(s).`;
+                hint.classList.remove('hidden');
+            }
+        } else {
+            bulkForm.action = '/admin/notificacoes/excluir-todas';
+            deleteButton.textContent = 'Excluir todas';
+            if (hint) {
+                hint.textContent = '';
+                hint.classList.add('hidden');
+            }
+        }
+    };
+
+    bulkForm.addEventListener('submit', (event) => {
+        const selectedCount = checkboxes.filter((item) => item.checked).length;
+        const message = selectedCount > 0
+            ? `Deseja excluir ${selectedCount} notificação(ões) selecionada(s)?`
+            : 'Deseja excluir todas as notificações?';
+
+        if (!window.confirm(message)) {
+            event.preventDefault();
+        }
+    });
+
+    selectAll.addEventListener('change', () => {
+        checkboxes.forEach((checkbox) => {
+            checkbox.checked = selectAll.checked;
+        });
+        updateDeleteState();
+    });
+
+    checkboxes.forEach((checkbox) => {
+        checkbox.addEventListener('change', () => {
+            selectAll.checked = checkboxes.every((item) => item.checked);
+            updateDeleteState();
+        });
+    });
+
+    updateDeleteState();
+})();
+</script>

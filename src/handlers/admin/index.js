@@ -4,6 +4,7 @@ module.exports = {
   AdminCompanyCertificateHandler: require('./AdminCompanyCertificateHandler'),
   AdminCourseHandler: require('./AdminCourseHandler'),
   AdminEnrollmentHandler: require('./AdminEnrollmentHandler'),
+  AdminNotificationHandler: require('./AdminNotificationHandler'),
   AdminProductHandler: require('./AdminProductHandler'),
   AdminProfileHandler: require('./AdminProfileHandler'),
   AdminSalesHandler: require('./AdminSalesHandler'),
