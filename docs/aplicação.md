@@ -1,32 +1,31 @@
-# Estrutura implementada:
+# Estrutura implementada
 
-✅ Framework: Express.js com MVC  
-✅ Banco de dados: SQLite para desenvolvimento, MySQL para produção  
-✅ Autenticação: JWT com sessões  
-✅ Níveis de acesso: Admin e Aluno  
-✅ Auto-reload: Nodemon configurado  
+- Framework: Express.js 5
+- Arquitetura: `routes -> handlers -> services -> models -> views`
+- Banco de dados: SQLite para desenvolvimento e MySQL para producao
+- Autenticacao: sessao + JWT
+- Niveis de acesso: admin e aluno
+- Auto-reload local: `node --watch`
 
-## Acessos criados:
+## Organizacao
 
-### Administrador:
-- Email: admin@consultoria.com
-- Senha: admin123
-- Acesso: /admin/login
+- `src/routes`: composicao dos modulos HTTP
+- `src/handlers`: camada HTTP por dominio
+- `src/services`: regra de negocio e persistencia
+- `src/models`: entidades Sequelize
+- `src/views`: templates EJS
 
-### Para rodar a aplicação:
+## Dominios
 
-``npm run dev``
-A aplicação estará rodando em http://localhost:3000
+- `admin`: dashboard, cursos, inscricoes, usuarios, vendas, configuracoes, blog, certificados e certidoes
+- `public`: home, catalogo, blog, loja, certidoes e validacao publica
+- `student`: dashboard, perfil, cursos, certificados e comprovantes
+- `auth`: login, cadastro, confirmacao e recuperacao
 
-### Páginas disponíveis:
+## Para rodar a aplicacao
 
-- Homepage (/) - Site institucional com opções de login
+```bash
+npm run dev
+```
 
-- Login Admin (/admin/login) - Acesso para 
-administradores
-
-- Login Aluno (/aluno/login) - Acesso para alunos
-
-- Dashboard Admin (/admin/dashboard) - Painel administrativo
-
-- Dashboard Aluno (/aluno/dashboard) - Painel do aluno
+A aplicacao estara rodando em `http://localhost:3000`, salvo se `PORT` estiver definido no ambiente.

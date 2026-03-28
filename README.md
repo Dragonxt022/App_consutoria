@@ -4,7 +4,7 @@ Plataforma web para divulgacao de cursos, matriculas, gestao administrativa, cer
 
 ## Visao Geral
 
-O projeto foi construido com Node.js e Express, usando arquitetura MVC no backend, EJS no frontend server-side e Sequelize para persistencia. A aplicacao atende tanto a operacao interna da consultoria quanto a experiencia publica dos alunos e visitantes.
+O projeto foi construido com Node.js e Express 5, EJS no frontend server-side e Sequelize para persistencia. A aplicacao atende tanto a operacao interna da consultoria quanto a experiencia publica dos alunos e visitantes, seguindo uma arquitetura em camadas orientada por dominio.
 
 ### Principais recursos
 
@@ -40,7 +40,12 @@ O projeto foi construido com Node.js e Express, usando arquitetura MVC no backen
 |-- scripts/
 |-- src/
 |   |-- config/
-|   |-- controllers/
+|   |-- handlers/
+|   |   |-- admin/
+|   |   |-- auth/
+|   |   |-- public/
+|   |   `-- student/
+|   |-- lib/
 |   |-- middleware/
 |   |-- models/
 |   |-- public/
@@ -49,12 +54,43 @@ O projeto foi construido com Node.js e Express, usando arquitetura MVC no backen
 |   |   `-- uploads/
 |   |-- routes/
 |   |-- services/
+|   |   |-- admin/
+|   |   |-- auth/
+|   |   |-- public/
+|   |   |-- shared/
+|   |   `-- student/
 |   |-- utils/
 |   `-- views/
 |-- test/
 |-- .env.example
 `-- package.json
 ```
+
+## Arquitetura
+
+Fluxo principal:
+
+```text
+request -> route -> middleware -> handler -> service -> model
+                                      |
+                                      -> view / json / redirect
+```
+
+Responsabilidades:
+
+- `routes`: definem endpoints e encadeiam middleware
+- `handlers`: tratam HTTP e escolhem `render`, `redirect` ou `json`
+- `services`: concentram regra de negocio, persistencia e integracoes
+- `models`: mapeiam entidades com Sequelize
+- `views`: renderizam a camada server-side com EJS
+
+Dominios organizados em `handlers` e `services`:
+
+- `admin`
+- `auth`
+- `public`
+- `student`
+- `shared` para recursos transversais
 
 ## Modulos do sistema
 
@@ -138,7 +174,7 @@ DB_STORAGE=./database.sqlite
 npm run dev
 ```
 
-Esse comando sobe o servidor com `nodemon` e recompila o CSS em modo watch.
+Esse comando sobe o servidor com `node --watch` e recompila o CSS em modo watch.
 
 ### Executar em producao
 

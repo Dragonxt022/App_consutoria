@@ -50,9 +50,12 @@ DB_SYNC_FORCE=0
 npm install
 npm run build-css-once
 node scripts/createAdmin.js
-pm2 start ecosystem.config.js
+pm2 start src/app.js --name app-consutoria
 pm2 save
 ```
+
+No ambiente de desenvolvimento, o comando `npm run dev` usa `node --watch` para subir a aplicacao e o watch do CSS juntos.
+Em producao, mantenha apenas o processo `app-consutoria` no PM2 e gere o CSS antes de reiniciar.
 
 Se preferir, o start manual por comando tambem funciona:
 
@@ -92,6 +95,15 @@ npm install
 npm run build-css-once
 pm2 restart app-consutoria
 ```
+
+Se a instancia ja estiver cadastrada no PM2, basta reiniciar o processo:
+
+```bash
+pm2 restart app-consutoria
+pm2 save
+```
+
+Observacao: em desenvolvimento, o `npm run dev` tambem sobe o watcher do PostCSS. Em producao, gere o CSS com `npm run build-css-once` antes do restart.
 
 ## 8. Primeiro acesso
 

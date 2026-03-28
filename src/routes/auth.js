@@ -1,24 +1,30 @@
 const express = require('express');
+const { AuthHandler } = require('../handlers');
+const { guestMiddleware } = require('../middleware');
+const { routeHandler } = require('../lib');
+
 const router = express.Router();
-const AuthController = require('../controllers/AuthController');
-const { guestMiddleware } = require('../middleware/auth');
 
-router.get('/login', (req, res) => AuthController.showLogin(req, res));
-router.post('/login', (req, res) => AuthController.login(req, res));
-router.get('/logout', (req, res) => AuthController.logout(req, res));
+router.get('/login', guestMiddleware, routeHandler(AuthHandler, 'showLogin'));
+router.post('/login', routeHandler(AuthHandler, 'login'));
+router.get('/logout', routeHandler(AuthHandler, 'logout'));
 
-router.get('/confirmar-conta/:token', (req, res) => AuthController.showConfirmAccount(req, res));
-router.post('/confirmar-conta', (req, res) => AuthController.handleConfirmAccount(req, res));
+router.get('/cadastro', guestMiddleware, routeHandler(AuthHandler, 'showRegister'));
+router.post('/cadastro', guestMiddleware, routeHandler(AuthHandler, 'register'));
+router.get('/register', guestMiddleware, routeHandler(AuthHandler, 'showRegister'));
+router.post('/register', guestMiddleware, routeHandler(AuthHandler, 'register'));
 
-router.get('/esqueci-senha', (req, res) => AuthController.showForgotPassword(req, res));
-router.post('/esqueci-senha', (req, res) => AuthController.handleForgotPassword(req, res));
+router.get('/confirmar-conta/:token', routeHandler(AuthHandler, 'showConfirmAccount'));
+router.post('/confirmar-conta', routeHandler(AuthHandler, 'handleConfirmAccount'));
 
-router.get('/redefinir-senha/:token', (req, res) => AuthController.showResetPassword(req, res));
-router.post('/redefinir-senha', (req, res) => AuthController.handleResetPassword(req, res));
+router.get('/esqueci-senha', routeHandler(AuthHandler, 'showForgotPassword'));
+router.post('/esqueci-senha', routeHandler(AuthHandler, 'handleForgotPassword'));
 
-// Rotas para primeiro admin
-router.get('/primeiro-admin', (req, res) => AuthController.showFirstAdminSetup(req, res));
-router.post('/primeiro-admin', (req, res) => AuthController.createFirstAdmin(req, res));
-router.get('/api/admin-exists', (req, res) => AuthController.checkAdminExists(req, res));
+router.get('/redefinir-senha/:token', routeHandler(AuthHandler, 'showResetPassword'));
+router.post('/redefinir-senha', routeHandler(AuthHandler, 'handleResetPassword'));
+
+router.get('/primeiro-admin', routeHandler(AuthHandler, 'showFirstAdminSetup'));
+router.post('/primeiro-admin', routeHandler(AuthHandler, 'createFirstAdmin'));
+router.get('/api/admin-exists', routeHandler(AuthHandler, 'checkAdminExists'));
 
 module.exports = router;

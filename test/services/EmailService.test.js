@@ -4,13 +4,13 @@ const path = require('node:path');
 
 const { loadWithStubs } = require('../../test-support/loadWithStubs');
 
-const emailServicePath = path.resolve(__dirname, '../../src/services/EmailService.js');
+const emailServicePath = path.resolve(__dirname, '../../src/services/shared/EmailService.js');
 
 test('sendEmail skips delivery when SMTP is not configured', async () => {
   let transporterCreated = false;
 
   const emailService = loadWithStubs(emailServicePath, {
-    '../controllers/SettingController': {
+    './SiteSettingsService': {
       getSettings: async () => ({ smtp_user: '', site_name: 'ConsultPro' })
     },
     nodemailer: {
@@ -32,7 +32,7 @@ test('sendEmail creates the transporter with settings and dispatches the email',
   let transportConfig;
 
   const emailService = loadWithStubs(emailServicePath, {
-    '../controllers/SettingController': {
+    './SiteSettingsService': {
       getSettings: async () => ({
         smtp_host: 'smtp.example.com',
         smtp_port: '465',
@@ -76,7 +76,7 @@ test('sendEmail creates the transporter with settings and dispatches the email',
 
 test('sendEmail returns false when the transport throws an error', async () => {
   const emailService = loadWithStubs(emailServicePath, {
-    '../controllers/SettingController': {
+    './SiteSettingsService': {
       getSettings: async () => ({
         smtp_host: 'smtp.example.com',
         smtp_port: '587',
@@ -104,7 +104,7 @@ test('sendEmail returns false when the transport throws an error', async () => {
 
 test('sendAccountConfirmation delegates to sendEmail with the expected content', async (t) => {
   const emailService = loadWithStubs(emailServicePath, {
-    '../controllers/SettingController': {
+    './SiteSettingsService': {
       getSettings: async () => ({})
     },
     nodemailer: {

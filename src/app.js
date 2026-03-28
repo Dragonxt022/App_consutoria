@@ -4,18 +4,13 @@ const MySQLStoreFactory = require('express-mysql-session');
 const path = require('path');
 require('dotenv').config();
 
-const { syncDatabase, BlogCategory, BlogPost } = require('./models');
+const { syncDatabase } = require('./models');
 const cleanupUnconfirmed = require('./utils/cleanup');
 
 const expressLayouts = require('express-ejs-layouts');
-const jwt = require('jsonwebtoken');
-
-const SettingController = require('./controllers/SettingController');
 const { getSafeImage, imgTag, bgImage } = require('./utils/imageHelper.js');
-const { getBaseUrl, buildAppUrl } = require('./utils/url');
-
-const homeRoutes = require('./routes/home');
-const authRoutes = require('./routes/auth');
+const { requestContext } = require('./middleware');
+const routes = require('./routes');
 
 const app = express();
 const isProduction = process.env.NODE_ENV === 'production';
@@ -109,48 +104,7 @@ app.use(session({
 /* =======================
    Auth + settings globais
 ======================= */
-app.use(async (req, res, next) => {
-  const token = req.session.token;
-
-  if (token) {
-    try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret');
-      req.user = decoded;
-      res.locals.user = decoded;
-    } catch {
-      delete req.session.token;
-      res.locals.user = null;
-    }
-  } else {
-    res.locals.user = null;
-  }
-
-  res.locals.siteSettings = await SettingController.getSettings();
-  res.locals.appBaseUrl = getBaseUrl(req);
-  res.locals.currentUrl = buildAppUrl(req, req.originalUrl || req.url || '/');
-  res.locals.blogMenuCategories = await BlogCategory.findAll({
-    where: { active: true },
-    include: [{
-      model: BlogPost,
-      as: 'posts',
-      attributes: [],
-      where: { status: 'publicado' },
-      required: true
-    }],
-    attributes: ['id', 'name', 'slug'],
-    order: [['name', 'ASC']],
-    group: ['BlogCategory.id'],
-    limit: 15
-  });
-  const flash = req.session.flash || null;
-  delete req.session.flash;
-
-  res.locals.toast = flash || (req.query.error ? { type: 'error', message: req.query.error } : null) || (req.query.success ? { type: 'success', message: req.query.success } : null);
-  res.locals.error = null;
-  res.locals.success = null;
-
-  next();
-});
+app.use(requestContext);
 
 /* =======================
    Redirect auth legacy
@@ -173,8 +127,7 @@ app.get('/health', (_req, res) => {
   res.status(200).json({ status: 'ok' });
 });
 
-app.use('/', homeRoutes);
-app.use('/', authRoutes);
+app.use('/', routes);
 
 /* =======================
    404
@@ -182,6 +135,26 @@ app.use('/', authRoutes);
 app.use((req, res) => {
   res.status(404).render('error', {
     title: 'Página não encontrada',
+    layout: false
+  });
+});
+
+app.use((error, req, res, _next) => {
+  console.error(error);
+
+  if (res.headersSent) {
+    return;
+  }
+
+  if (req.accepts('json') && !req.accepts('html')) {
+    res.status(error.status || 500).json({
+      error: error.message || 'Erro interno do servidor'
+    });
+    return;
+  }
+
+  res.status(error.status || 500).render('error', {
+    title: 'Erro interno do servidor',
     layout: false
   });
 });
