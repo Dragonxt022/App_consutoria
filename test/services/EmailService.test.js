@@ -2,7 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const path = require('node:path');
 
-const { loadWithStubs } = require('../../test-support/loadWithStubs');
+const { loadWithStubs } = require('../../test-support/LoadWithStubs');
 
 const emailServicePath = path.resolve(__dirname, '../../src/services/shared/EmailService.js');
 

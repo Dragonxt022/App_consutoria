@@ -5,7 +5,7 @@ const {
   getDefaultCertificateBuilderConfig,
   normalizeCertificateBuilderConfig,
   buildCertificateRenderElements
-} = require('../../utils/certificateBuilder');
+} = require('../../utils/CertificateBuilder');
 
 class CertificateBuilderAdminService {
   async getStoredConfig() {

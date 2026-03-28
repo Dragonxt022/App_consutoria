@@ -49,8 +49,8 @@ DB_SYNC_FORCE=0
 ```bash
 npm install
 npm run build-css-once
-node scripts/createAdmin.js
-pm2 start src/app.js --name app-consutoria
+node scripts/CreateAdmin.js
+pm2 start src/App.js --name app-consutoria
 pm2 save
 ```
 
@@ -60,7 +60,7 @@ Em producao, mantenha apenas o processo `app-consutoria` no PM2 e gere o CSS ant
 Se preferir, o start manual por comando tambem funciona:
 
 ```bash
-pm2 start src/app.js --name app-consutoria
+pm2 start src/App.js --name app-consutoria
 ```
 
 ## 5. Healthcheck
@@ -110,7 +110,7 @@ Observacao: em desenvolvimento, o `npm run dev` tambem sobe o watcher do PostCSS
 Se o banco estiver vazio, rode:
 
 ```bash
-node scripts/createAdmin.js
+node scripts/CreateAdmin.js
 ```
 
 Depois acesse `/login` ou a tela de primeiro administrador.

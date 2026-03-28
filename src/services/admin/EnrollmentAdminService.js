@@ -1,7 +1,7 @@
 const crypto = require('crypto');
 const { Op } = require('sequelize');
 const { Enrollment, Course } = require('../../models');
-const { parseMoneyValue } = require('../../utils/money');
+const { parseMoneyValue } = require('../../utils/Money');
 
 function buildCertificateCode() {
   return crypto.randomBytes(4).toString('hex').toUpperCase().match(/.{1,4}/g).join('-');

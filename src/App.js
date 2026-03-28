@@ -5,10 +5,10 @@ const path = require('path');
 require('dotenv').config();
 
 const { syncDatabase } = require('./models');
-const cleanupUnconfirmed = require('./utils/cleanup');
+const cleanupUnconfirmed = require('./utils/Cleanup');
 
 const expressLayouts = require('express-ejs-layouts');
-const { getSafeImage, imgTag, bgImage } = require('./utils/imageHelper.js');
+const { getSafeImage, imgTag, bgImage } = require('./utils/ImageHelper');
 const { requestContext } = require('./middleware');
 const routes = require('./routes');
 

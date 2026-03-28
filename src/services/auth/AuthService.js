@@ -1,7 +1,7 @@
 const { Op } = require('sequelize');
 const { User } = require('../../models');
-const { generateToken } = require('../../middleware/jwt');
-const { buildAppUrl } = require('../../utils/url');
+const { generateToken } = require('../../middleware/Jwt');
+const { buildAppUrl } = require('../../utils/Url');
 const { EmailService } = require('../shared');
 
 async function getCryptoRandomString() {

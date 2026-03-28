@@ -6,7 +6,7 @@ const {
   getDateOnlyValue,
   isCertificateExpired,
   formatCertificateExpiration
-} = require('../../utils/companyCertificate');
+} = require('../../utils/CompanyCertificate');
 
 class CompanyCertificateAdminService {
   resolveStoredFilePath(fileUrl) {

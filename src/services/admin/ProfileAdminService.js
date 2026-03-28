@@ -3,7 +3,7 @@ const fs = require('fs');
 const { Op } = require('sequelize');
 const { User } = require('../../models');
 const { EmailService } = require('../shared');
-const { buildAppUrl } = require('../../utils/url');
+const { buildAppUrl } = require('../../utils/Url');
 
 async function getCryptoRandomString() {
   return (await import('crypto-random-string')).default;

@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const { SiteSettingsService } = require('../services');
 const { BlogCategory, BlogPost } = require('../models');
-const { getBaseUrl, buildAppUrl } = require('../utils/url');
+const { getBaseUrl, buildAppUrl } = require('../utils/Url');
 
 async function requestContext(req, res, next) {
   const token = req.session.token;

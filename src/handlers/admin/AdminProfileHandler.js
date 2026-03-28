@@ -1,4 +1,4 @@
-const { generateToken } = require('../../middleware/jwt');
+const { generateToken } = require('../../middleware/Jwt');
 const { ProfileAdminService } = require('../../services');
 
 const AdminProfileHandler = {

@@ -1,5 +1,5 @@
 const { ProductAdminService } = require('../../services');
-const { redirectWithFlash } = require('../../utils/flash');
+const { redirectWithFlash } = require('../../utils/Flash');
 
 const AdminProductHandler = {
   async list(req, res) {

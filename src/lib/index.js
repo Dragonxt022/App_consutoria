@@ -1,4 +1,4 @@
 module.exports = {
-  asyncHandler: require('./asyncHandler'),
-  routeHandler: require('./routeHandler')
+  asyncHandler: require('./AsyncHandler'),
+  routeHandler: require('./RouteHandler')
 };

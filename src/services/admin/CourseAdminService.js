@@ -3,7 +3,7 @@ const path = require('path');
 const slugify = require('slugify');
 const { Op } = require('sequelize');
 const { Course } = require('../../models');
-const { parseMoneyValue } = require('../../utils/money');
+const { parseMoneyValue } = require('../../utils/Money');
 const { CoursePublicService } = require('../public');
 
 const DEFAULT_ITEMS_INCLUDED = [

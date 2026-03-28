@@ -1,4 +1,4 @@
-const { formatCurrency } = require('../../utils/currencyFormatter');
+const { formatCurrency } = require('../../utils/CurrencyFormatter');
 const { EnrollmentAdminService } = require('../../services');
 
 const AdminEnrollmentHandler = {

@@ -1,6 +1,6 @@
 const { Op } = require('sequelize');
 const { User, Enrollment, BlogPost } = require('../../models');
-const { buildAppUrl } = require('../../utils/url');
+const { buildAppUrl } = require('../../utils/Url');
 const { EmailService } = require('../shared');
 
 async function getCryptoRandomString() {

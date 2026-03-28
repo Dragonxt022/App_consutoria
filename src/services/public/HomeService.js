@@ -1,7 +1,7 @@
 const { Op } = require('sequelize');
 const { Course, User, Enrollment, Product, Setting, BlogPost, BlogCategory } = require('../../models');
-const { formatCurrency } = require('../../utils/currencyFormatter');
-const { parseMoneyValue } = require('../../utils/money');
+const { formatCurrency } = require('../../utils/CurrencyFormatter');
+const { parseMoneyValue } = require('../../utils/Money');
 const { ProductFormatter } = require('../shared');
 const { formatProduct } = ProductFormatter;
 

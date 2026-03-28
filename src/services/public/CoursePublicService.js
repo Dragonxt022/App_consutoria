@@ -3,9 +3,9 @@ const fs = require('fs');
 const path = require('path');
 const slugify = require('slugify');
 const { Course, Enrollment, User, Product, Setting } = require('../../models');
-const { buildAppUrl } = require('../../utils/url');
-const { formatCurrency } = require('../../utils/currencyFormatter');
-const { parseMoneyValue } = require('../../utils/money');
+const { buildAppUrl } = require('../../utils/Url');
+const { formatCurrency } = require('../../utils/CurrencyFormatter');
+const { parseMoneyValue } = require('../../utils/Money');
 const { ProductFormatter, EmailService } = require('../shared');
 const { formatProduct } = ProductFormatter;
 

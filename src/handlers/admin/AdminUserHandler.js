@@ -1,4 +1,4 @@
-const { redirectWithFlash } = require('../../utils/flash');
+const { redirectWithFlash } = require('../../utils/Flash');
 const { UserAdminService } = require('../../services');
 
 const AdminUserHandler = {

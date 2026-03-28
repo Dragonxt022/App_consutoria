@@ -1,5 +1,5 @@
-const { generateToken } = require('../../middleware/jwt');
-const { formatCurrency } = require('../../utils/currencyFormatter');
+const { generateToken } = require('../../middleware/Jwt');
+const { formatCurrency } = require('../../utils/CurrencyFormatter');
 const { StudentProfileService } = require('../../services');
 
 const StudentProfileHandler = {

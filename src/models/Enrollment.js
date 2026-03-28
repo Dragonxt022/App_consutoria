@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database');
-const { parseMoneyValue, toMoneyStorage } = require('../utils/money');
+const sequelize = require('../config/Database');
+const { parseMoneyValue, toMoneyStorage } = require('../utils/Money');
 
 const Enrollment = sequelize.define('Enrollment', {
   id: {

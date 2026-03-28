@@ -196,11 +196,11 @@ npm test
 
 Scripts auxiliares em [`scripts/`](scripts):
 
-- `createAdmin.js`: cria o primeiro administrador
-- `seedCourses.js`: popula cursos de exemplo
-- `migrateCoursePricesToDecimal.js`: ajusta valores de cursos
-- `cleanupBackupTables.js`: limpeza de tabelas auxiliares
-- `fix_sqlite_backup.js`: manutencao de backup em SQLite
+- `CreateAdmin.js`: cria o primeiro administrador
+- `SeedCourses.js`: popula cursos de exemplo
+- `MigrateCoursePricesToDecimal.js`: ajusta valores de cursos
+- `CleanupBackupTables.js`: limpeza de tabelas auxiliares
+- `FixSqliteBackup.js`: manutencao de backup em SQLite
 
 ## Rotas principais
 
@@ -226,7 +226,7 @@ npm test
 ## Documentacao relacionada
 
 - [DEPLOY-CLOUDPANEL.md](DEPLOY-CLOUDPANEL.md)
-- [docs/aplicação.md](docs/aplicação.md)
+- [docs/Aplicacao.md](docs/Aplicacao.md)
 
 ## Contribuicao
 

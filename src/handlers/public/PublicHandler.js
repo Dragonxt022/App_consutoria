@@ -1,5 +1,5 @@
 const { HomeService, CoursePublicService } = require('../../services');
-const { formatCurrency } = require('../../utils/currencyFormatter');
+const { formatCurrency } = require('../../utils/CurrencyFormatter');
 
 const PublicHandler = {
   async home(req, res) {

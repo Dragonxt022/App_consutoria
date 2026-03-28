@@ -5,8 +5,8 @@ const {
   normalizeCertificateBuilderConfig,
   buildCertificateRenderValues,
   buildCertificateRenderElements
-} = require('../../utils/certificateBuilder');
-const { buildAppUrl } = require('../../utils/url');
+} = require('../../utils/CertificateBuilder');
+const { buildAppUrl } = require('../../utils/Url');
 
 class CertificatePublicService {
   async loadSettings() {

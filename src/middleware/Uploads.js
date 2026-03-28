@@ -1,4 +1,4 @@
-const upload = require('../config/multer');
+const upload = require('../config/Multer');
 
 const courseFilesUpload = upload.fields([
   { name: 'image', maxCount: 1 },

@@ -1,8 +1,8 @@
 const express = require('express');
-const authRoutes = require('./auth');
-const publicRoutes = require('./public');
-const studentRoutes = require('./student');
-const adminRoutes = require('./admin');
+const authRoutes = require('./AuthRoutes');
+const publicRoutes = require('./PublicRoutes');
+const studentRoutes = require('./StudentRoutes');
+const adminRoutes = require('./AdminRoutes');
 
 const router = express.Router();
 

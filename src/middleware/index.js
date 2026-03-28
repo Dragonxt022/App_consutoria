@@ -1,6 +1,6 @@
 module.exports = {
-  ...require('./auth'),
-  requestContext: require('./requestContext'),
-  uploads: require('./uploads'),
-  ...require('./jwt')
+  ...require('./Auth'),
+  requestContext: require('./RequestContext'),
+  uploads: require('./Uploads'),
+  ...require('./Jwt')
 };

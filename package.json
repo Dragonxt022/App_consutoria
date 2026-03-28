@@ -2,14 +2,14 @@
   "name": "app_consutoria",
   "version": "1.0.0",
   "description": "",
-  "main": "src/app.js",
+  "main": "src/App.js",
   "scripts": {
-    "start": "node src/app.js",
+    "start": "node src/App.js",
     "dev": "concurrently \"npm run dev:server\" \"npm run build-css\"",
-    "dev:server": "node --watch src/app.js",
+    "dev:server": "node --watch src/App.js",
     "build-css": "postcss src/public/css/input.css -o src/public/css/output.css --watch",
     "build-css-once": "postcss src/public/css/input.css -o src/public/css/output.css",
-    "seed": "node scripts/seedCourses.js",
+    "seed": "node scripts/SeedCourses.js",
     "migrate:course-prices-decimal": "node scripts/migrateCoursePricesToDecimal.js",
     "test": "node --test"
   },
