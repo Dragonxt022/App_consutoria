@@ -131,7 +131,7 @@
             <table class="responsive-table-users w-full text-left">
                 <thead class="bg-gray-50 text-xs font-bold uppercase text-gray-400">
                     <tr>
-                        <th class="px-4 py-3 md:px-6 md:py-4">Usuario</th>
+                        <th class="px-4 py-3 md:px-6 md:py-4">Usuário</th>
                         <th class="hidden px-4 py-3 md:px-6 md:py-4 lg:table-cell">Perfil</th>
                         <th class="px-4 py-3 md:px-6 md:py-4">Status</th>
                         <th class="hidden px-4 py-3 md:px-6 md:py-4 xl:table-cell">Cadastro</th>
@@ -141,7 +141,7 @@
                 <tbody class="divide-y divide-gray-100">
                     <% users.forEach((managedUser) => { %>
                         <tr class="transition-colors hover:bg-gray-50/50">
-                            <td class="px-4 py-3 md:px-6 md:py-4" data-label="Usuario">
+                            <td class="px-4 py-3 md:px-6 md:py-4" data-label="Usuário">
                                 <div class="flex items-center gap-3">
                                     <img class="h-11 w-11 rounded-full border border-slate-200 object-cover" src="<%= managedUser.avatar ? managedUser.avatar : ('https://ui-avatars.com/api/?name=' + encodeURIComponent(managedUser.name) + '&background=0f172a&color=fff') %>" alt="Avatar do usuario">
                                     <div class="flex flex-col">

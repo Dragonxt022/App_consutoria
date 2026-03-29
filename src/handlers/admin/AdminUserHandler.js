@@ -6,7 +6,7 @@ const AdminUserHandler = {
     const data = await UserAdminService.getListData(req.query);
 
     res.render('admin/users/list', {
-      title: 'Usuarios',
+      title: 'Usuários',
       user: req.user,
       layout: 'admin/layout',
       ...data
@@ -17,11 +17,11 @@ const AdminUserHandler = {
     const managedUser = await UserAdminService.getUserForEdit(req.params.id);
 
     if (!managedUser) {
-      return redirectWithFlash(req, res, '/admin/usuarios', 'error', 'Usuario nao encontrado');
+      return redirectWithFlash(req, res, '/admin/usuarios', 'error', 'Usuário não encontrado');
     }
 
     return res.render('admin/users/edit', {
-      title: 'Editar Usuario',
+      title: 'Editar Usuário',
       managedUser,
       user: req.user,
       layout: 'admin/layout'
@@ -36,7 +36,7 @@ const AdminUserHandler = {
         return redirectWithFlash(req, res, '/admin/usuarios', 'error', result.error);
       }
 
-      return redirectWithFlash(req, res, '/admin/usuarios', 'success', 'Usuario cadastrado com sucesso');
+      return redirectWithFlash(req, res, '/admin/usuarios', 'success', 'Usuário cadastrado com sucesso');
     } catch (error) {
       console.error(error);
       return redirectWithFlash(req, res, '/admin/usuarios', 'error', 'Erro ao cadastrar usuario');
@@ -51,7 +51,7 @@ const AdminUserHandler = {
         return redirectWithFlash(req, res, result.redirectTo, 'error', result.error);
       }
 
-      return redirectWithFlash(req, res, '/admin/usuarios', 'success', 'Usuario atualizado com sucesso');
+      return redirectWithFlash(req, res, '/admin/usuarios', 'success', 'Usuário atualizado com sucesso');
     } catch (error) {
       console.error(error);
       return redirectWithFlash(req, res, `/admin/usuarios/${req.params.id}/editar`, 'error', 'Erro ao atualizar usuario');
@@ -81,7 +81,7 @@ const AdminUserHandler = {
         return redirectWithFlash(req, res, '/admin/usuarios', 'error', result.error);
       }
 
-      return redirectWithFlash(req, res, '/admin/usuarios', 'success', 'Usuario excluido com sucesso');
+      return redirectWithFlash(req, res, '/admin/usuarios', 'success', 'Usuário excluído com sucesso');
     } catch (error) {
       console.error(error);
       return redirectWithFlash(req, res, '/admin/usuarios', 'error', 'Erro ao excluir usuario');
