@@ -1,11 +1,11 @@
 const { Op } = require('sequelize');
 const fs = require('fs');
-const path = require('path');
 const slugify = require('slugify');
 const { Course, Enrollment, User, Product, Setting } = require('../../models');
 const { buildAppUrl } = require('../../utils/Url');
 const { formatCurrency } = require('../../utils/CurrencyFormatter');
 const { parseMoneyValue } = require('../../utils/Money');
+const { resolveUploadUrlToPath } = require('../../utils/UploadPaths');
 const { ProductFormatter, EmailService, NotificationService } = require('../shared');
 const { formatProduct } = ProductFormatter;
 
@@ -17,13 +17,19 @@ function stripHtml(value) {
     .trim();
 }
 
+function decodeHtmlEntities(value) {
+  return String(value || '')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'");
+}
+
 class CoursePublicService {
   resolvePublicFilePath(fileUrl) {
-    if (!fileUrl || typeof fileUrl !== 'string' || !fileUrl.startsWith('/uploads/')) {
-      return null;
-    }
-
-    return path.join(__dirname, '..', '..', 'public', fileUrl.replace(/^\/+/, ''));
+    return resolveUploadUrlToPath(fileUrl);
   }
 
   removeFileIfExists(fileUrl) {
@@ -89,9 +95,75 @@ class CoursePublicService {
       .filter(Boolean);
   }
 
+  extractCertificateItemsFromHtml(rawHtml) {
+    return decodeHtmlEntities(
+      String(rawHtml || '')
+        .replace(/<br\s*\/?>/gi, '\n')
+        .replace(/<\/(p|div|li|h1|h2|h3|h4|h5|h6)>/gi, '\n')
+        .replace(/<[^>]*>/g, ' ')
+    )
+      .replace(/\r/g, '\n')
+      .split('\n')
+      .map((item) => item.trim())
+      .filter((item) => item.length > 1);
+  }
+
+  sanitizeCertificateBackContent(rawHtml) {
+    return String(rawHtml || '')
+      .replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, '')
+      .replace(/\son[a-z]+="[^"]*"/gi, '')
+      .replace(/\son[a-z]+='[^']*'/gi, '')
+      .replace(/\sstyle="[^"]*"/gi, '')
+      .replace(/\sstyle='[^']*'/gi, '')
+      .trim();
+  }
+
+  normalizeCertificateTopicsPayload(rawTopics, rawRichContent) {
+    const html = this.sanitizeCertificateBackContent(rawRichContent);
+    const itemsFromTextarea = this.normalizeCertificateTopics(rawTopics);
+    const itemsFromHtml = html ? this.extractCertificateItemsFromHtml(html) : [];
+    const items = (itemsFromTextarea.length ? itemsFromTextarea : itemsFromHtml).slice(0, 40);
+
+    if (html) {
+      return {
+        mode: 'rich',
+        html,
+        items
+      };
+    }
+
+    return items;
+  }
+
+  extractCertificateTopicsData(course) {
+    const rawValue = course.certificateTopics;
+
+    if (rawValue && typeof rawValue === 'object' && !Array.isArray(rawValue)) {
+      const html = this.sanitizeCertificateBackContent(rawValue.html || '');
+      const items = Array.isArray(rawValue.items)
+        ? rawValue.items.map((item) => String(item).trim()).filter((item) => item.length > 1)
+        : this.extractCertificateItemsFromHtml(html);
+
+      return {
+        html,
+        items: items.slice(0, 40)
+      };
+    }
+
+    const items = Array.isArray(rawValue)
+      ? rawValue.map((item) => String(item).trim()).filter((item) => item.length > 1)
+      : [];
+
+    return {
+      html: '',
+      items: items.slice(0, 40)
+    };
+  }
+
   serializeCourse(course, now = new Date()) {
     const data = course.toJSON();
     const priceValue = parseMoneyValue(data.price);
+    const certificateTopicsData = this.extractCertificateTopicsData(data);
 
     return {
       ...data,
@@ -100,6 +172,8 @@ class CoursePublicService {
       priceDisplay: formatCurrency(priceValue),
       priceInputValue: priceValue.toFixed(2),
       descriptionPlain: stripHtml(data.description),
+      certificateTopicsList: certificateTopicsData.items,
+      certificateBackContentHtml: certificateTopicsData.html,
       isExpired: new Date(data.startDate) < now
     };
   }

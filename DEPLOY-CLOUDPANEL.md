@@ -33,6 +33,7 @@ SESSION_SECRET=um-segredo-forte
 SESSION_COOKIE_SECURE=1
 JWT_SECRET=outro-segredo-forte
 JWT_EXPIRE=7d
+UPLOADS_DIR=/var/www/app-consultoria/uploads
 DB_DIALECT=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
@@ -83,7 +84,8 @@ Resposta esperada:
 - Deixe `DB_SYNC_ALTER=0` em producao para evitar alteracoes automaticas de schema
 - O app agora respeita `APP_URL`, o que ajuda links de e-mail e certificados atras do proxy
 - `TRUST_PROXY=1` e `SESSION_COOKIE_SECURE=1` sao importantes para cookies funcionarem corretamente com HTTPS no CloudPanel
-- A pasta `src/public/uploads` precisa ser preservada entre deploys se voces publicarem novas imagens, logos, assinaturas e anexos
+- Configure `UPLOADS_DIR` para uma pasta persistente fora do codigo. A URL publica continua sendo `/uploads/...`
+- Apenas assets estaticos do sistema, como `src/public/uploads/icons` e `src/public/uploads/templete-certificados`, permanecem dentro do projeto
 
 ## 7. Atualizacao de versao
 

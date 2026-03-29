@@ -1,9 +1,9 @@
-const path = require('path');
 const fs = require('fs');
 const { Op } = require('sequelize');
 const { User } = require('../../models');
 const { EmailService } = require('../shared');
 const { buildAppUrl } = require('../../utils/Url');
+const { resolveUploadUrlToPath } = require('../../utils/UploadPaths');
 
 async function getCryptoRandomString() {
   return (await import('crypto-random-string')).default;
@@ -23,10 +23,9 @@ class ProfileAdminService {
       return;
     }
 
-    const avatarRelativePath = avatarUrl.replace('/uploads/', 'uploads/');
-    const avatarPath = path.join(__dirname, '..', '..', 'public', avatarRelativePath);
+    const avatarPath = resolveUploadUrlToPath(avatarUrl);
 
-    if (!fs.existsSync(avatarPath)) {
+    if (!avatarPath || !fs.existsSync(avatarPath)) {
       return;
     }
 

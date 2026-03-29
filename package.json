@@ -10,8 +10,9 @@
     "build-css": "postcss src/public/css/input.css -o src/public/css/output.css --watch",
     "build-css-once": "postcss src/public/css/input.css -o src/public/css/output.css",
     "seed": "node scripts/SeedCourses.js",
+    "seed:notifications": "node scripts/SeedNotifications.js",
     "migrate:course-prices-decimal": "node scripts/migrateCoursePricesToDecimal.js",
-    "test": "node --test"
+    "test": "node --test tests/**/*.test.js"
   },
   "keywords": [],
   "author": "",

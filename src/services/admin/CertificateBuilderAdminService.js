@@ -24,6 +24,7 @@ class CertificateBuilderAdminService {
     const backgrounds = listCertificateBackgrounds();
     const storedConfig = await this.getStoredConfig();
     const signatureSetting = await Setting.findOne({ where: { key: 'certificate_signature_url' } });
+    const logoSetting = await Setting.findOne({ where: { key: 'logo_url' } });
     const config = normalizeCertificateBuilderConfig(
       storedConfig || getDefaultCertificateBuilderConfig(backgrounds[0] || ''),
       backgrounds
@@ -32,7 +33,10 @@ class CertificateBuilderAdminService {
     return {
       backgrounds,
       builderConfig: config,
-      previewElements: buildCertificateRenderElements(config, SAMPLE_VALUES, signatureSetting ? signatureSetting.value : ''),
+      previewElements: buildCertificateRenderElements(config, SAMPLE_VALUES, {
+        signatureUrl: signatureSetting ? signatureSetting.value : '',
+        logoUrl: logoSetting ? logoSetting.value : ''
+      }),
       sampleValues: SAMPLE_VALUES
     };
   }

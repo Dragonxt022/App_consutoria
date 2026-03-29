@@ -6,6 +6,15 @@ const TEMPLATE_DIR = path.join(__dirname, '..', 'public', 'uploads', 'templete-c
 
 const ELEMENT_PRESETS = [
   {
+    id: 'companyLogo',
+    type: 'image',
+    label: 'Logo da empresa',
+    settingKey: 'logo',
+    x: 7,
+    y: 8,
+    width: 16
+  },
+  {
     id: 'title',
     type: 'text',
     label: 'Titulo',
@@ -212,22 +221,23 @@ function buildCertificateRenderValues({ enrollment, course, code, validationUrl 
   };
 }
 
-function buildCertificateRenderElements(config, values, signatureUrl) {
+function buildCertificateRenderElements(config, values, assets = {}) {
   return config.elements.map((element) => {
     if (element.type === 'signature-block') {
       return {
         ...element,
-        src: signatureUrl || '',
+        src: assets.signatureUrl || '',
         signatureName: replacePlaceholders(element.text, values),
         visible: true
       };
     }
 
     if (element.type === 'image') {
+      const src = element.settingKey === 'logo' ? (assets.logoUrl || '') : '';
       return {
         ...element,
-        src: signatureUrl || '',
-        visible: Boolean(signatureUrl)
+        src,
+        visible: Boolean(src)
       };
     }
 

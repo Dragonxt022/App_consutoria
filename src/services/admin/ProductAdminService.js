@@ -1,7 +1,7 @@
 const fs = require('fs');
-const path = require('path');
 const slugify = require('slugify');
 const { Product } = require('../../models');
+const { resolveUploadUrlToPath } = require('../../utils/UploadPaths');
 const { ProductFormatter } = require('../shared');
 const { formatProduct, normalizeGalleryImages } = ProductFormatter;
 
@@ -14,11 +14,7 @@ class ProductAdminService {
   }
 
   resolvePublicFilePath(fileUrl) {
-    if (!fileUrl || typeof fileUrl !== 'string' || !fileUrl.startsWith('/uploads/')) {
-      return null;
-    }
-
-    return path.join(__dirname, '..', '..', 'public', fileUrl.replace(/^\/+/, ''));
+    return resolveUploadUrlToPath(fileUrl);
   }
 
   removeFileIfExists(fileUrl) {

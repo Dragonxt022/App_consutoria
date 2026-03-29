@@ -1,6 +1,11 @@
 const fs = require('fs');
 const path = require('path');
 const { Setting } = require('../../models');
+const {
+  ensureDir,
+  getMutableUploadPath,
+  resolveUploadUrlToPath
+} = require('../../utils/UploadPaths');
 const { EmailService, NotificationService, SiteSettingsService } = require('../shared');
 
 class SettingAdminService {
@@ -36,27 +41,15 @@ class SettingAdminService {
   }
 
   resolveLogoFilePath(logoUrl) {
-    if (!logoUrl || typeof logoUrl !== 'string') return null;
-    const prefix = '/uploads/logos/';
-    if (!logoUrl.startsWith(prefix)) return null;
-    const filename = path.basename(logoUrl);
-    return path.join(__dirname, '..', '..', 'public', 'uploads', 'logos', filename);
+    return resolveUploadUrlToPath(logoUrl);
   }
 
   resolveSignatureFilePath(signatureUrl) {
-    if (!signatureUrl || typeof signatureUrl !== 'string') return null;
-    const prefix = '/uploads/certificates/signatures/';
-    if (!signatureUrl.startsWith(prefix)) return null;
-    const filename = path.basename(signatureUrl);
-    return path.join(__dirname, '..', '..', 'public', 'uploads', 'certificates', 'signatures', filename);
+    return resolveUploadUrlToPath(signatureUrl);
   }
 
   resolveBannerFilePath(bannerUrl) {
-    if (!bannerUrl || typeof bannerUrl !== 'string') return null;
-    const prefix = '/uploads/banners/';
-    if (!bannerUrl.startsWith(prefix)) return null;
-    const filename = path.basename(bannerUrl);
-    return path.join(__dirname, '..', '..', 'public', 'uploads', 'banners', filename);
+    return resolveUploadUrlToPath(bannerUrl);
   }
 
   async getSettingsPageData(activeTab) {
@@ -114,8 +107,8 @@ class SettingAdminService {
           const ext = matches[2] === 'jpeg' ? 'jpg' : matches[2];
           const data = matches[3];
           const filename = `signature-${Date.now()}.${ext}`;
-          const targetDir = path.join(__dirname, '..', '..', 'public', 'uploads', 'certificates', 'signatures');
-          if (!fs.existsSync(targetDir)) fs.mkdirSync(targetDir, { recursive: true });
+          const targetDir = getMutableUploadPath('certificates', 'signatures');
+          ensureDir(targetDir);
           const filePath = path.join(targetDir, filename);
           fs.writeFileSync(filePath, Buffer.from(data, 'base64'));
           nextSignatureUrl = `/uploads/certificates/signatures/${filename}`;

@@ -1,9 +1,9 @@
 const fs = require('fs');
-const path = require('path');
 const slugify = require('slugify');
 const { Op } = require('sequelize');
 const { Course } = require('../../models');
 const { parseMoneyValue } = require('../../utils/Money');
+const { resolveUploadUrlToPath } = require('../../utils/UploadPaths');
 const { CoursePublicService } = require('../public');
 
 const DEFAULT_ITEMS_INCLUDED = [
@@ -28,11 +28,7 @@ function normalizeItemsIncluded(rawItemsIncluded) {
 
 class CourseAdminService {
   resolvePublicFilePath(fileUrl) {
-    if (!fileUrl || typeof fileUrl !== 'string' || !fileUrl.startsWith('/uploads/')) {
-      return null;
-    }
-
-    return path.join(__dirname, '..', '..', 'public', fileUrl.replace(/^\/+/, ''));
+    return resolveUploadUrlToPath(fileUrl);
   }
 
   removeFileIfExists(fileUrl) {
@@ -89,7 +85,10 @@ class CourseAdminService {
   }
 
   buildPersistedPayload(body, files, slug) {
-    const normalizedCertificateTopics = CoursePublicService.normalizeCertificateTopics(body.certificateTopics);
+    const normalizedCertificateTopics = CoursePublicService.normalizeCertificateTopicsPayload(
+      body.certificateTopics,
+      body.certificateBackContent
+    );
 
     return {
       title: body.title,

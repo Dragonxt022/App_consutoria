@@ -73,9 +73,10 @@
                         <% previewElements.forEach((element) => { %>
                             <% if (element.type === 'signature-block') { %>
                                 <div
-                                    class="js-builder-element absolute cursor-grab rounded-2xl border border-dashed border-indigo-300 bg-white/86 p-3 shadow-sm backdrop-blur-sm active:cursor-grabbing"
+                                    class="js-builder-element absolute cursor-grab transition active:cursor-grabbing"
                                     data-id="<%= element.id %>"
-                                    style="left:<%= element.x %>%; top:<%= element.y %>%; width:<%= element.width %>%;"
+                                    data-type="<%= element.type %>"
+                                    style="left:<%= element.x %>%; top:<%= element.y %>%; width:<%= element.width %>%; text-align:<%= element.align %>; color:<%= element.color %>;"
                                 >
                                     <div class="pointer-events-none flex flex-col items-center gap-2 text-center">
                                         <% if (element.src) { %>
@@ -89,10 +90,30 @@
                                         <div class="js-builder-signature-name w-full leading-relaxed" style="color:<%= element.color %>; text-align:<%= element.align %>; font-size:<%= element.fontSize %>px; font-weight:<%= element.fontWeight %>; font-family:<%= element.fontFamily %>;"><%= element.signatureName %></div>
                                     </div>
                                 </div>
+                            <% } else if (element.type === 'image') { %>
+                                <div
+                                    class="js-builder-element absolute cursor-grab transition active:cursor-grabbing"
+                                    data-id="<%= element.id %>"
+                                    data-type="<%= element.type %>"
+                                    style="left:<%= element.x %>%; top:<%= element.y %>%; width:<%= element.width %>%"
+                                >
+                                    <% if (element.src) { %>
+                                        <img
+                                            src="<%= element.src %>"
+                                            alt="<%= element.label %>"
+                                            class="js-builder-image pointer-events-none block h-auto w-full object-contain"
+                                        >
+                                    <% } else { %>
+                                        <div class="pointer-events-none flex min-h-14 w-full items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                                            Logo
+                                        </div>
+                                    <% } %>
+                                </div>
                             <% } else { %>
                                 <div
-                                    class="js-builder-element absolute cursor-grab rounded-2xl border border-dashed border-indigo-300 bg-white/80 px-3 py-2 shadow-sm backdrop-blur-sm active:cursor-grabbing"
+                                    class="js-builder-element absolute cursor-grab transition active:cursor-grabbing"
                                     data-id="<%= element.id %>"
+                                    data-type="<%= element.type %>"
                                     style="left:<%= element.x %>%; top:<%= element.y %>%; width:<%= element.width %>%; color:<%= element.color %>; text-align:<%= element.align %>; font-size:<%= element.fontSize %>px; font-weight:<%= element.fontWeight %>; font-family:<%= element.fontFamily %>;"
                                 >
                                     <span class="js-builder-text pointer-events-none block whitespace-pre-wrap leading-relaxed"><%= element.content %></span>
@@ -130,8 +151,12 @@
                     </div>
 
                     <div>
-                        <label for="builder-width" class="mb-2 block text-xs font-bold uppercase tracking-[0.18em] text-slate-500">Largura</label>
+                        <label for="builder-width" class="mb-2 block text-xs font-bold uppercase tracking-[0.18em] text-slate-500">Largura do bloco</label>
                         <input id="builder-width" type="range" min="5" max="100" step="0.5" class="w-full accent-indigo-600">
+                    </div>
+
+                    <div id="image-controls" class="hidden rounded-2xl border border-slate-200 bg-slate-50 p-4 text-xs leading-5 text-slate-500">
+                        Para a logo, ajuste a largura do bloco para controlar o tamanho exibido no certificado final.
                     </div>
 
                     <div id="text-controls" class="space-y-4">
@@ -206,6 +231,7 @@
     const backgroundInputs = Array.from(document.querySelectorAll('.js-background-input'));
     const backgroundCards = Array.from(document.querySelectorAll('.js-background-card'));
     const selectedLabel = document.getElementById('selected-element-label');
+    const imageControls = document.getElementById('image-controls');
     const textControls = document.getElementById('text-controls');
     const signatureNameControl = document.getElementById('signature-name-control');
     const widthInput = document.getElementById('builder-width');
@@ -263,9 +289,10 @@
 
         stage.querySelectorAll('.js-builder-element').forEach((node) => {
             const active = node.dataset.id === selectedId;
-            node.classList.toggle('ring-2', active);
-            node.classList.toggle('ring-indigo-400', active);
-            node.classList.toggle('shadow-lg', active);
+            node.classList.toggle('outline', active);
+            node.classList.toggle('outline-2', active);
+            node.classList.toggle('outline-indigo-400', active);
+            node.classList.toggle('outline-offset-2', active);
         });
 
         if (!selected) return;
@@ -274,6 +301,8 @@
         widthInput.value = selected.width;
 
         const isTextLike = selected.type === 'text' || selected.type === 'signature-block';
+        const isImage = selected.type === 'image';
+        imageControls.classList.toggle('hidden', !isImage);
         textControls.classList.toggle('hidden', !isTextLike);
         signatureNameControl.classList.toggle('hidden', selected.type !== 'signature-block');
 
@@ -310,6 +339,12 @@
                     nameNode.style.fontFamily = element.fontFamily;
                 }
                 node.style.color = element.color;
+            } else if (element.type === 'image') {
+                const imageNode = node.querySelector('.js-builder-image');
+                if (imageNode && element.src) {
+                    imageNode.src = element.src;
+                    imageNode.alt = element.label;
+                }
             } else if (element.type === 'text') {
                 node.style.color = element.color;
                 node.style.textAlign = element.align;

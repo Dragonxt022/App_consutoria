@@ -161,20 +161,34 @@
             margin-bottom: 2.2mm;
             font-size: 10.5px;
             line-height: 1.45;
-            padding-left: 3.5mm;
-            position: relative;
         }
 
-        .topic::before {
-            content: '';
-            width: 1.6mm;
-            height: 1.6mm;
-            border-radius: 999px;
-            background: var(--accent);
-            position: absolute;
-            left: 0;
-            top: .68em;
-            transform: translateY(-50%);
+        .topics-rich {
+            font-size: 10.5px;
+            line-height: 1.55;
+            color: var(--ink);
+        }
+
+        .topics-rich h1,
+        .topics-rich h2,
+        .topics-rich h3,
+        .topics-rich h4 {
+            margin-bottom: 2.2mm;
+            color: var(--accent);
+            font-size: 11.5px;
+        }
+
+        .topics-rich p {
+            margin-bottom: 2.2mm;
+        }
+
+        .topics-rich ul,
+        .topics-rich ol {
+            margin: 0 0 2.5mm 5mm;
+        }
+
+        .topics-rich li {
+            margin-bottom: 1.5mm;
         }
 
         .back-footer {
@@ -245,8 +259,8 @@
     <section class="page">
         <div class="back-content">
             <header class="back-header">
-                <h1>Conteudo Programatico</h1>
-                <p>Verso do certificado de conclusao</p>
+                <h1>Conteúdo Programático</h1>
+                <p>Verso do certificado de conclusão</p>
             </header>
 
             <div class="back-meta">
@@ -259,30 +273,34 @@
                     <div class="v"><%= course.title %></div>
                 </div>
                 <div class="meta-item">
-                    <div class="k">Carga Horaria</div>
+                    <div class="k">Carga Horária</div>
                     <div class="v"><%= course.workload %></div>
                 </div>
                 <div class="meta-item">
-                    <div class="k">Codigo</div>
+                    <div class="k">Código</div>
                     <div class="v"><%= code %></div>
                 </div>
             </div>
 
             <div class="topics">
-                <h2>Lista de Conteudos</h2>
-                <div class="topic-cols">
-                    <% if (topics && topics.length) { %>
-                        <% topics.forEach((topic) => { %>
-                            <p class="topic"><%= topic %></p>
-                        <% }) %>
-                    <% } else { %>
-                        <p class="topic">Fundamentos e objetivos do curso</p>
-                        <p class="topic">Aplicacoes praticas no contexto profissional</p>
-                        <p class="topic">Estudos de caso e resolucao de problemas</p>
-                        <p class="topic">Ferramentas e boas praticas de execucao</p>
-                        <p class="topic">Consolidacao de conhecimento e avaliacao final</p>
-                    <% } %>
-                </div>
+                <h2>Lista de Conteúdos</h2>
+                <% if (topicsHtml) { %>
+                    <div class="topics-rich"><%- topicsHtml %></div>
+                <% } else { %>
+                    <div class="topic-cols">
+                        <% if (topics && topics.length) { %>
+                            <% topics.forEach((topic) => { %>
+                                <p class="topic"><%= topic %></p>
+                            <% }) %>
+                        <% } else { %>
+                            <p class="topic">Fundamentos e objetivos do curso</p>
+                            <p class="topic">Aplicações práticas no contexto profissional</p>
+                            <p class="topic">Estudos de caso e resolução de problemas</p>
+                            <p class="topic">Ferramentas e boas práticas de execução</p>
+                            <p class="topic">Consolidação de conhecimento e avaliação final</p>
+                        <% } %>
+                    </div>
+                <% } %>
             </div>
 
             <footer class="back-footer">

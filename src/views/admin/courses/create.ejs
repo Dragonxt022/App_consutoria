@@ -40,15 +40,24 @@
                         <div class="mb-5 flex items-start justify-between gap-4">
                             <div>
                                 <h3 class="text-lg font-bold text-slate-800">Verso do certificado</h3>
-                                <p class="text-sm text-slate-500">Organize um tópico por linha para melhorar a leitura no certificado.</p>
+                                <p class="text-sm text-slate-500">Monte o conteúdo do verso com mais controle visual e mantenha uma lista-resumo para o layout clássico.</p>
                             </div>
-                            <span class="inline-flex items-center rounded-full bg-indigo-50 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-indigo-700">1 item por linha</span>
+                            <span class="inline-flex items-center rounded-full bg-indigo-50 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-indigo-700">Editor avançado</span>
                         </div>
 
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Lista de Conteúdos</label>
-                            <p class="text-xs text-slate-400 mb-3">Sugestão: usar tópicos curtos, sem textos longos. Isso melhora o visual do verso.</p>
-                            <textarea name="certificateTopics" rows="13" class="w-full min-h-[340px] px-4 py-4 rounded-2xl border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all resize-y" placeholder="Ex:&#10;Fundamentos do curso&#10;Estudos de caso&#10;Aplicações práticas&#10;Ferramentas utilizadas&#10;Plano de ação"></textarea>
+                        <div class="space-y-6">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Conteúdo formatado do verso</label>
+                                <p class="text-xs text-slate-400 mb-3">Use títulos, listas e ênfases para controlar melhor a forma como o verso será exibido no certificado.</p>
+                                <input type="hidden" name="certificateBackContent" id="certificateBackContentInput">
+                                <div id="certificateBackContentEditor" class="rounded-2xl border border-slate-200 bg-white min-h-[280px]"></div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Lista-resumo de conteúdos</label>
+                                <p class="text-xs text-slate-400 mb-3">Opcional. Informe um tópico por linha para reforçar o layout clássico e servir como fallback.</p>
+                                <textarea name="certificateTopics" rows="7" class="w-full min-h-[200px] px-4 py-4 rounded-2xl border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all resize-y" placeholder="Ex:&#10;Fundamentos do curso&#10;Estudos de caso&#10;Aplicações práticas&#10;Ferramentas utilizadas&#10;Plano de ação"></textarea>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -223,6 +232,25 @@ document.addEventListener('DOMContentLoaded', function() {
     descriptionInput.value = descriptionEditor.root.innerHTML;
     descriptionEditor.on('text-change', function() {
         descriptionInput.value = descriptionEditor.root.innerHTML;
+    });
+
+    const certificateBackEditor = new Quill('#certificateBackContentEditor', {
+        theme: 'snow',
+        placeholder: 'Estruture o conteúdo do verso do certificado...',
+        modules: {
+            toolbar: [
+                [{ header: [2, 3, false] }],
+                ['bold', 'italic', 'underline'],
+                [{ list: 'ordered' }, { list: 'bullet' }],
+                [{ color: [] }],
+                ['blockquote', 'clean']
+            ]
+        }
+    });
+    const certificateBackInput = document.getElementById('certificateBackContentInput');
+    certificateBackInput.value = certificateBackEditor.root.innerHTML;
+    certificateBackEditor.on('text-change', function() {
+        certificateBackInput.value = certificateBackEditor.root.innerHTML;
     });
 
     const imageInput = document.getElementById('imageInput');

@@ -1,6 +1,6 @@
 const fs = require('fs');
-const path = require('path');
 const { CompanyCertificate } = require('../../models');
+const { resolveUploadUrlToPath } = require('../../utils/UploadPaths');
 const {
   normalizeHasExpiration,
   getDateOnlyValue,
@@ -10,11 +10,7 @@ const {
 
 class CompanyCertificateAdminService {
   resolveStoredFilePath(fileUrl) {
-    if (!fileUrl || typeof fileUrl !== 'string') return null;
-    const prefix = '/uploads/company-certificates/';
-    if (!fileUrl.startsWith(prefix)) return null;
-
-    return path.join(__dirname, '..', '..', 'public', 'uploads', 'company-certificates', path.basename(fileUrl));
+    return resolveUploadUrlToPath(fileUrl);
   }
 
   removeFileIfExists(fileUrl) {

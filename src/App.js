@@ -9,6 +9,13 @@ const cleanupUnconfirmed = require('./utils/Cleanup');
 
 const expressLayouts = require('express-ejs-layouts');
 const { getSafeImage, imgTag, bgImage } = require('./utils/ImageHelper');
+const {
+  publicRoot,
+  legacyUploadsRoot,
+  mutableUploadsRoot,
+  ensureDir,
+  getLegacyUploadPath
+} = require('./utils/UploadPaths');
 const { requestContext } = require('./middleware');
 const routes = require('./routes');
 
@@ -118,7 +125,13 @@ app.use('/auth', (req, res, next) => {
 /* =======================
    Static files
 ======================= */
-app.use(express.static(path.join(__dirname, 'public')));
+ensureDir(mutableUploadsRoot);
+
+app.use('/uploads/icons', express.static(getLegacyUploadPath('icons')));
+app.use('/uploads/templete-certificados', express.static(getLegacyUploadPath('templete-certificados')));
+app.use('/uploads', express.static(mutableUploadsRoot));
+app.use('/uploads', express.static(legacyUploadsRoot));
+app.use(express.static(publicRoot));
 
 /* =======================
    Routes

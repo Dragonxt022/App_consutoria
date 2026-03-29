@@ -1,28 +1,28 @@
 const multer = require('multer');
 const path = require('path');
-const fs = require('fs');
+const {
+  ensureDir,
+  getMutableUploadPath
+} = require('../utils/UploadPaths');
 
-const publicRoot = path.join(__dirname, '..', 'public');
 const uploadPaths = {
-  courseImages: path.join(publicRoot, 'uploads', 'courses', 'images'),
-  courseDocuments: path.join(publicRoot, 'uploads', 'courses', 'documents'),
-  productImages: path.join(publicRoot, 'uploads', 'products'),
-  logos: path.join(publicRoot, 'uploads', 'logos'),
-  banners: path.join(publicRoot, 'uploads', 'banners'),
-  certificateSignatures: path.join(publicRoot, 'uploads', 'certificates', 'signatures'),
-  avatars: path.join(publicRoot, 'uploads', 'avatars'),
-  companyCertificates: path.join(publicRoot, 'uploads', 'company-certificates'),
-  blogCovers: path.join(publicRoot, 'uploads', 'blog', 'covers'),
-  blogContent: path.join(publicRoot, 'uploads', 'blog', 'content')
+  courseImages: getMutableUploadPath('courses', 'images'),
+  courseDocuments: getMutableUploadPath('courses', 'documents'),
+  productImages: getMutableUploadPath('products'),
+  logos: getMutableUploadPath('logos'),
+  banners: getMutableUploadPath('banners'),
+  certificateSignatures: getMutableUploadPath('certificates', 'signatures'),
+  avatars: getMutableUploadPath('avatars'),
+  companyCertificates: getMutableUploadPath('company-certificates'),
+  blogCovers: getMutableUploadPath('blog', 'covers'),
+  blogContent: getMutableUploadPath('blog', 'content')
 };
 
 // Ensure upload directories exist
 const uploadDirs = Object.values(uploadPaths);
 
 uploadDirs.forEach((dir) => {
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
+  ensureDir(dir);
 });
 
 const storage = multer.diskStorage({

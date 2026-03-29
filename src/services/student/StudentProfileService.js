@@ -1,6 +1,6 @@
-const path = require('path');
 const fs = require('fs');
 const { User, Enrollment, Course } = require('../../models');
+const { resolveUploadUrlToPath } = require('../../utils/UploadPaths');
 
 class StudentProfileService {
   removeAvatarIfNeeded(avatarUrl) {
@@ -8,8 +8,8 @@ class StudentProfileService {
       return;
     }
 
-    const avatarPath = path.join(__dirname, '..', '..', 'public', avatarUrl.replace('/uploads/', 'uploads/'));
-    if (!fs.existsSync(avatarPath)) {
+    const avatarPath = resolveUploadUrlToPath(avatarUrl);
+    if (!avatarPath || !fs.existsSync(avatarPath)) {
       return;
     }
 

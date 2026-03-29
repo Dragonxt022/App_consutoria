@@ -61,7 +61,7 @@ O projeto foi construido com Node.js e Express 5, EJS no frontend server-side e 
 |   |   `-- student/
 |   |-- utils/
 |   `-- views/
-|-- test/
+|-- tests/
 |-- .env.example
 `-- package.json
 ```
@@ -154,6 +154,7 @@ Ajuste principalmente:
 - `APP_URL`
 - `SESSION_SECRET`
 - `JWT_SECRET`
+- `UPLOADS_DIR`
 - `DB_DIALECT`
 - `DB_HOST`
 - `DB_PORT`
@@ -167,6 +168,9 @@ Para desenvolvimento local com SQLite, habilite:
 DB_DIALECT=sqlite
 DB_STORAGE=./database.sqlite
 ```
+
+Uploads mutaveis de usuario podem ficar fora de `src/public`. O padrao atual e `./storage/uploads`, mantendo a URL publica `/uploads/...`.
+Arquivos estaticos do sistema como `uploads/icons` e `uploads/templete-certificados` continuam dentro de `src/public/uploads`.
 
 ### Executar em desenvolvimento
 
@@ -217,7 +221,7 @@ Scripts auxiliares em [`scripts/`](scripts):
 
 ## Testes
 
-Os testes atuais cobrem partes de middleware, servicos e utilitarios.
+Os testes atuais ficam centralizados em `tests/` e cobrem partes de middleware, servicos, utilitarios e helpers de apoio.
 
 ```bash
 npm test

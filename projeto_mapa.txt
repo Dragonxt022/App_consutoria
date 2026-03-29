@@ -37,6 +37,5 @@
 |       |-- auth/
 |       |-- certificate/
 |       `-- public/
-|-- test/
-|-- test-support/
+|-- tests/
 `-- tailwind.config.js
