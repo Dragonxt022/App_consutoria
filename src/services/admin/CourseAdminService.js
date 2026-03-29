@@ -1,10 +1,12 @@
 const fs = require('fs');
 const slugify = require('slugify');
 const { Op } = require('sequelize');
-const { Course } = require('../../models');
+const { Course, Enrollment } = require('../../models');
 const { parseMoneyValue } = require('../../utils/Money');
+const { buildAppUrl } = require('../../utils/Url');
 const { resolveUploadUrlToPath } = require('../../utils/UploadPaths');
 const { CoursePublicService } = require('../public');
+const { EmailService, SiteSettingsService } = require('../shared');
 
 const DEFAULT_ITEMS_INCLUDED = [
   'COPO E CANETA.',
@@ -27,6 +29,35 @@ function normalizeItemsIncluded(rawItemsIncluded) {
 }
 
 class CourseAdminService {
+  async notifyStudentsWhenCourseConfirmed({ previousStatus, course, req }) {
+    if (!req || previousStatus === 'confirmado' || course.status !== 'confirmado') {
+      return;
+    }
+
+    const settings = await SiteSettingsService.getSettings();
+    if (String(settings.email_notify_students_course_confirmed || 'false') !== 'true') {
+      return;
+    }
+
+    const enrollments = await Enrollment.findAll({
+      where: {
+        courseId: course.id,
+        status: {
+          [Op.ne]: 'cancelado'
+        }
+      },
+      attributes: ['studentEmail']
+    });
+
+    const recipients = enrollments.map((enrollment) => enrollment.studentEmail).filter(Boolean);
+
+    await EmailService.sendCourseConfirmedNoticeToStudents({
+      recipients,
+      course,
+      dashboardUrl: buildAppUrl(req, '/aluno/dashboard')
+    });
+  }
+
   resolvePublicFilePath(fileUrl) {
     return resolveUploadUrlToPath(fileUrl);
   }
@@ -96,6 +127,7 @@ class CourseAdminService {
       description: body.description,
       location: body.location,
       workload: body.workload,
+      status: body.status === 'confirmado' ? 'confirmado' : 'ativo',
       price: parseMoneyValue(body.price),
       startDate: body.startDate,
       spots: body.spots,
@@ -153,6 +185,7 @@ class CourseAdminService {
     }
 
     const slug = await this.generateUniqueSlug(req.body.title, course.id);
+    const previousStatus = course.status;
     const updateData = {
       ...this.buildPersistedPayload(req.body, req.files, slug),
       active: req.body.active === 'on' || req.body.active === true
@@ -170,6 +203,12 @@ class CourseAdminService {
     }
 
     await course.update(updateData);
+
+    try {
+      await this.notifyStudentsWhenCourseConfirmed({ previousStatus, course, req });
+    } catch (error) {
+      console.error('Erro ao enviar e-mail de curso confirmado:', error);
+    }
 
     if (req.files?.image?.[0] && previousImage && previousImage !== updateData.image) {
       this.removeFileIfExists(previousImage);

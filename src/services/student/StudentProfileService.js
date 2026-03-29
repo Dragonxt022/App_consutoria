@@ -1,6 +1,7 @@
 const fs = require('fs');
 const { User, Enrollment, Course } = require('../../models');
 const { resolveUploadUrlToPath } = require('../../utils/UploadPaths');
+const { resolveCourseStatus } = require('../../utils/CourseStatus');
 
 class StudentProfileService {
   removeAvatarIfNeeded(avatarUrl) {
@@ -25,10 +26,23 @@ class StudentProfileService {
   }
 
   async getStudentEnrollments(userId) {
-    return Enrollment.findAll({
+    const enrollments = await Enrollment.findAll({
       where: { userId },
       include: [{ model: Course }],
       order: [['createdAt', 'DESC']]
+    });
+
+    const now = new Date();
+
+    return enrollments.map((enrollment) => {
+      if (enrollment.Course) {
+        const status = resolveCourseStatus(enrollment.Course.toJSON(), now);
+        enrollment.Course.setDataValue('statusCode', status.code);
+        enrollment.Course.setDataValue('statusLabel', status.label);
+        enrollment.Course.setDataValue('isExpired', status.isExpired);
+      }
+
+      return enrollment;
     });
   }
 

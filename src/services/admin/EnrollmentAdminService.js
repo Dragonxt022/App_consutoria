@@ -2,6 +2,8 @@ const crypto = require('crypto');
 const { Op } = require('sequelize');
 const { Enrollment, Course } = require('../../models');
 const { parseMoneyValue } = require('../../utils/Money');
+const { buildAppUrl } = require('../../utils/Url');
+const { EmailService, SiteSettingsService } = require('../shared');
 
 function buildCertificateCode() {
   return crypto.randomBytes(4).toString('hex').toUpperCase().match(/.{1,4}/g).join('-');
@@ -18,6 +20,35 @@ function buildCertificateJson(enrollment, course, verificationCode) {
 }
 
 class EnrollmentAdminService {
+  async handleEnrollmentStatusEmails({ previousStatus, nextStatus, enrollment, course, req }) {
+    if (!req || previousStatus === nextStatus) {
+      return;
+    }
+
+    const settings = await SiteSettingsService.getSettings();
+    const dashboardUrl = buildAppUrl(req, '/aluno/dashboard');
+    const certificatesUrl = buildAppUrl(req, '/meus-certificados');
+    const coursesUrl = buildAppUrl(req, '/cursos');
+
+    if (nextStatus === 'confirmado' && String(settings.email_notify_student_enrollment_confirmed || 'false') === 'true') {
+      await EmailService.sendEnrollmentConfirmedToStudent({
+        enrollment,
+        course,
+        dashboardUrl,
+        certificatesUrl
+      });
+    }
+
+    if (nextStatus === 'cancelado' && String(settings.email_notify_student_enrollment_cancelled || 'false') === 'true') {
+      await EmailService.sendEnrollmentCancelledToStudent({
+        enrollment,
+        course,
+        coursesUrl,
+        contactEmail: settings.footer_email || settings.smtp_from || 'contato@consultpro.com.br'
+      });
+    }
+  }
+
   buildAdminFilters(search) {
     const normalizedSearch = typeof search === 'string' ? search.trim() : '';
     const where = {};
@@ -95,22 +126,36 @@ class EnrollmentAdminService {
     };
   }
 
-  async updateStatus(id, status) {
+  async updateStatus(id, status, req) {
     const enrollment = await Enrollment.findByPk(id);
     if (!enrollment) {
       return { notFound: true };
     }
 
+    const previousStatus = enrollment.status;
     enrollment.status = status;
+    const course = await enrollment.getCourse();
 
     if (status === 'completo') {
-      const course = await enrollment.getCourse();
       const verificationCode = enrollment.certificateCode || buildCertificateCode();
       enrollment.certificateCode = verificationCode;
       enrollment.certificateJson = buildCertificateJson(enrollment, course, verificationCode);
     }
 
     await enrollment.save();
+
+    try {
+      await this.handleEnrollmentStatusEmails({
+        previousStatus,
+        nextStatus: enrollment.status,
+        enrollment,
+        course,
+        req
+      });
+    } catch (error) {
+      console.error('Erro ao enviar e-mails de status da inscrição:', error);
+    }
+
     return { notFound: false };
   }
 
@@ -190,12 +235,13 @@ class EnrollmentAdminService {
     };
   }
 
-  async updateEnrollment(id, body) {
+  async updateEnrollment(id, body, req) {
     const enrollment = await Enrollment.findByPk(id);
     if (!enrollment) {
       return { notFound: true };
     }
 
+    const previousStatus = enrollment.status;
     const price = parseMoneyValue(body.coursePrice);
     const discount = parseMoneyValue(body.discount);
     const finalPrice = price - discount;
@@ -218,8 +264,9 @@ class EnrollmentAdminService {
     enrollment.finalPrice = finalPrice;
     enrollment.status = body.status;
 
+    const course = await Course.findByPk(body.courseId);
+
     if (body.status === 'completo') {
-      const course = await Course.findByPk(body.courseId);
 
       if (!enrollment.certificateCode) {
         enrollment.certificateCode = buildCertificateCode();
@@ -229,6 +276,19 @@ class EnrollmentAdminService {
     }
 
     await enrollment.save();
+
+    try {
+      await this.handleEnrollmentStatusEmails({
+        previousStatus,
+        nextStatus: enrollment.status,
+        enrollment,
+        course,
+        req
+      });
+    } catch (error) {
+      console.error('Erro ao enviar e-mails após editar inscrição:', error);
+    }
+
     return { notFound: false };
   }
 

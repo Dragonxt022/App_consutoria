@@ -170,6 +170,23 @@
 
                             <!-- Ações -->
                             <div class="flex flex-col sm:flex-row lg:flex-col xl:flex-row gap-3">
+                                <% if (enroll.Course && enroll.Course.statusCode && enroll.Course.statusCode !== 'ativo') { %>
+                                    <div class="flex-shrink-0">
+                                        <% if (enroll.Course.statusCode === 'confirmado') { %>
+                                            <span class="inline-block border border-cyan-300 bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 px-3 py-2 rounded-lg text-xs font-black uppercase tracking-[0.18em] text-white shadow-sm shadow-cyan-200 ring-2 ring-cyan-100">
+                                                Curso Confirmado
+                                            </span>
+                                        <% } else if (enroll.Course.statusCode === 'encerrado') { %>
+                                            <span class="inline-block bg-amber-100 text-amber-700 px-3 py-2 rounded-lg text-xs font-black uppercase tracking-widest border border-amber-200">
+                                                Curso Encerrado
+                                            </span>
+                                        <% } else if (enroll.Course.statusCode === 'desativado') { %>
+                                            <span class="inline-block bg-red-100 text-red-700 px-3 py-2 rounded-lg text-xs font-black uppercase tracking-widest border border-red-200">
+                                                Curso Desativado
+                                            </span>
+                                        <% } %>
+                                    </div>
+                                <% } %>
                                 <!-- Status da Inscrição -->
                                 <div class="flex-shrink-0">
                                     <% if(enroll.status === 'completo') { %>

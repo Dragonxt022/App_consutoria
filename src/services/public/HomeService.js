@@ -2,6 +2,7 @@ const { Op } = require('sequelize');
 const { Course, User, Enrollment, Product, Setting, BlogPost, BlogCategory } = require('../../models');
 const { formatCurrency } = require('../../utils/CurrencyFormatter');
 const { parseMoneyValue } = require('../../utils/Money');
+const { resolveCourseStatus } = require('../../utils/CourseStatus');
 const { ProductFormatter } = require('../shared');
 const { formatProduct } = ProductFormatter;
 
@@ -39,6 +40,7 @@ function parseHomeBanners(rawValue) {
 function serializeCourse(course, now = new Date()) {
   const data = course.toJSON();
   const priceValue = parseMoneyValue(data.price);
+  const status = resolveCourseStatus(data, now);
 
   return {
     ...data,
@@ -47,7 +49,9 @@ function serializeCourse(course, now = new Date()) {
     priceDisplay: formatCurrency(priceValue),
     priceInputValue: priceValue.toFixed(2),
     descriptionPlain: stripHtml(data.description),
-    isExpired: new Date(data.startDate) < now
+    isExpired: status.isExpired,
+    statusCode: status.code,
+    statusLabel: status.label
   };
 }
 

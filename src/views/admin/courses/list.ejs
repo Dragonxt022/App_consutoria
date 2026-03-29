@@ -40,10 +40,12 @@
                             <h3 class="font-bold text-gray-900 text-sm mb-1"><%= course.title %></h3>
                             <p class="text-xs text-gray-500 mb-2"><%= course.location %></p>
                             <div class="flex items-center space-x-2">
-                                <% if (!course.active) { %>
+                                <% if (course.statusCode === 'desativado') { %>
                                     <span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-red-100 text-red-700 uppercase tracking-widest border border-red-200">Desativado</span>
-                                <% } else if (course.isExpired) { %>
+                                <% } else if (course.statusCode === 'encerrado') { %>
                                     <span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-amber-100 text-amber-700 uppercase tracking-widest border border-amber-200">Encerrado</span>
+                                <% } else if (course.statusCode === 'confirmado') { %>
+                                    <span class="px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.18em] border border-cyan-300 bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 text-white shadow-sm shadow-cyan-200 ring-2 ring-cyan-100">Confirmado</span>
                                 <% } else { %>
                                     <span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-emerald-100 text-emerald-700 uppercase tracking-widest border border-emerald-200">Ativo</span>
                                 <% } %>
@@ -67,10 +69,12 @@
                         <div class="bg-gray-50 p-2 rounded">
                             <span class="text-gray-500 block">Status</span>
                             <span class="font-medium">
-                                <% if (!course.active) { %>
+                                <% if (course.statusCode === 'desativado') { %>
                                     Desativado
-                                <% } else if (course.isExpired) { %>
+                                <% } else if (course.statusCode === 'encerrado') { %>
                                     Encerrado
+                                <% } else if (course.statusCode === 'confirmado') { %>
+                                    Confirmado
                                 <% } else { %>
                                     Ativo
                                 <% } %>
@@ -148,10 +152,12 @@
                             <%= new Date(course.startDate).toLocaleDateString('pt-BR') %>
                         </td>
                         <td class="px-6 py-4" data-label="Status">
-                            <% if (!course.active) { %>
+                            <% if (course.statusCode === 'desativado') { %>
                                 <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-red-100 text-red-700 uppercase tracking-widest border border-red-200">Desativado</span>
-                            <% } else if (course.isExpired) { %>
+                            <% } else if (course.statusCode === 'encerrado') { %>
                                 <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-amber-100 text-amber-700 uppercase tracking-widest border border-amber-200">Encerrado</span>
+                            <% } else if (course.statusCode === 'confirmado') { %>
+                                <span class="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.18em] border border-cyan-300 bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 text-white shadow-sm shadow-cyan-200 ring-2 ring-cyan-100">Confirmado</span>
                             <% } else { %>
                                 <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-700 uppercase tracking-widest border border-emerald-200">Ativo</span>
                             <% } %>
@@ -173,7 +179,7 @@
                                     data-date="<%= new Date(course.startDate).toLocaleDateString('pt-BR') %>"
                                     data-spots="<%= course.spots %>"
                                     data-price="<%= course.priceValue %>"
-                                    data-status="<%= !course.active ? 'Desativado' : (course.isExpired ? 'Encerrado' : 'Ativo') %>"
+                                    data-status="<%= course.statusLabel %>"
                                 >
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5s8.268 2.943 9.542 7c-1.274 4.057-5.065 7-9.542 7S3.732 16.057 2.458 12z"></path></svg>
                                 </button>

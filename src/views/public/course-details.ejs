@@ -9,13 +9,6 @@
                 </ol>
             </nav>
 
-            <% if (course.isExpired) { %>
-                <div class="mb-4 inline-flex items-center rounded-full bg-red-100 px-4 py-2 text-sm font-bold text-red-700">
-                    <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    Inscrições encerradas
-                </div>
-            <% } %>
-
             <div class="grid gap-10 lg:grid-cols-[1.6fr_0.9fr]">
                 <div class="space-y-8">
                     <section>
@@ -31,7 +24,22 @@
                 </div>
 
                 <aside class="space-y-6">
-                    <div class="overflow-hidden border border-slate-200 bg-slate-50 shadow-sm">
+                    <div class="relative overflow-hidden border border-slate-200 bg-slate-50 shadow-sm">
+                        <% if (course.statusCode === 'encerrado') { %>
+                            <div class="absolute left-4 top-4 z-10">
+                                <span class="inline-flex items-center rounded-full border border-red-200 bg-white/95 px-3.5 py-1.5 text-[10px] font-black uppercase tracking-[0.18em] text-red-700 shadow-md ring-2 ring-white/70 backdrop-blur-sm">
+                                    <svg class="mr-1.5 h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    Inscrições encerradas
+                                </span>
+                            </div>
+                        <% } else if (course.statusCode === 'confirmado') { %>
+                            <div class="absolute left-4 top-4 z-10">
+                                <span class="inline-flex items-center rounded-full border border-cyan-300 bg-gradient-to-r from-cyan-500 to-blue-600 to-blue-600 px-3.5 py-1.5 text-[10px] font-black uppercase tracking-[0.22em] text-white shadow-lg shadow-cyan-200 ring-4 ring-white/70 backdrop-blur-sm">
+                                    <svg class="mr-1.5 h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="M5 13l4 4L19 7"/></svg>
+                                    Turma confirmada
+                                </span>
+                            </div>
+                        <% } %>
                         <div class="flex h-72 items-center justify-center bg-white md:h-80">
                             <%- imgTag(course.image, course.title, 'h-full w-full object-contain object-center p-4 bg-white', 'course') %>
                         </div>
@@ -51,7 +59,7 @@
                                 </a>
                             <% } %>
 
-                            <% if (course.isExpired) { %>
+                            <% if (course.statusCode === 'encerrado') { %>
                                 <button disabled class="flex w-full items-center justify-center rounded-xl bg-slate-400 px-4 py-3 text-sm font-bold uppercase text-white cursor-not-allowed">
                                     Inscrições Encerradas
                                 </button>
@@ -87,6 +95,10 @@
                             <li class="flex items-center text-indigo-700">
                                 <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                                 <strong>Local:</strong> <span class="ml-2"><%= course.location %></span>
+                            </li>
+                            <li class="flex items-center text-indigo-700">
+                                <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <strong>Status:</strong> <span class="ml-2"><%= course.statusLabel %></span>
                             </li>
                             <li class="flex items-center text-indigo-700">
                                 <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>

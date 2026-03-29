@@ -6,7 +6,8 @@ const { buildAppUrl } = require('../../utils/Url');
 const { formatCurrency } = require('../../utils/CurrencyFormatter');
 const { parseMoneyValue } = require('../../utils/Money');
 const { resolveUploadUrlToPath } = require('../../utils/UploadPaths');
-const { ProductFormatter, EmailService, NotificationService } = require('../shared');
+const { resolveCourseStatus } = require('../../utils/CourseStatus');
+const { ProductFormatter, EmailService, NotificationService, SiteSettingsService } = require('../shared');
 const { formatProduct } = ProductFormatter;
 
 function stripHtml(value) {
@@ -164,6 +165,7 @@ class CoursePublicService {
     const data = course.toJSON();
     const priceValue = parseMoneyValue(data.price);
     const certificateTopicsData = this.extractCertificateTopicsData(data);
+    const status = resolveCourseStatus(data, now);
 
     return {
       ...data,
@@ -174,7 +176,9 @@ class CoursePublicService {
       descriptionPlain: stripHtml(data.description),
       certificateTopicsList: certificateTopicsData.items,
       certificateBackContentHtml: certificateTopicsData.html,
-      isExpired: new Date(data.startDate) < now
+      isExpired: status.isExpired,
+      statusCode: status.code,
+      statusLabel: status.label
     };
   }
 
@@ -323,6 +327,32 @@ class CoursePublicService {
       await NotificationService.createEnrollmentNotification(enrollment, course);
     } catch (error) {
       console.error('Erro ao registrar notificação de nova inscrição:', error);
+    }
+
+    try {
+      const siteSettings = await SiteSettingsService.getSettings();
+      const notifyAdmins = String(siteSettings.email_notify_admin_new_enrollment || 'false') === 'true';
+
+      if (notifyAdmins) {
+        const adminUsers = await User.findAll({
+          where: {
+            role: 'admin',
+            active: true
+          },
+          attributes: ['email']
+        });
+
+        const adminRecipients = adminUsers.map((admin) => admin.email).filter(Boolean);
+
+        await EmailService.sendNewEnrollmentAlertToAdmins({
+          adminRecipients,
+          enrollment,
+          course,
+          manageUrl: buildAppUrl(req, `/admin/inscricoes/${enrollment.id}/editar`)
+        });
+      }
+    } catch (error) {
+      console.error('Erro ao enviar alerta de nova inscrição para administradores:', error);
     }
 
     return { redirectTo: '/obrigado' };

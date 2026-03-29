@@ -41,6 +41,11 @@ const Course = sequelize.define('Course', {
     type: DataTypes.STRING,
     allowNull: false
   },
+  status: {
+    type: DataTypes.ENUM('ativo', 'confirmado'),
+    allowNull: false,
+    defaultValue: 'ativo'
+  },
   price: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: false,

@@ -12,10 +12,14 @@
                     <span class="inline-flex items-center rounded-full bg-white px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-slate-600 border border-slate-200">
                         Campos com * são obrigatórios
                     </span>
-                    <% if(course.active) { %>
-                        <span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-emerald-200">Ativo</span>
-                    <% } else { %>
+                    <% if (course.statusCode === 'desativado') { %>
                         <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-red-200">Desativado</span>
+                    <% } else if (course.statusCode === 'encerrado') { %>
+                        <span class="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-amber-200">Encerrado</span>
+                    <% } else if (course.statusCode === 'confirmado') { %>
+                        <span class="border border-cyan-300 bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.18em] text-white shadow-sm shadow-cyan-200 ring-2 ring-cyan-100">Confirmado</span>
+                    <% } else { %>
+                        <span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-emerald-200">Ativo</span>
                     <% } %>
                 </div>
             </div>
@@ -102,6 +106,15 @@
                                     <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Vagas Disponíveis *</label>
                                     <input type="number" name="spots" value="<%= course.spots %>" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" placeholder="20">
                                 </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Status Manual do Curso</label>
+                                <select name="status" class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 transition-all">
+                                    <option value="ativo" <%= course.status === 'ativo' ? 'selected' : '' %>>Ativo</option>
+                                    <option value="confirmado" <%= course.status === 'confirmado' ? 'selected' : '' %>>Confirmado</option>
+                                </select>
+                                <p class="mt-2 text-xs text-slate-400">Esse status é manual e aparece no site público e no portal do aluno quando o curso estiver ativo e ainda não tiver encerrado.</p>
                             </div>
 
                             <div class="pt-2">

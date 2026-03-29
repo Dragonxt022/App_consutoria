@@ -27,7 +27,7 @@ const AdminEnrollmentHandler = {
 
   async updateStatus(req, res) {
     try {
-      const result = await EnrollmentAdminService.updateStatus(req.params.id, req.body.status);
+      const result = await EnrollmentAdminService.updateStatus(req.params.id, req.body.status, req);
 
       if (result.notFound) {
         return res.status(404).json({ error: 'Inscrição não encontrada' });
@@ -97,7 +97,7 @@ const AdminEnrollmentHandler = {
 
   async update(req, res) {
     try {
-      const result = await EnrollmentAdminService.updateEnrollment(req.params.id, req.body);
+      const result = await EnrollmentAdminService.updateEnrollment(req.params.id, req.body, req);
 
       if (result.notFound) {
         return res.redirect('/admin/inscricoes?error=Inscrição não encontrada');

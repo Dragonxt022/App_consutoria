@@ -111,6 +111,17 @@
                                 </div>
                                 <div class="flex-1">
                                     <h4 class="text-lg font-bold text-slate-900 mb-1"><%= enroll.Course ? enroll.Course.title : 'Curso indisponível' %></h4>
+                                    <% if (enroll.Course) { %>
+                                        <div class="mb-2">
+                                            <% if (enroll.Course.statusCode === 'confirmado') { %>
+                                                <span class="inline-flex rounded-full border border-cyan-300 bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-white shadow-sm shadow-cyan-200 ring-2 ring-cyan-100">Curso confirmado</span>
+                                            <% } else if (enroll.Course.statusCode === 'encerrado') { %>
+                                                <span class="inline-flex rounded-full bg-amber-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-amber-700 border border-amber-200">Curso encerrado</span>
+                                            <% } else if (enroll.Course.statusCode === 'desativado') { %>
+                                                <span class="inline-flex rounded-full bg-red-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-red-700 border border-red-200">Curso desativado</span>
+                                            <% } %>
+                                        </div>
+                                    <% } %>
                                     <div class="flex flex-wrap items-center text-xs text-slate-500 mb-2 gap-2">
                                         <span class="flex items-center bg-slate-100 px-2 py-1 rounded">
                                             <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

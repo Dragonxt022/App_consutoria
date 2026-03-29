@@ -2,6 +2,26 @@ const nodemailer = require('nodemailer');
 const SiteSettingsService = require('./SiteSettingsService');
 
 class EmailService {
+  async sendBulkEmails(recipients, subject, buildHtml) {
+    const uniqueRecipients = [...new Set((Array.isArray(recipients) ? recipients : []).map((item) => String(item || '').trim().toLowerCase()).filter(Boolean))];
+
+    if (!uniqueRecipients.length) {
+      return { attempted: 0, sent: 0 };
+    }
+
+    let sent = 0;
+
+    for (const recipient of uniqueRecipients) {
+      const delivered = await this.sendEmail(recipient, subject, buildHtml(recipient));
+      if (delivered) sent += 1;
+    }
+
+    return {
+      attempted: uniqueRecipients.length,
+      sent
+    };
+  }
+
   async sendEmail(to, subject, html) {
     try {
       const settings = await SiteSettingsService.getSettings();
@@ -139,6 +159,92 @@ class EmailService {
     `;
 
     return await this.sendEmail(newEmail, 'Confirmação de alteração de e-mail', html);
+  }
+
+  async sendNewEnrollmentAlertToAdmins({ adminRecipients, enrollment, course, manageUrl }) {
+    const subject = `Nova inscrição recebida: ${course.title}`;
+
+    return this.sendBulkEmails(adminRecipients, subject, () => `
+      <div style="font-family: Arial, sans-serif; max-width: 640px; margin: 0 auto; color: #0f172a;">
+        <h2 style="margin-bottom: 12px; color: #1d4ed8;">Nova inscrição realizada</h2>
+        <p>Uma nova inscrição foi registrada no site e já está disponível para acompanhamento no painel.</p>
+
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:14px; padding:20px; margin:24px 0;">
+          <p style="margin:0 0 8px;"><strong>Curso:</strong> ${course.title}</p>
+          <p style="margin:0 0 8px;"><strong>Aluno:</strong> ${enrollment.studentName}</p>
+          <p style="margin:0 0 8px;"><strong>E-mail:</strong> ${enrollment.studentEmail}</p>
+          <p style="margin:0 0 8px;"><strong>Telefone:</strong> ${enrollment.studentPhone}</p>
+          <p style="margin:0;"><strong>Empresa:</strong> ${enrollment.company || 'Não informada'}</p>
+        </div>
+
+        <a href="${manageUrl}" style="display:inline-block; background:#2563eb; color:#fff; padding:14px 24px; text-decoration:none; border-radius:10px; font-weight:700;">Abrir inscrição no painel</a>
+      </div>
+    `);
+  }
+
+  async sendCourseConfirmedNoticeToStudents({ recipients, course, dashboardUrl }) {
+    const subject = `Turma confirmada: ${course.title}`;
+
+    return this.sendBulkEmails(recipients, subject, () => `
+      <div style="font-family: Arial, sans-serif; max-width: 640px; margin: 0 auto; color: #0f172a;">
+        <h2 style="margin-bottom: 12px; color: #0284c7;">Turma confirmada</h2>
+        <p>Temos uma ótima notícia: a turma do curso <strong>${course.title}</strong> foi confirmada.</p>
+
+        <div style="background:#ecfeff; border:1px solid #a5f3fc; border-radius:14px; padding:20px; margin:24px 0;">
+          <p style="margin:0 0 8px;"><strong>Curso:</strong> ${course.title}</p>
+          <p style="margin:0 0 8px;"><strong>Local:</strong> ${course.location}</p>
+          <p style="margin:0;"><strong>Início:</strong> ${new Date(course.startDate).toLocaleDateString('pt-BR')}</p>
+        </div>
+
+        <p>Você pode acompanhar sua inscrição e os detalhes atualizados na sua área do aluno.</p>
+        <a href="${dashboardUrl}" style="display:inline-block; background:#0284c7; color:#fff; padding:14px 24px; text-decoration:none; border-radius:10px; font-weight:700;">Abrir área do aluno</a>
+
+        <p style="margin-top:24px; font-size:13px; color:#475569;">O certificado será disponibilizado na plataforma após a conclusão e liberação do curso.</p>
+      </div>
+    `);
+  }
+
+  async sendEnrollmentConfirmedToStudent({ enrollment, course, dashboardUrl, certificatesUrl }) {
+    const subject = `Sua inscrição foi confirmada: ${course.title}`;
+
+    return this.sendEmail(enrollment.studentEmail, subject, `
+      <div style="font-family: Arial, sans-serif; max-width: 640px; margin: 0 auto; color: #0f172a;">
+        <h2 style="margin-bottom: 12px; color: #0284c7;">Inscrição confirmada</h2>
+        <p>Olá <strong>${enrollment.studentName}</strong>,</p>
+        <p>Sua inscrição no curso <strong>${course.title}</strong> foi confirmada com sucesso.</p>
+
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:14px; padding:20px; margin:24px 0;">
+          <p style="margin:0 0 8px;"><strong>Curso:</strong> ${course.title}</p>
+          <p style="margin:0 0 8px;"><strong>Local:</strong> ${course.location}</p>
+          <p style="margin:0;"><strong>Data de início:</strong> ${new Date(course.startDate).toLocaleDateString('pt-BR')}</p>
+        </div>
+
+        <p>Você pode acompanhar sua inscrição e, quando o certificado for liberado, acessá-lo diretamente pela plataforma.</p>
+        <div style="margin-top: 24px;">
+          <a href="${dashboardUrl}" style="display:inline-block; background:#0284c7; color:#fff; padding:14px 24px; text-decoration:none; border-radius:10px; font-weight:700; margin-right:12px;">Ver minha inscrição</a>
+          <a href="${certificatesUrl}" style="display:inline-block; background:#e2e8f0; color:#0f172a; padding:14px 24px; text-decoration:none; border-radius:10px; font-weight:700;">Meus certificados</a>
+        </div>
+      </div>
+    `);
+  }
+
+  async sendEnrollmentCancelledToStudent({ enrollment, course, coursesUrl, contactEmail }) {
+    const subject = `Atualização da sua inscrição: ${course.title}`;
+
+    return this.sendEmail(enrollment.studentEmail, subject, `
+      <div style="font-family: Arial, sans-serif; max-width: 640px; margin: 0 auto; color: #0f172a;">
+        <h2 style="margin-bottom: 12px; color: #dc2626;">Inscrição cancelada</h2>
+        <p>Olá <strong>${enrollment.studentName}</strong>,</p>
+        <p>Sua inscrição no curso <strong>${course.title}</strong> foi cancelada.</p>
+
+        <div style="background:#fff1f2; border:1px solid #fecdd3; border-radius:14px; padding:20px; margin:24px 0;">
+          <p style="margin:0;">Agradecemos sinceramente pelo seu interesse. Esperamos ter a oportunidade de receber você em uma próxima turma.</p>
+        </div>
+
+        <p>Se quiser conhecer outras opções disponíveis, acesse nosso catálogo de cursos. Caso precise de suporte, fale conosco pelo e-mail <strong>${contactEmail}</strong>.</p>
+        <a href="${coursesUrl}" style="display:inline-block; background:#dc2626; color:#fff; padding:14px 24px; text-decoration:none; border-radius:10px; font-weight:700;">Ver outros cursos</a>
+      </div>
+    `);
   }
 }
 
