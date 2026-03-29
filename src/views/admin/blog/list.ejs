@@ -1,16 +1,7 @@
 <div class="space-y-6">
-    <div class="rounded-3xl border border-slate-200 bg-white px-6 py-6 shadow-sm sm:px-7">
-        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div class="max-w-2xl">
-                <p class="text-xs font-bold uppercase tracking-[0.24em] text-slate-400">Workflow editorial</p>
-                <h2 class="mt-3 text-2xl font-bold text-slate-900">Publicações, rascunhos e operação editorial</h2>
-                <p class="mt-2 text-sm leading-6 text-slate-500">Acompanhe o acervo do blog, revise conteúdos em andamento e publique novas matérias sem repetir o título principal da página.</p>
-            </div>
-            <div class="flex gap-3">
-                <a href="/admin/blog/categorias" class="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50">Categorias</a>
-                <a href="/admin/blog/novo" class="rounded-xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white hover:bg-indigo-700">Criar novo</a>
-            </div>
-        </div>
+    <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-end">
+        <a href="/admin/blog/categorias" class="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50">Categorias</a>
+        <a href="/admin/blog/novo" class="rounded-xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white hover:bg-indigo-700">Criar novo</a>
     </div>
 
     <div class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
@@ -35,9 +26,9 @@
                     <tr class="align-top">
                         <td class="px-6 py-5">
                             <div class="flex items-start gap-4">
-                                <div class="h-16 w-24 overflow-hidden rounded-xl bg-slate-100">
+                                <div class="h-16 w-24 shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
                                     <% if (post.coverImage) { %>
-                                        <img src="<%= post.coverImage %>" alt="<%= post.title %>" class="h-full w-full object-cover">
+                                        <img src="<%= post.coverImage %>" alt="<%= post.title %>" class="block h-full w-full object-cover">
                                     <% } %>
                                 </div>
                                 <div>

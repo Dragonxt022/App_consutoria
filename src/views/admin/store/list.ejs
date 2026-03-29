@@ -40,9 +40,9 @@
                     <tr class="hover:bg-gray-50/50 transition-colors">
                         <td class="px-6 py-4">
                             <div class="flex min-w-0 items-center gap-3">
-                                <div class="h-12 w-16 overflow-hidden rounded bg-slate-100 flex-shrink-0">
+                                <div class="h-16 w-24 overflow-hidden rounded-xl border border-slate-200 bg-slate-100 flex-shrink-0">
                                     <% if (product.primaryImage) { %>
-                                        <img src="<%= product.primaryImage %>" alt="<%= product.name %>" class="h-full w-full object-cover">
+                                        <img src="<%= product.primaryImage %>" alt="<%= product.name %>" class="block h-full w-full object-cover">
                                     <% } else { %>
                                         <div class="flex h-full w-full items-center justify-center text-slate-400">
                                             <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V7a2 2 0 00-2-2h-3V3H9v2H6a2 2 0 00-2 2v6m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-4m-8 0H4m8 0v4"></path></svg>

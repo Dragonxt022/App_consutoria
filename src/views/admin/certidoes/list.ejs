@@ -1,20 +1,12 @@
-<div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
-    <div class="flex flex-col gap-4 border-b border-slate-100 px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
-        <div class="flex items-start gap-4">
-            <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-50 text-violet-600 shadow-sm shadow-violet-100">
-                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586A2 2 0 0114 3.586L18.414 8A2 2 0 0119 9.414V19a2 2 0 01-2 2z"></path>
-                </svg>
-            </div>
-            <div>
-                <p class="text-xs font-bold uppercase tracking-[0.24em] text-slate-400">Acervo documental</p>
-                <p class="mt-2 text-sm text-slate-500">Gerencie arquivos PDF e acompanhe rapidamente o vencimento. Total: <%= pagination ? pagination.totalItems : certificates.length %>.</p>
-            </div>
-        </div>
+<div class="space-y-4">
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <p class="text-sm text-slate-500">Total: <%= pagination ? pagination.totalItems : certificates.length %> certidão(ões).</p>
         <a href="/admin/certidoes/criar" class="inline-flex items-center justify-center rounded-xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-200 transition hover:bg-indigo-700">
             Nova certid&atilde;o
         </a>
     </div>
+
+    <div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
 
     <% if (!certificates.length) { %>
         <div class="px-6 py-14 text-center">
@@ -98,4 +90,5 @@
             </div>
         <% } %>
     <% } %>
+    </div>
 </div>
