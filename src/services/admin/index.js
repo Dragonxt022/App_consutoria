@@ -1,4 +1,5 @@
 module.exports = {
+  AttachmentAdminService: require('./AttachmentAdminService'),
   BlogAdminService: require('./BlogAdminService'),
   CertificateBuilderAdminService: require('./CertificateBuilderAdminService'),
   CompanyCertificateAdminService: require('./CompanyCertificateAdminService'),

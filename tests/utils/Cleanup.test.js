@@ -36,12 +36,31 @@ test('cleanupUnconfirmed removes expired inactive users and their enrollments', 
           calls.enrollmentDestroy = options;
         }
       },
-      Course: {}
+      Course: {
+        async findAll() {
+          return [];
+        }
+      },
+      Notification: {
+        async findOne() {
+          return null;
+        }
+      }
     },
     sequelize: {
-      Op: { lt }
+      Op: { lt, gt: Symbol('gt'), lte: Symbol('lte'), ne: Symbol('ne') }
     },
     '../services': {
+      SiteSettingsService: {
+        async getSettings() {
+          return { email_notify_student_course_reminder_24h: 'true' };
+        }
+      },
+      EmailService: {
+        async sendCourseReminder24hToStudents() {
+          return { attempted: 0, sent: 0 };
+        }
+      },
       NotificationService: {
         async createAutoClosedNotification(payload) {
           calls.notificationPayload = payload;
@@ -90,12 +109,31 @@ test('cleanupUnconfirmed does nothing when no users are expired', async () => {
           enrollmentDestroyed = true;
         }
       },
-      Course: {}
+      Course: {
+        async findAll() {
+          return [];
+        }
+      },
+      Notification: {
+        async findOne() {
+          return null;
+        }
+      }
     },
     sequelize: {
-      Op: { lt: Symbol('lt') }
+      Op: { lt: Symbol('lt'), gt: Symbol('gt'), lte: Symbol('lte'), ne: Symbol('ne') }
     },
     '../services': {
+      SiteSettingsService: {
+        async getSettings() {
+          return { email_notify_student_course_reminder_24h: 'true' };
+        }
+      },
+      EmailService: {
+        async sendCourseReminder24hToStudents() {
+          return { attempted: 0, sent: 0 };
+        }
+      },
       NotificationService: {
         async createAutoClosedNotification() {
           throw new Error('notification should not be called');
@@ -119,12 +157,31 @@ test('cleanupUnconfirmed swallows unexpected errors and logs them', async (t) =>
         }
       },
       Enrollment: {},
-      Course: {}
+      Course: {
+        async findAll() {
+          return [];
+        }
+      },
+      Notification: {
+        async findOne() {
+          return null;
+        }
+      }
     },
     sequelize: {
-      Op: { lt: Symbol('lt') }
+      Op: { lt: Symbol('lt'), gt: Symbol('gt'), lte: Symbol('lte'), ne: Symbol('ne') }
     },
     '../services': {
+      SiteSettingsService: {
+        async getSettings() {
+          return { email_notify_student_course_reminder_24h: 'true' };
+        }
+      },
+      EmailService: {
+        async sendCourseReminder24hToStudents() {
+          return { attempted: 0, sent: 0 };
+        }
+      },
       NotificationService: {
         async createAutoClosedNotification() {}
       }

@@ -16,6 +16,7 @@ const StudentProfileHandler = {
     return res.render('aluno/profile', {
       title: 'Meu Perfil',
       layout: 'public/layout',
+      currentStudentSection: 'profile',
       ...data
     });
   },
@@ -69,7 +70,8 @@ const StudentProfileHandler = {
       enrollments: data.enrollments,
       stats: data.stats,
       formatCurrency,
-      layout: 'public/layout'
+      layout: 'public/layout',
+      currentStudentSection: 'courses'
     });
   },
 
@@ -85,7 +87,8 @@ const StudentProfileHandler = {
       user: data.user,
       certificates: data.enrollments.filter((enrollment) => enrollment.status === 'completo'),
       stats: data.stats,
-      layout: 'public/layout'
+      layout: 'public/layout',
+      currentStudentSection: 'certificates'
     });
   }
 };

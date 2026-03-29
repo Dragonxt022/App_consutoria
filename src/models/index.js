@@ -9,6 +9,7 @@ const Product = require('./Product');
 const BlogCategory = require('./BlogCategory');
 const BlogPost = require('./BlogPost');
 const Notification = require('./Notification');
+const Attachment = require('./Attachment');
 
 function parseBoolean(value, fallback = false) {
   if (value === undefined) return fallback;
@@ -30,6 +31,7 @@ const models = {
   BlogCategory,
   BlogPost,
   Notification,
+  Attachment,
   sequelize
 };
 
@@ -39,6 +41,15 @@ Course.hasMany(Enrollment, { foreignKey: 'courseId' });
 
 Enrollment.belongsTo(User, { foreignKey: 'userId', as: 'student' });
 User.hasMany(Enrollment, { foreignKey: 'userId' });
+
+Attachment.belongsTo(Course, { foreignKey: 'courseId' });
+Course.hasMany(Attachment, { foreignKey: 'courseId' });
+
+Attachment.belongsTo(User, { foreignKey: 'userId', as: 'recipient' });
+User.hasMany(Attachment, { foreignKey: 'userId', as: 'receivedAttachments' });
+
+Attachment.belongsTo(User, { foreignKey: 'createdBy', as: 'creator' });
+User.hasMany(Attachment, { foreignKey: 'createdBy', as: 'createdAttachments' });
 
 BlogPost.belongsTo(BlogCategory, { foreignKey: 'categoryId', as: 'category' });
 BlogCategory.hasMany(BlogPost, { foreignKey: 'categoryId', as: 'posts' });

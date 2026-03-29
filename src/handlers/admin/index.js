@@ -1,4 +1,5 @@
 module.exports = {
+  AdminAttachmentHandler: require('./AdminAttachmentHandler'),
   AdminBlogHandler: require('./AdminBlogHandler'),
   AdminCertificateBuilderHandler: require('./AdminCertificateBuilderHandler'),
   AdminCompanyCertificateHandler: require('./AdminCompanyCertificateHandler'),

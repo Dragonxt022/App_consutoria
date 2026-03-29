@@ -1,4 +1,4 @@
-<div class="space-y-6" x-data="{ showCreateUser: false }">
+<div class="space-y-6" x-data="{ showCreateUser: false, showFilters: <%= (filters.search || filters.status || filters.role) ? 'true' : 'false' %> }">
     <% if (success) { %>
         <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm font-medium text-emerald-800">
             <%= success %>
@@ -14,7 +14,24 @@
     <div class="bg-white shadow-xl rounded-2xl overflow-hidden">
         <div class="border-b border-gray-100 bg-gray-50/50 p-6">
             <div class="flex flex-col gap-4">
-                <form action="/admin/usuarios" method="GET" class="w-full xl:max-w-5xl">
+                <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-[0.24em] text-slate-400">Cadastro rápido</p>
+                        <p class="mt-2 text-sm text-slate-500">Cadastre um novo aluno ou administrador sem sair desta tela.</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button type="button" @click="showFilters = !showFilters" class="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:bg-slate-50 hover:text-slate-900" :title="showFilters ? 'Ocultar filtros' : 'Mostrar filtros'">
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 01.8 1.6L15 12v5a1 1 0 01-.553.894l-4 2A1 1 0 019 19v-7L3.2 4.6A1 1 0 013 4z"/>
+                            </svg>
+                        </button>
+                        <button type="button" @click="showCreateUser = !showCreateUser" class="inline-flex items-center justify-center rounded-xl bg-indigo-600 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-indigo-700">
+                            <span x-text="showCreateUser ? 'Fechar cadastro' : 'Cadastrar usuário'"></span>
+                        </button>
+                    </div>
+                </div>
+
+                <form action="/admin/usuarios" method="GET" class="w-full xl:max-w-5xl" x-show="showFilters" x-cloak x-transition>
                     <div class="grid gap-3 rounded-xl border border-gray-100 bg-white p-4 shadow-sm md:grid-cols-4 md:items-end">
                         <div class="min-w-0 md:col-span-2">
                             <label for="search" class="mb-1 block text-xs font-bold uppercase tracking-[0.24em] text-slate-400">Pesquisar</label>
@@ -44,18 +61,6 @@
                         </div>
                     </div>
                 </form>
-            </div>
-        </div>
-
-        <div class="border-b border-gray-100 bg-white p-6">
-            <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                <div>
-                    <p class="text-xs font-bold uppercase tracking-[0.24em] text-slate-400">Cadastro rápido</p>
-                    <p class="mt-2 text-sm text-slate-500">Cadastre um novo aluno ou administrador sem sair desta tela.</p>
-                </div>
-                <button type="button" @click="showCreateUser = !showCreateUser" class="inline-flex items-center justify-center rounded-xl bg-indigo-600 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-indigo-700">
-                    <span x-text="showCreateUser ? 'Fechar cadastro' : 'Cadastrar usuário'"></span>
-                </button>
             </div>
 
             <div x-show="showCreateUser" x-cloak x-transition class="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-5">

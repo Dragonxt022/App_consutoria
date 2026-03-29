@@ -143,16 +143,46 @@ class BlogAdminService {
     return req.file ? `/uploads/blog/covers/${req.file.filename}` : null;
   }
 
-  async getAdminListData() {
-    const posts = await BlogPost.findAll({
-      include: [
-        { model: BlogCategory, as: 'category' },
-        { model: User, as: 'author', attributes: ['id', 'name'] }
-      ],
-      order: [['updatedAt', 'DESC']]
-    });
+  async getAdminListData(rawFilters = {}) {
+    const filters = {
+      search: String(rawFilters.search || '').trim(),
+      status: String(rawFilters.status || '').trim(),
+      categoryId: String(rawFilters.categoryId || '').trim()
+    };
 
-    return { posts };
+    const where = {};
+
+    if (filters.search) {
+      where[Op.or] = [
+        { title: { [Op.like]: `%${filters.search}%` } },
+        { excerpt: { [Op.like]: `%${filters.search}%` } },
+        { content: { [Op.like]: `%${filters.search}%` } }
+      ];
+    }
+
+    if (filters.status && ['publicado', 'rascunho'].includes(filters.status)) {
+      where.status = filters.status;
+    }
+
+    if (filters.categoryId) {
+      where.categoryId = filters.categoryId;
+    }
+
+    const [posts, categories] = await Promise.all([
+      BlogPost.findAll({
+        where,
+        include: [
+          { model: BlogCategory, as: 'category' },
+          { model: User, as: 'author', attributes: ['id', 'name'] }
+        ],
+        order: [['updatedAt', 'DESC']]
+      }),
+      BlogCategory.findAll({
+        order: [['name', 'ASC']]
+      })
+    ]);
+
+    return { posts, categories, filters };
   }
 
   async getCreateFormData(user) {

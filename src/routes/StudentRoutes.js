@@ -1,5 +1,5 @@
 const express = require('express');
-const { PublicHandler, StudentProfileHandler } = require('../handlers');
+const { PublicHandler, StudentAttachmentHandler, StudentProfileHandler } = require('../handlers');
 const { authMiddleware, uploads } = require('../middleware');
 const { routeHandler } = require('../lib');
 
@@ -10,6 +10,8 @@ const router = express.Router();
 router.get('/aluno/dashboard', authMiddleware('aluno'), routeHandler(PublicHandler, 'studentDashboard'));
 router.get('/meus-cursos', authMiddleware('aluno'), routeHandler(StudentProfileHandler, 'courses'));
 router.get('/meus-certificados', authMiddleware('aluno'), routeHandler(StudentProfileHandler, 'certificates'));
+router.get('/meus-arquivos', authMiddleware('aluno'), routeHandler(StudentAttachmentHandler, 'list'));
+router.get('/meus-arquivos/:id', authMiddleware('aluno'), routeHandler(StudentAttachmentHandler, 'details'));
 router.get('/perfil', authMiddleware('aluno'), routeHandler(StudentProfileHandler, 'show'));
 router.post('/perfil/atualizar', authMiddleware('aluno'), upload.single('avatar'), routeHandler(StudentProfileHandler, 'update'));
 router.post('/perfil/alterar-senha', authMiddleware('aluno'), routeHandler(StudentProfileHandler, 'changePassword'));

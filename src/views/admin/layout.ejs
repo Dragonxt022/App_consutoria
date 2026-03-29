@@ -204,6 +204,29 @@
 
                 <p class="sidebar-group-title" x-show="!sidebarCollapsed">Ferramentas</p>
                 <div class="space-y-1 mb-4">
+                    <div x-show="!sidebarCollapsed" x-data="{ open: <%= ['Anexos', 'Histórico de Anexos'].includes(title) ? 'true' : 'false' %> }">
+                        <button @click="open = !open" class="w-full flex items-center px-3 py-3 text-sm font-medium rounded-lg hover:bg-slate-100 hover:text-slate-900 transition-colors justify-between <%= ['Anexos', 'Histórico de Anexos'].includes(title) ? 'sidebar-link-active' : '' %>">
+                            <div class="flex items-center">
+                                <svg class="mr-3 h-6 w-6 <%= ['Anexos', 'Histórico de Anexos'].includes(title) ? 'text-indigo-500' : 'text-slate-400 group-hover:text-indigo-500' %>" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h10M7 11h10M7 15h6m-6 6h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                </svg>
+                                <span>Anexos</span>
+                            </div>
+                            <svg :class="open ? 'rotate-180' : ''" class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+
+                        <div x-show="open" x-collapse class="pl-12 space-y-1 mt-1" style="display: none;">
+                            <a href="/admin/anexos" class="block py-2 text-sm hover:text-indigo-400 transition-colors <%= title === 'Anexos' ? 'text-indigo-400 font-medium' : '' %>">Enviar</a>
+                            <a href="/admin/anexos/historico" class="block py-2 text-sm hover:text-indigo-400 transition-colors <%= title === 'Histórico de Anexos' ? 'text-indigo-400 font-medium' : '' %>">Histórico</a>
+                        </div>
+                    </div>
+                    <a x-show="sidebarCollapsed" x-cloak href="/admin/anexos" class="group flex items-center justify-center rounded-lg px-3 py-3 text-sm font-medium transition-colors hover:bg-slate-100 hover:text-slate-900 <%= ['Anexos', 'Histórico de Anexos'].includes(title) ? 'sidebar-link-active' : '' %>" title="Anexos">
+                        <svg class="h-6 w-6 <%= ['Anexos', 'Histórico de Anexos'].includes(title) ? 'text-indigo-600' : 'text-slate-400 group-hover:text-indigo-600' %>" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h10M7 11h10M7 15h6m-6 6h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                        </svg>
+                    </a>
                     <a href="/admin/certificados" class="group flex items-center rounded-lg px-3 py-3 text-sm font-medium transition-colors hover:bg-slate-100 hover:text-slate-900 <%= title === 'Gerador de Certificados' ? 'sidebar-link-active' : '' %>" :class="sidebarCollapsed ? 'justify-center' : ''" :title="sidebarCollapsed ? 'Certificados' : ''">
                         <svg class="h-6 w-6 <%= title === 'Gerador de Certificados' ? 'text-indigo-600' : 'text-slate-400 group-hover:text-indigo-600' %>" :class="sidebarCollapsed ? '' : 'mr-3'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />

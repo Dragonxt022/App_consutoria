@@ -1,6 +1,7 @@
 const express = require('express');
 const {
   PublicHandler,
+  AdminAttachmentHandler,
   AdminBlogHandler,
   AdminCertificateBuilderHandler,
   AdminCompanyCertificateHandler,
@@ -20,12 +21,17 @@ const {
   upload,
   courseFilesUpload,
   uploadSettingsFiles,
-  uploadBlogImages
+  uploadBlogImages,
+  uploadAttachmentFile
 } = uploads;
 
 const router = express.Router();
 
 router.get('/admin/dashboard', authMiddleware('admin'), routeHandler(PublicHandler, 'adminDashboard'));
+router.get('/admin/anexos', authMiddleware('admin'), routeHandler(AdminAttachmentHandler, 'showCreate'));
+router.get('/admin/anexos/historico', authMiddleware('admin'), routeHandler(AdminAttachmentHandler, 'list'));
+router.post('/admin/anexos', authMiddleware('admin'), uploadAttachmentFile, routeHandler(AdminAttachmentHandler, 'create'));
+router.post('/admin/anexos/:id/deletar', authMiddleware('admin'), routeHandler(AdminAttachmentHandler, 'remove'));
 
 router.get('/admin/inscricoes', authMiddleware('admin'), routeHandler(AdminEnrollmentHandler, 'list'));
 router.get('/admin/inscricoes/exportar', authMiddleware('admin'), routeHandler(AdminEnrollmentHandler, 'exportList'));

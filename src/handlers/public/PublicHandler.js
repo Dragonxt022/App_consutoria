@@ -97,6 +97,8 @@ const PublicHandler = {
       title: 'Dashboard Aluno',
       user: req.user,
       formatCurrency,
+      layout: 'public/layout',
+      currentStudentSection: 'dashboard',
       ...data
     });
   }

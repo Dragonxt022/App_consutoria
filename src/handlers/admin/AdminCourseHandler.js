@@ -3,7 +3,7 @@ const { CourseAdminService } = require('../../services');
 const AdminCourseHandler = {
   async list(req, res) {
     const page = parseInt(req.query.page, 10) || 1;
-    const data = await CourseAdminService.getAdminListData(page);
+    const data = await CourseAdminService.getAdminListData(page, req.query);
 
     res.render('admin/courses/list', {
       title: 'Listagem de Cursos',

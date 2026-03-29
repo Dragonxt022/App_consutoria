@@ -11,30 +11,37 @@
     }).join(' ');
 %>
 
-<div class="space-y-6">
+<div class="space-y-6" x-data="{ showFilters: false }">
     <div class="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
         <div>
             <div class="text-sm font-bold uppercase tracking-[0.25em] text-slate-400">Leitura do período</div>
             <p class="mt-2 text-sm text-slate-500">Acompanhe receita, ticket médio e o ritmo das vendas sem repetir o título principal da página.</p>
         </div>
 
-        <form action="/admin/vendas" method="GET" class="flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
-            <select name="month" class="rounded-xl border-slate-200 bg-slate-50 text-sm text-slate-700 focus:border-indigo-500 focus:ring-indigo-500">
-                <% months.forEach((m, index) => { %>
-                    <option value="<%= index + 1 %>" <%= filters.month == (index + 1) ? 'selected' : '' %>><%= m %></option>
-                <% }) %>
-            </select>
-
-            <select name="year" class="rounded-xl border-slate-200 bg-slate-50 text-sm text-slate-700 focus:border-indigo-500 focus:ring-indigo-500">
-                <% filters.years.forEach(y => { %>
-                    <option value="<%= y %>" <%= filters.year == y ? 'selected' : '' %>><%= y %></option>
-                <% }) %>
-            </select>
-
-            <button type="submit" class="inline-flex items-center rounded-xl bg-indigo-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-indigo-700">
-                Aplicar
+        <div class="flex flex-col items-end gap-3">
+            <button type="button" @click="showFilters = !showFilters" class="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:bg-slate-50 hover:text-slate-900" :title="showFilters ? 'Ocultar filtros' : 'Mostrar filtros'">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 01.8 1.6L15 12v5a1 1 0 01-.553.894l-4 2A1 1 0 019 19v-7L3.2 4.6A1 1 0 013 4z"/>
+                </svg>
             </button>
-        </form>
+            <form action="/admin/vendas" method="GET" x-show="showFilters" x-cloak x-transition class="flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+                <select name="month" class="rounded-xl border-slate-200 bg-slate-50 text-sm text-slate-700 focus:border-indigo-500 focus:ring-indigo-500">
+                    <% months.forEach((m, index) => { %>
+                        <option value="<%= index + 1 %>" <%= filters.month == (index + 1) ? 'selected' : '' %>><%= m %></option>
+                    <% }) %>
+                </select>
+
+                <select name="year" class="rounded-xl border-slate-200 bg-slate-50 text-sm text-slate-700 focus:border-indigo-500 focus:ring-indigo-500">
+                    <% filters.years.forEach(y => { %>
+                        <option value="<%= y %>" <%= filters.year == y ? 'selected' : '' %>><%= y %></option>
+                    <% }) %>
+                </select>
+
+                <button type="submit" class="inline-flex items-center rounded-xl bg-indigo-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-indigo-700">
+                    Aplicar
+                </button>
+            </form>
+        </div>
     </div>
 
     <div class="grid grid-cols-1 gap-6 md:grid-cols-3">

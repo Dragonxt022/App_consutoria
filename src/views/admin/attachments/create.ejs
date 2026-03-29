@@ -1,0 +1,275 @@
+<div class="space-y-6">
+    <section class="rounded-[2rem] border border-slate-200 bg-white shadow-sm">
+        <div class="border-b border-slate-100 px-6 py-6">
+            <p class="text-[11px] font-black uppercase tracking-[0.24em] text-indigo-500">Distribuição de materiais</p>
+            <h2 class="mt-2 text-3xl font-black tracking-tight text-slate-950">Disponibilize anexos com regras claras de acesso</h2>
+            <p class="mt-3 max-w-3xl text-sm leading-6 text-slate-500">Libere um arquivo para todos os inscritos de um curso com um status específico, ou envie algo exclusivo para um usuário sem depender de curso ou etapa da inscrição.</p>
+        </div>
+
+        <form
+            action="/admin/anexos"
+            method="POST"
+            enctype="multipart/form-data"
+            class="space-y-6 p-6"
+            x-data='attachmentCreateForm(<%- JSON.stringify(courses.map((course) => ({ id: course.id, title: course.title }))) %>, <%- JSON.stringify(students.map((student) => ({ id: student.id, name: student.name, email: student.email }))) %>)'
+        >
+            <div class="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+                <div class="space-y-5">
+                    <div class="grid gap-5 md:grid-cols-2">
+                        <div class="md:col-span-2">
+                            <label for="title" class="block text-xs font-black uppercase tracking-[0.2em] text-slate-500">Nome do anexo</label>
+                            <input id="title" name="title" type="text" required placeholder="Ex.: Apostila complementar do módulo 1" class="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-indigo-300 focus:ring-4 focus:ring-indigo-100">
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label for="description" class="block text-xs font-black uppercase tracking-[0.2em] text-slate-500">Descrição opcional</label>
+                            <textarea id="description" name="description" rows="4" placeholder="Explique rapidamente o conteúdo e quando o aluno deve usar este material." class="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-indigo-300 focus:ring-4 focus:ring-indigo-100"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="rounded-3xl border border-slate-200 bg-slate-50 p-5">
+                        <p class="text-xs font-black uppercase tracking-[0.22em] text-slate-500">Destino do anexo</p>
+                        <div class="mt-4 grid gap-3 md:grid-cols-2">
+                            <label class="cursor-pointer rounded-2xl border p-4 transition" :class="destination === 'course' ? 'border-indigo-300 bg-indigo-50 shadow-sm' : 'border-slate-200 bg-white hover:border-slate-300'">
+                                <input type="radio" class="sr-only" name="visibilityType" value="course" x-model="destination">
+                                <span class="block text-sm font-black text-slate-900">Todos de um curso</span>
+                                <span class="mt-1 block text-sm leading-6 text-slate-500">Escolha o curso e o status necessário para o aluno visualizar o material.</span>
+                            </label>
+                            <label class="cursor-pointer rounded-2xl border p-4 transition" :class="destination === 'user' ? 'border-indigo-300 bg-indigo-50 shadow-sm' : 'border-slate-200 bg-white hover:border-slate-300'">
+                                <input type="radio" class="sr-only" name="visibilityType" value="user" x-model="destination">
+                                <span class="block text-sm font-black text-slate-900">Usuário específico</span>
+                                <span class="mt-1 block text-sm leading-6 text-slate-500">Entrega direta para uma pessoa, sem depender de curso nem status.</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="grid gap-5 md:grid-cols-2">
+                        <div x-show="destination === 'course'" x-cloak>
+                            <label for="courseSearch" class="block text-xs font-black uppercase tracking-[0.2em] text-slate-500">Curso destinatário</label>
+                            <input type="hidden" name="courseId" :value="selectedCourseId">
+                            <div class="relative mt-2">
+                                <input
+                                    id="courseSearch"
+                                    type="text"
+                                    x-model="courseSearch"
+                                    placeholder="Digite pelo menos 3 letras do curso"
+                                    autocomplete="off"
+                                    class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-indigo-300 focus:ring-4 focus:ring-indigo-100"
+                                >
+
+                                <div x-show="courseSearch.trim().length >= 3" x-cloak class="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-20 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl">
+                                    <template x-if="filteredCourses.length">
+                                        <div class="max-h-72 overflow-y-auto py-2">
+                                            <template x-for="course in filteredCourses" :key="course.id">
+                                                <button
+                                                    type="button"
+                                                    @click="selectCourse(course)"
+                                                    class="flex w-full items-start justify-between gap-4 px-4 py-3 text-left transition hover:bg-slate-50"
+                                                >
+                                                    <div>
+                                                        <p class="text-sm font-black text-slate-900" x-text="course.title"></p>
+                                                    </div>
+                                                    <span class="rounded-full bg-indigo-50 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-indigo-600">Selecionar</span>
+                                                </button>
+                                            </template>
+                                        </div>
+                                    </template>
+                                    <template x-if="!filteredCourses.length">
+                                        <div class="px-4 py-4 text-sm text-slate-500">Nenhum curso encontrado com esse termo.</div>
+                                    </template>
+                                </div>
+                            </div>
+
+                            <p class="mt-2 text-xs text-slate-400">A busca aparece somente após 3 letras para deixar o processo mais ágil.</p>
+
+                            <div x-show="selectedCourseId" x-cloak class="mt-4 flex items-start justify-between gap-4 rounded-2xl border border-indigo-200 bg-indigo-50 px-4 py-3">
+                                <div>
+                                    <p class="text-[10px] font-black uppercase tracking-[0.18em] text-indigo-600">Curso selecionado</p>
+                                    <p class="mt-1 text-sm font-semibold text-slate-900" x-text="selectedCourseLabel"></p>
+                                </div>
+                                <button type="button" @click="clearSelectedCourse()" class="rounded-xl bg-white px-3 py-2 text-xs font-black text-slate-600 transition hover:bg-slate-100">
+                                    Trocar
+                                </button>
+                            </div>
+                        </div>
+
+                        <div x-show="destination === 'course'" x-cloak>
+                            <label for="requiredEnrollmentStatus" class="block text-xs font-black uppercase tracking-[0.2em] text-slate-500">Status necessário</label>
+                            <select id="requiredEnrollmentStatus" name="requiredEnrollmentStatus" class="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-indigo-300 focus:ring-4 focus:ring-indigo-100">
+                                <option value="">Selecione o status</option>
+                                <% statusOptions.forEach((status) => { %>
+                                    <option value="<%= status.value %>"><%= status.label %></option>
+                                <% }) %>
+                            </select>
+                        </div>
+
+                        <div class="md:col-span-2" x-show="destination === 'user'" x-cloak>
+                            <label for="userSearch" class="block text-xs font-black uppercase tracking-[0.2em] text-slate-500">Usuário destinatário</label>
+                            <input type="hidden" name="userId" :value="selectedUserId">
+                            <div class="relative mt-2">
+                                <input
+                                    id="userSearch"
+                                    type="text"
+                                    x-model="userSearch"
+                                    placeholder="Digite pelo menos 3 letras do nome ou e-mail"
+                                    autocomplete="off"
+                                    class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-800 shadow-sm outline-none transition focus:border-indigo-300 focus:ring-4 focus:ring-indigo-100"
+                                >
+
+                                <div x-show="userSearch.trim().length >= 3" x-cloak class="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-20 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl">
+                                    <template x-if="filteredStudents.length">
+                                        <div class="max-h-72 overflow-y-auto py-2">
+                                            <template x-for="student in filteredStudents" :key="student.id">
+                                                <button
+                                                    type="button"
+                                                    @click="selectUser(student)"
+                                                    class="flex w-full items-start justify-between gap-4 px-4 py-3 text-left transition hover:bg-slate-50"
+                                                >
+                                                    <div>
+                                                        <p class="text-sm font-black text-slate-900" x-text="student.name"></p>
+                                                        <p class="mt-1 text-xs text-slate-500" x-text="student.email"></p>
+                                                    </div>
+                                                    <span class="rounded-full bg-indigo-50 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-indigo-600">Selecionar</span>
+                                                </button>
+                                            </template>
+                                        </div>
+                                    </template>
+                                    <template x-if="!filteredStudents.length">
+                                        <div class="px-4 py-4 text-sm text-slate-500">Nenhum usuário encontrado com esse termo.</div>
+                                    </template>
+                                </div>
+                            </div>
+
+                            <p class="mt-2 text-xs text-slate-400">A busca aparece somente após 3 letras para deixar o processo mais ágil.</p>
+
+                            <div x-show="selectedUserId" x-cloak class="mt-4 flex items-start justify-between gap-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3">
+                                <div>
+                                    <p class="text-[10px] font-black uppercase tracking-[0.18em] text-emerald-600">Usuário selecionado</p>
+                                    <p class="mt-1 text-sm font-semibold text-slate-900" x-text="selectedUserLabel"></p>
+                                </div>
+                                <button type="button" @click="clearSelectedUser()" class="rounded-xl bg-white px-3 py-2 text-xs font-black text-slate-600 transition hover:bg-slate-100">
+                                    Trocar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <aside class="rounded-3xl border border-slate-200 bg-slate-50 p-5">
+                    <p class="text-xs font-black uppercase tracking-[0.22em] text-slate-500">Arquivo</p>
+                    <label for="attachmentFile" class="mt-4 flex cursor-pointer flex-col items-center justify-center rounded-3xl border border-dashed border-slate-300 bg-white px-6 py-10 text-center transition hover:border-indigo-300 hover:bg-indigo-50/40">
+                        <div x-show="!fileItems.length" x-cloak class="flex flex-col items-center justify-center text-center">
+                            <span class="flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600">
+                                <svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h10M7 11h10M7 15h6m-6 6h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                </svg>
+                            </span>
+                            <span class="mt-4 text-sm font-black text-slate-900">Selecionar arquivo(s)</span>
+                            <span class="mt-2 text-sm leading-6 text-slate-500">Envie ate 10 arquivos por vez. PDF, DOC, XLS, PPT, ZIP ou imagem com ate 8MB por arquivo.</span>
+                        </div>
+
+                        <div x-show="fileItems.length" x-cloak class="w-full text-left">
+                            <div class="flex items-center justify-between gap-3">
+                                <p class="text-xs font-black uppercase tracking-[0.22em] text-slate-500">Arquivos selecionados</p>
+                                <span class="rounded-full bg-indigo-50 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-indigo-600" x-text="`${fileItems.length} arquivo(s)`"></span>
+                            </div>
+
+                            <div class="mt-4 space-y-3">
+                                <template x-for="(file, index) in fileItems" :key="`${file.name}-${index}`">
+                                    <div class="flex items-start gap-3 rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3">
+                                        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600">
+                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h10M7 11h10M7 15h6m-6 6h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                            </svg>
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <p class="truncate text-sm font-black text-slate-900" x-text="file.name"></p>
+                                            <div class="mt-1 flex flex-wrap items-center gap-2">
+                                                <span class="rounded-full bg-white px-2 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-slate-500" x-text="file.ext || 'ARQ'"></span>
+                                                <span class="text-xs text-slate-400" x-text="formatBytes(file.size)"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </label>
+                    <input id="attachmentFile" name="attachmentFile" type="file" required multiple @change="updateFiles($event)" class="mt-4 block w-full text-sm text-slate-500 file:mr-4 file:rounded-full file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:font-semibold file:text-indigo-700 hover:file:bg-indigo-100">
+
+                    <div class="mt-6 rounded-2xl bg-white p-4 text-sm leading-6 text-slate-500">
+                        <p class="font-black text-slate-900">Sugestão de uso</p>
+                        <p class="mt-2">Use anexos por curso para apostilas, checklists e materiais liberados conforme a evolução da inscrição. Use anexos por usuário para documentos exclusivos, correções ou orientações individuais. Selecione mais de um arquivo quando o material fizer parte do mesmo pacote.</p>
+                    </div>
+
+                    <button type="submit" class="mt-6 inline-flex w-full items-center justify-center rounded-2xl bg-indigo-600 px-5 py-3 text-sm font-black text-white shadow-lg shadow-indigo-200 transition hover:bg-indigo-700">
+                        Disponibilizar anexo
+                    </button>
+                </aside>
+            </div>
+        </form>
+    </section>
+</div>
+
+<script>
+    function attachmentCreateForm(courses, students) {
+        return {
+            destination: 'course',
+            courses,
+            students,
+            courseSearch: '',
+            selectedCourseId: '',
+            selectedCourseLabel: '',
+            userSearch: '',
+            selectedUserId: '',
+            selectedUserLabel: '',
+            fileItems: [],
+            get filteredCourses() {
+                const term = this.courseSearch.trim().toLowerCase();
+                if (term.length < 3) return [];
+                return this.courses
+                    .filter((course) => course.title.toLowerCase().includes(term))
+                    .slice(0, 8);
+            },
+            selectCourse(course) {
+                this.selectedCourseId = String(course.id);
+                this.selectedCourseLabel = course.title;
+                this.courseSearch = '';
+            },
+            clearSelectedCourse() {
+                this.selectedCourseId = '';
+                this.selectedCourseLabel = '';
+                this.courseSearch = '';
+            },
+            get filteredStudents() {
+                const term = this.userSearch.trim().toLowerCase();
+                if (term.length < 3) return [];
+                return this.students
+                    .filter((student) => `${student.name} ${student.email}`.toLowerCase().includes(term))
+                    .slice(0, 8);
+            },
+            selectUser(student) {
+                this.selectedUserId = String(student.id);
+                this.selectedUserLabel = `${student.name} - ${student.email}`;
+                this.userSearch = '';
+            },
+            clearSelectedUser() {
+                this.selectedUserId = '';
+                this.selectedUserLabel = '';
+                this.userSearch = '';
+            },
+            updateFiles(event) {
+                this.fileItems = Array.from(event.target.files || []).map((file) => ({
+                    name: file.name,
+                    size: file.size,
+                    ext: (file.name.split('.').pop() || '').toUpperCase()
+                }));
+            },
+            formatBytes(size) {
+                if (!size || size <= 0) return 'Arquivo';
+                if (size < 1024) return `${size} B`;
+                if (size < 1024 * 1024) return `${(size / 1024).toFixed(1)} KB`;
+                return `${(size / (1024 * 1024)).toFixed(1)} MB`;
+            }
+        };
+    }
+</script>

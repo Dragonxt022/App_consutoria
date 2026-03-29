@@ -44,6 +44,13 @@ class NotificationService {
           badgeClass: 'bg-orange-50 text-orange-700',
           label: 'Falha SMTP'
         };
+      case 'course_reminder_24h':
+        return {
+          iconBgClass: 'bg-sky-50',
+          iconTextClass: 'text-sky-600',
+          badgeClass: 'bg-sky-50 text-sky-700',
+          label: 'Lembrete 24h'
+        };
       default:
         return {
           iconBgClass: 'bg-slate-100',
@@ -164,6 +171,22 @@ class NotificationService {
       link: '/admin/configuracoes?tab=email',
       dedupeKey: `smtp-failure:${new Date().toISOString().slice(0, 13)}`,
       metadata: context
+    });
+  }
+
+  async createCourseReminder24hNotification({ course, attemptedRecipients, sentRecipients }) {
+    return this.createNotification({
+      type: 'course_reminder_24h',
+      title: 'Lembrete automático enviado',
+      message: `O curso "${course.title}" recebeu lembrete automático de 24h para ${sentRecipients} de ${attemptedRecipients} inscrito(s).`,
+      link: `/admin/cursos/${course.id}/editar`,
+      dedupeKey: `course-reminder-24h:${course.id}:${new Date(course.startDate).toISOString()}`,
+      metadata: {
+        courseId: course.id,
+        attemptedRecipients,
+        sentRecipients,
+        startDate: course.startDate
+      }
     });
   }
 

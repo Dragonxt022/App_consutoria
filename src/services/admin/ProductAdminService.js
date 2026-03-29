@@ -1,5 +1,6 @@
 const fs = require('fs');
 const slugify = require('slugify');
+const { Op } = require('sequelize');
 const { Product } = require('../../models');
 const { resolveUploadUrlToPath } = require('../../utils/UploadPaths');
 const { ProductFormatter } = require('../shared');
@@ -92,23 +93,64 @@ class ProductAdminService {
     return 'Ja existe um produto com este nome/slug.';
   }
 
-  async getAdminListData(page = 1) {
+  async getAdminListData(page = 1, rawFilters = {}) {
     const limit = 10;
     const offset = (page - 1) * limit;
+    const filters = {
+      search: String(rawFilters.search || '').trim(),
+      status: String(rawFilters.status || '').trim(),
+      category: String(rawFilters.category || '').trim()
+    };
+    const where = {};
 
-    const { count, rows: products } = await Product.findAndCountAll({
-      limit,
-      offset,
-      order: [['featured', 'DESC'], ['createdAt', 'DESC']]
-    });
+    if (filters.search) {
+      where[Op.or] = [
+        { name: { [Op.like]: `%${filters.search}%` } },
+        { shortDescription: { [Op.like]: `%${filters.search}%` } },
+        { description: { [Op.like]: `%${filters.search}%` } }
+      ];
+    }
+
+    if (filters.status === 'ativo') {
+      where.active = true;
+    } else if (filters.status === 'desativado') {
+      where.active = false;
+    } else if (filters.status === 'destaque') {
+      where.featured = true;
+    }
+
+    if (filters.category) {
+      where.category = filters.category;
+    }
+
+    const [{ count, rows: products }, categoryRows] = await Promise.all([
+      Product.findAndCountAll({
+        where,
+        limit,
+        offset,
+        order: [['featured', 'DESC'], ['createdAt', 'DESC']]
+      }),
+      Product.findAll({
+        attributes: ['category'],
+        where: {
+          category: {
+            [Op.ne]: null
+          }
+        },
+        group: ['category'],
+        order: [['category', 'ASC']]
+      })
+    ]);
 
     return {
       products: products.map((product) => formatProduct(product)),
+      categories: categoryRows.map((row) => row.category).filter(Boolean),
       pagination: {
         currentPage: page,
         totalPages: Math.max(1, Math.ceil(count / limit)),
         totalItems: count
-      }
+      },
+      filters
     };
   }
 

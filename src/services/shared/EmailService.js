@@ -246,6 +246,27 @@ class EmailService {
       </div>
     `);
   }
+
+  async sendCourseReminder24hToStudents({ recipients, course, dashboardUrl }) {
+    const startDate = new Date(course.startDate).toLocaleString('pt-BR');
+    const subject = `Lembrete: seu curso começa em até 24h`;
+
+    return this.sendBulkEmails(recipients, subject, () => `
+      <div style="font-family: Arial, sans-serif; max-width: 640px; margin: 0 auto; color: #0f172a;">
+        <h2 style="margin-bottom: 12px; color: #1d4ed8;">Seu curso está chegando</h2>
+        <p>Este é um lembrete automático para avisar que o curso <strong>${course.title}</strong> começa em até 24 horas.</p>
+
+        <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:14px; padding:20px; margin:24px 0;">
+          <p style="margin:0 0 8px;"><strong>Curso:</strong> ${course.title}</p>
+          <p style="margin:0 0 8px;"><strong>Início:</strong> ${startDate}</p>
+          <p style="margin:0;"><strong>Local:</strong> ${course.location}</p>
+        </div>
+
+        <p>Se precisar revisar sua inscrição ou consultar seus dados, acesse sua área do aluno.</p>
+        <a href="${dashboardUrl}" style="display:inline-block; background:#1d4ed8; color:#fff; padding:14px 24px; text-decoration:none; border-radius:10px; font-weight:700;">Abrir área do aluno</a>
+      </div>
+    `);
+  }
 }
 
 module.exports = new EmailService();

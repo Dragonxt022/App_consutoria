@@ -4,7 +4,7 @@ const { redirectWithFlash } = require('../../utils/Flash');
 const AdminProductHandler = {
   async list(req, res) {
     const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
-    const data = await ProductAdminService.getAdminListData(page);
+    const data = await ProductAdminService.getAdminListData(page, req.query);
 
     res.render('admin/store/list', {
       title: 'Loja',

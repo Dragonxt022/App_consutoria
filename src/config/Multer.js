@@ -15,7 +15,8 @@ const uploadPaths = {
   avatars: getMutableUploadPath('avatars'),
   companyCertificates: getMutableUploadPath('company-certificates'),
   blogCovers: getMutableUploadPath('blog', 'covers'),
-  blogContent: getMutableUploadPath('blog', 'content')
+  blogContent: getMutableUploadPath('blog', 'content'),
+  attachments: getMutableUploadPath('attachments')
 };
 
 // Ensure upload directories exist
@@ -47,6 +48,8 @@ const storage = multer.diskStorage({
       cb(null, uploadPaths.blogCovers);
     } else if (file.fieldname === 'blog_image') {
       cb(null, uploadPaths.blogContent);
+    } else if (file.fieldname === 'attachmentFile') {
+      cb(null, uploadPaths.attachments);
     } else {
       cb(null, uploadPaths.courseDocuments);
     }
@@ -60,7 +63,8 @@ const storage = multer.diskStorage({
 const upload = multer({
   storage,
   limits: {
-    fileSize: 8 * 1024 * 1024
+    fileSize: 8 * 1024 * 1024,
+    files: 30
   },
   fileFilter: (req, file, cb) => {
     if (file.fieldname === 'app_icon') {
@@ -78,6 +82,10 @@ const upload = multer({
     } else if (file.fieldname === 'certificateFile') {
       if (!file.originalname.match(/\.pdf$/i)) {
         return cb(new Error('Apenas arquivos PDF sao permitidos!'), false);
+      }
+    } else if (file.fieldname === 'attachmentFile') {
+      if (!file.originalname.match(/\.(pdf|doc|docx|xls|xlsx|ppt|pptx|zip|rar|jpg|jpeg|png|webp)$/i)) {
+        return cb(new Error('O anexo deve estar em PDF, DOC, XLS, PPT, ZIP ou imagem.'), false);
       }
     }
 

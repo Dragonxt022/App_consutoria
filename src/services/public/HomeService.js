@@ -143,12 +143,36 @@ class HomeService {
   async getStudentDashboardData(userId) {
     const enrollments = await Enrollment.findAll({
       where: { userId },
-      include: [{ model: Course }]
+      include: [{ model: Course }],
+      order: [['createdAt', 'DESC']]
     });
 
+    const now = new Date();
+    const normalizedEnrollments = enrollments.map((enrollment) => {
+      if (enrollment.Course) {
+        const status = resolveCourseStatus(enrollment.Course.toJSON(), now);
+        enrollment.Course.setDataValue('statusCode', status.code);
+        enrollment.Course.setDataValue('statusLabel', status.label);
+        enrollment.Course.setDataValue('isExpired', status.isExpired);
+      }
+
+      return enrollment;
+    });
+
+    const totalCourses = normalizedEnrollments.length;
+    const certificateCount = normalizedEnrollments.filter((item) => item.status === 'completo').length;
+    const inProgressCount = normalizedEnrollments.filter((item) => ['pendente', 'confirmado'].includes(item.status)).length;
+    const confirmedCount = normalizedEnrollments.filter((item) => item.Course?.statusCode === 'confirmado').length;
+
     return {
-      enrollments,
-      certificateCount: enrollments.filter((item) => item.status === 'completo').length
+      enrollments: normalizedEnrollments,
+      certificateCount,
+      stats: {
+        totalCourses,
+        certificateCount,
+        inProgressCount,
+        confirmedCount
+      }
     };
   }
 }

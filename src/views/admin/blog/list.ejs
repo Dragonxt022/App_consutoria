@@ -1,22 +1,63 @@
-<div class="space-y-6">
+<div class="space-y-6" x-data="{ showFilters: <%= (filters.search || filters.status || filters.categoryId) ? 'true' : 'false' %> }">
     <div class="overflow-hidden rounded-xl border border-gray-100 bg-white shadow-md">
-        <div class="flex flex-col items-start justify-between gap-4 border-b border-gray-100 bg-gray-50/50 p-4 md:flex-row md:items-center md:p-6">
-            <div class="flex items-start gap-4">
-                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600 shadow-sm shadow-indigo-100">
-                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21H8a2 2 0 01-2-2V5a2 2 0 012-2h11m0 18a2 2 0 002-2V7m-2 14V7m0 0L15 3m4 4h-4a2 2 0 01-2-2V3m-5 6h5m-5 4h8m-8 4h8" />
-                    </svg>
+        <div class="border-b border-gray-100 bg-gray-50/50 p-4 md:p-6">
+            <div class="flex flex-col gap-4">
+                <div class="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
+                    <div class="flex items-start gap-4">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600 shadow-sm shadow-indigo-100">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21H8a2 2 0 01-2-2V5a2 2 0 012-2h11m0 18a2 2 0 002-2V7m-2 14V7m0 0L15 3m4 4h-4a2 2 0 01-2-2V3m-5 6h5m-5 4h8m-8 4h8" />
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-[0.24em] text-slate-400">Workflow editorial</p>
+                            <p class="mt-2 text-xs text-gray-500 md:text-sm">Total: <%= posts.length %> publicação(ões) entre rascunhos e conteúdos publicados.</p>
+                        </div>
+                    </div>
+                    <div class="flex w-full flex-col gap-3 md:w-auto md:flex-row md:items-center">
+                        <a href="/admin/blog/categorias" class="rounded-lg border border-slate-200 bg-white px-4 py-3 text-center text-sm font-semibold text-slate-700 hover:bg-slate-50">Categorias</a>
+                        <button type="button" @click="showFilters = !showFilters" class="inline-flex h-12 w-12 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:bg-slate-50 hover:text-slate-900" :title="showFilters ? 'Ocultar filtros' : 'Mostrar filtros'">
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 01.8 1.6L15 12v5a1 1 0 01-.553.894l-4 2A1 1 0 019 19v-7L3.2 4.6A1 1 0 013 4z"/>
+                            </svg>
+                        </button>
+                        <a href="/admin/blog/novo" class="flex items-center justify-center rounded-lg bg-indigo-600 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-indigo-100 transition-all hover:bg-indigo-700">
+                            Criar novo
+                        </a>
+                    </div>
                 </div>
-                <div>
-                    <p class="text-xs font-bold uppercase tracking-[0.24em] text-slate-400">Workflow editorial</p>
-                    <p class="mt-2 text-xs md:text-sm text-gray-500">Total: <%= posts.length %> publicação(ões) entre rascunhos e conteúdos publicados.</p>
-                </div>
-            </div>
-            <div class="flex w-full flex-col gap-3 md:w-auto md:flex-row md:items-center">
-                <a href="/admin/blog/categorias" class="rounded-lg border border-slate-200 bg-white px-4 py-3 text-center text-sm font-semibold text-slate-700 hover:bg-slate-50">Categorias</a>
-                <a href="/admin/blog/novo" class="flex items-center justify-center rounded-lg bg-indigo-600 px-4 py-3 text-sm font-bold text-white transition-all shadow-lg shadow-indigo-100 hover:bg-indigo-700">
-                    Criar novo
-                </a>
+
+                <form action="/admin/blog" method="GET" class="w-full xl:max-w-5xl" x-show="showFilters" x-cloak x-transition>
+                    <div class="grid gap-3 rounded-xl border border-gray-100 bg-white p-4 shadow-sm md:grid-cols-4 md:items-end">
+                        <div class="min-w-0 md:col-span-2">
+                            <label for="search" class="mb-1 block text-xs font-bold uppercase tracking-[0.24em] text-slate-400">Pesquisar</label>
+                            <input id="search" type="text" name="search" placeholder="Buscar por titulo, resumo ou conteúdo..." value="<%= filters.search || '' %>" class="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label for="status" class="mb-1 block text-xs font-bold uppercase tracking-[0.24em] text-slate-400">Status</label>
+                            <select id="status" name="status" class="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500">
+                                <option value="">Todos</option>
+                                <option value="publicado" <%= filters.status === 'publicado' ? 'selected' : '' %>>Publicado</option>
+                                <option value="rascunho" <%= filters.status === 'rascunho' ? 'selected' : '' %>>Rascunho</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="categoryId" class="mb-1 block text-xs font-bold uppercase tracking-[0.24em] text-slate-400">Categoria</label>
+                            <select id="categoryId" name="categoryId" class="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500">
+                                <option value="">Todas</option>
+                                <% categories.forEach((category) => { %>
+                                    <option value="<%= category.id %>" <%= String(filters.categoryId || '') === String(category.id) ? 'selected' : '' %>><%= category.name %></option>
+                                <% }) %>
+                            </select>
+                        </div>
+                        <div class="flex flex-col gap-2 md:col-span-4 md:flex-row">
+                            <button type="submit" class="w-full rounded-lg bg-indigo-600 px-6 py-2.5 text-sm font-bold text-white transition-colors hover:bg-indigo-700 md:w-auto">Buscar</button>
+                            <% if (filters.search || filters.status || filters.categoryId) { %>
+                                <a href="/admin/blog" class="w-full rounded-lg border border-slate-200 px-6 py-2.5 text-center text-sm font-semibold text-slate-500 transition-colors hover:bg-slate-50 md:w-auto">Limpar</a>
+                            <% } %>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
 

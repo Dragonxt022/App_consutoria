@@ -29,6 +29,7 @@ const defaultSettings = {
   email_notify_students_course_confirmed: 'true',
   email_notify_student_enrollment_confirmed: 'true',
   email_notify_student_enrollment_cancelled: 'true',
+  email_notify_student_course_reminder_24h: 'true',
   certificate_signature_url: '',
   home_banners: []
 };

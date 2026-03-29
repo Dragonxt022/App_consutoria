@@ -72,9 +72,28 @@ function uploadBlogImages(req, res, next) {
   });
 }
 
+function uploadAttachmentFile(req, res, next) {
+  upload.array('attachmentFile', 10)(req, res, (error) => {
+    if (!error) return next();
+
+    console.error('Erro no upload de anexo:', error);
+
+    let message = error.message || 'Erro ao processar upload do anexo.';
+
+    if (error.code === 'LIMIT_FILE_COUNT') {
+      message = 'Voce pode enviar no maximo 10 arquivos por vez.';
+    } else if (error.code === 'LIMIT_FILE_SIZE') {
+      message = 'Um dos arquivos excede o limite de 8MB.';
+    }
+
+    return res.redirect(`/admin/anexos?error=${encodeURIComponent(message)}`);
+  });
+}
+
 module.exports = {
   upload,
   courseFilesUpload,
   uploadSettingsFiles,
-  uploadBlogImages
+  uploadBlogImages,
+  uploadAttachmentFile
 };

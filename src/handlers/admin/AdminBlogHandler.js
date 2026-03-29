@@ -2,7 +2,7 @@ const { BlogAdminService } = require('../../services');
 
 const AdminBlogHandler = {
   async list(req, res) {
-    const data = await BlogAdminService.getAdminListData();
+    const data = await BlogAdminService.getAdminListData(req.query);
 
     res.render('admin/blog/list', {
       title: 'Blog',

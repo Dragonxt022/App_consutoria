@@ -138,11 +138,35 @@ class CourseAdminService {
     };
   }
 
-  async getAdminListData(page = 1) {
+  async getAdminListData(page = 1, rawFilters = {}) {
     const limit = 10;
     const offset = (page - 1) * limit;
+    const filters = {
+      search: String(rawFilters.search || '').trim(),
+      status: String(rawFilters.status || '').trim()
+    };
+    const where = {};
+
+    if (filters.search) {
+      where[Op.or] = [
+        { title: { [Op.like]: `%${filters.search}%` } },
+        { location: { [Op.like]: `%${filters.search}%` } },
+        { description: { [Op.like]: `%${filters.search}%` } }
+      ];
+    }
+
+    if (filters.status === 'ativo') {
+      where.active = true;
+      where.status = 'ativo';
+    } else if (filters.status === 'confirmado') {
+      where.active = true;
+      where.status = 'confirmado';
+    } else if (filters.status === 'desativado') {
+      where.active = false;
+    }
 
     const { count, rows: courses } = await Course.findAndCountAll({
+      where,
       limit,
       offset,
       order: [['createdAt', 'DESC']]
@@ -156,7 +180,8 @@ class CourseAdminService {
         currentPage: page,
         totalPages: Math.ceil(count / limit),
         totalItems: count
-      }
+      },
+      filters
     };
   }
 

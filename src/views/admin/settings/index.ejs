@@ -440,6 +440,18 @@
                             <span class="w-14 h-7 bg-slate-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-indigo-600"></span>
                         </span>
                     </label>
+
+                    <label class="flex items-start justify-between gap-4 rounded-2xl border border-slate-200 bg-white px-4 py-4">
+                        <div class="pr-4">
+                            <span class="block text-sm font-bold text-slate-800">Enviar lembrete automático 24h antes do início do curso</span>
+                            <span class="mt-1 block text-xs text-slate-500">Dispara um lembrete para todos os inscritos não cancelados quando o curso estiver a até 24 horas do início.</span>
+                        </div>
+                        <span class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+                            <input type="hidden" name="email_notify_student_course_reminder_24h" value="false">
+                            <input type="checkbox" name="email_notify_student_course_reminder_24h" value="true" <%= settings.email_notify_student_course_reminder_24h === 'true' ? 'checked' : '' %> class="sr-only peer">
+                            <span class="w-14 h-7 bg-slate-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-indigo-600"></span>
+                        </span>
+                    </label>
                 </div>
 
                 <div class="rounded-2xl border border-indigo-100 bg-indigo-50 px-4 py-4">

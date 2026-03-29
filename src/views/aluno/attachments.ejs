@@ -1,0 +1,66 @@
+<%- include('./_hub-nav') %>
+
+<div class="mx-auto w-full max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+    <section class="rounded-[2rem] border border-slate-200 bg-white shadow-sm">
+        <div class="flex flex-col gap-3 border-b border-slate-100 px-6 py-5 md:flex-row md:items-end md:justify-between">
+            <div>
+                <p class="text-[10px] font-black uppercase tracking-[0.24em] text-indigo-500">Centro de arquivos</p>
+                <h2 class="mt-2 text-2xl font-black tracking-tight text-slate-950">Arquivos recebidos</h2>
+                <p class="mt-2 text-sm leading-6 text-slate-500">Aqui aparecem materiais enviados diretamente para você ou liberados conforme o status da sua inscrição nos cursos.</p>
+            </div>
+            <div class="inline-flex items-center rounded-full bg-slate-100 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-slate-500">
+                <%= attachments.length %> arquivo(s)
+            </div>
+        </div>
+
+        <% if (!attachments.length) { %>
+            <div class="px-6 py-14 text-center">
+                <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-slate-100 text-slate-300">
+                    <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h10M7 11h10M7 15h6m-6 6h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                </div>
+                <h3 class="mt-5 text-xl font-black text-slate-900">Nenhum arquivo liberado por enquanto.</h3>
+                <p class="mt-2 text-sm text-slate-500">Quando um administrador disponibilizar algum material para você, ele aparecerá aqui com detalhes e botão de download.</p>
+            </div>
+        <% } else { %>
+            <div class="grid gap-5 p-5 md:grid-cols-2 md:p-6 xl:grid-cols-3">
+                <% attachments.forEach((attachment) => { %>
+                    <article class="rounded-3xl border border-slate-200 bg-slate-50/70 p-5 transition hover:border-slate-300 hover:bg-white hover:shadow-sm">
+                        <div class="flex items-start justify-between gap-4">
+                            <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600">
+                                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h10M7 11h10M7 15h6m-6 6h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                            <span class="inline-flex rounded-full bg-white px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">
+                                <%= attachment.fileCountLabel %>
+                            </span>
+                        </div>
+
+                        <div class="mt-5">
+                            <p class="text-xs font-black uppercase tracking-[0.22em] text-slate-400"><%= attachment.audienceLabel %></p>
+                            <h3 class="mt-3 text-xl font-black leading-tight text-slate-950"><%= attachment.title %></h3>
+                            <p class="mt-3 text-sm leading-6 text-slate-500"><%= attachment.description || 'Arquivo disponibilizado para consulta e download.' %></p>
+                        </div>
+
+                        <div class="mt-5 space-y-2 text-sm text-slate-500">
+                            <p><span class="font-semibold text-slate-800">Volume:</span> <%= attachment.fileSizeLabel %></p>
+                            <% if (attachment.courseContext) { %>
+                                <p><span class="font-semibold text-slate-800">Curso:</span> <%= attachment.courseContext.courseTitle %></p>
+                                <p><span class="font-semibold text-slate-800">Status exigido:</span> <%= attachment.requiredEnrollmentStatusLabel %></p>
+                            <% } else { %>
+                                <p><span class="font-semibold text-slate-800">Visibilidade:</span> Enviado diretamente para sua conta</p>
+                            <% } %>
+                            <p><span class="font-semibold text-slate-800">Disponibilizado em:</span> <%= new Date(attachment.createdAt).toLocaleDateString('pt-BR') %></p>
+                        </div>
+
+                        <a href="/meus-arquivos/<%= attachment.id %>" class="mt-6 inline-flex w-full items-center justify-center rounded-2xl bg-slate-900 px-4 py-3 text-sm font-black text-white transition hover:bg-slate-800">
+                            Ver detalhes do arquivo
+                        </a>
+                    </article>
+                <% }) %>
+            </div>
+        <% } %>
+    </section>
+</div>
