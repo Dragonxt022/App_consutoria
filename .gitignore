@@ -155,7 +155,4 @@ tmp/
 temp/
 
 # Outras Pastas
-src/public/uploads/*
-!src/public/uploads/templete-certificados/
-!src/public/uploads/templete-certificados/**
-!src/public/uploads/icons
+storage/

@@ -1,9 +1,15 @@
 const fs = require('fs');
 const path = require('path');
 
+const projectRoot = path.resolve(__dirname, '..', '..');
 const publicRoot = path.join(__dirname, '..', 'public');
 const legacyUploadsRoot = path.join(publicRoot, 'uploads');
-const mutableUploadsRoot = path.resolve(process.env.UPLOADS_DIR || path.join(process.cwd(), 'storage', 'uploads'));
+const configuredUploadsDir = process.env.UPLOADS_DIR;
+const mutableUploadsRoot = configuredUploadsDir
+  ? path.isAbsolute(configuredUploadsDir)
+    ? configuredUploadsDir
+    : path.resolve(projectRoot, configuredUploadsDir)
+  : path.join(projectRoot, 'storage', 'uploads');
 
 const STATIC_UPLOAD_PREFIXES = [
   '/uploads/icons/',
@@ -65,6 +71,7 @@ function resolveUploadUrlToPath(fileUrl) {
 }
 
 module.exports = {
+  projectRoot,
   publicRoot,
   legacyUploadsRoot,
   mutableUploadsRoot,

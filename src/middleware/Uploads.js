@@ -7,6 +7,7 @@ const courseFilesUpload = upload.fields([
 
 const settingsFilesFields = [
   { name: 'logo', maxCount: 1 },
+  { name: 'app_icon', maxCount: 1 },
   { name: 'cert_signature', maxCount: 1 }
 ];
 

@@ -9,6 +9,18 @@ const {
 const { EmailService, NotificationService, SiteSettingsService } = require('../shared');
 
 class SettingAdminService {
+  removeFileIfExists(filePath, contextLabel = 'arquivo') {
+    if (!filePath || !fs.existsSync(filePath)) {
+      return;
+    }
+
+    try {
+      fs.unlinkSync(filePath);
+    } catch (error) {
+      console.error(`Erro ao remover ${contextLabel}: ${filePath}`, error);
+    }
+  }
+
   getAllowedTabs() {
     return ['identidade', 'seo', 'loja', 'certificados', 'rodape', 'banners', 'email'];
   }
@@ -42,6 +54,10 @@ class SettingAdminService {
 
   resolveLogoFilePath(logoUrl) {
     return resolveUploadUrlToPath(logoUrl);
+  }
+
+  resolveAppIconFilePath(iconUrl) {
+    return resolveUploadUrlToPath(iconUrl);
   }
 
   resolveSignatureFilePath(signatureUrl) {
@@ -79,17 +95,23 @@ class SettingAdminService {
     const submitAction = typeof req.body.submit_action === 'string' ? req.body.submit_action.trim() : 'save';
     const currentLogo = await Setting.findOne({ where: { key: 'logo_url' } });
     const currentLogoUrl = currentLogo ? currentLogo.value : '';
+    const currentAppIcon = await Setting.findOne({ where: { key: 'app_icon_url' } });
+    const currentAppIconUrl = currentAppIcon ? currentAppIcon.value : '';
     const currentSignature = await Setting.findOne({ where: { key: 'certificate_signature_url' } });
     const currentSignatureUrl = currentSignature ? currentSignature.value : '';
     const currentBannersSetting = await Setting.findOne({ where: { key: 'home_banners' } });
     const currentBanners = this.parseHomeBanners(currentBannersSetting ? currentBannersSetting.value : '[]');
     let nextSignatureUrl = null;
     let nextLogoUrl = null;
+    let nextAppIconUrl = null;
     let nextBanners = currentBanners;
 
     if (req.files) {
       if (req.files.logo && req.files.logo[0]) {
         nextLogoUrl = `/uploads/logos/${req.files.logo[0].filename}`;
+      }
+      if (req.files.app_icon && req.files.app_icon[0]) {
+        nextAppIconUrl = `/uploads/logos/${req.files.app_icon[0].filename}`;
       }
       if (req.files.cert_signature && req.files.cert_signature[0]) {
         nextSignatureUrl = `/uploads/certificates/signatures/${req.files.cert_signature[0].filename}`;
@@ -98,6 +120,10 @@ class SettingAdminService {
 
     if (nextLogoUrl) {
       settings.logo_url = nextLogoUrl;
+    }
+
+    if (nextAppIconUrl) {
+      settings.app_icon_url = nextAppIconUrl;
     }
 
     if (settings.certificate_signature_base64 && settings.certificate_signature_base64.startsWith('data:image')) {
@@ -123,37 +149,42 @@ class SettingAdminService {
     }
 
     const uploadedBannerFiles = req.files || {};
-    const parsedBanners = [];
     const previousBannerImages = currentBanners.map((banner) => banner.imageUrl).filter(Boolean);
 
-    for (let index = 0; index < 6; index += 1) {
-      const name = String(settings[`banner_name_${index}`] || '').trim();
-      const link = String(settings[`banner_link_${index}`] || '').trim();
-      const newTab = settings[`banner_new_tab_${index}`] === '1';
-      const existingImage = String(settings[`banner_existing_image_${index}`] || '').trim();
-      const removeBanner = settings[`banner_remove_${index}`] === '1';
-      const uploadedFile = uploadedBannerFiles[`banner_image_${index}`] && uploadedBannerFiles[`banner_image_${index}`][0];
-      const nextImageUrl = uploadedFile ? `/uploads/banners/${uploadedFile.filename}` : existingImage;
+    if (activeTab === 'banners') {
+      const parsedBanners = [];
 
-      if (removeBanner || (!name && !link && !uploadedFile && !existingImage)) {
-        continue;
+      for (let index = 0; index < 6; index += 1) {
+        const name = String(settings[`banner_name_${index}`] || '').trim();
+        const link = String(settings[`banner_link_${index}`] || '').trim();
+        const newTab = settings[`banner_new_tab_${index}`] === '1';
+        const existingImage = String(settings[`banner_existing_image_${index}`] || '').trim();
+        const removeBanner = settings[`banner_remove_${index}`] === '1';
+        const uploadedFile = uploadedBannerFiles[`banner_image_${index}`] && uploadedBannerFiles[`banner_image_${index}`][0];
+        const nextImageUrl = uploadedFile ? `/uploads/banners/${uploadedFile.filename}` : existingImage;
+
+        if (removeBanner || (!name && !link && !uploadedFile && !existingImage)) {
+          continue;
+        }
+
+        if (!nextImageUrl) {
+          continue;
+        }
+
+        parsedBanners.push({
+          id: `banner-${index + 1}`,
+          name: name || `Banner ${index + 1}`,
+          imageUrl: nextImageUrl,
+          link,
+          newTab
+        });
       }
 
-      if (!nextImageUrl) {
-        continue;
-      }
-
-      parsedBanners.push({
-        id: `banner-${index + 1}`,
-        name: name || `Banner ${index + 1}`,
-        imageUrl: nextImageUrl,
-        link,
-        newTab
-      });
+      nextBanners = parsedBanners.slice(0, 6);
+      settings.home_banners = JSON.stringify(nextBanners);
+    } else {
+      nextBanners = currentBanners;
     }
-
-    nextBanners = parsedBanners.slice(0, 6);
-    settings.home_banners = JSON.stringify(nextBanners);
 
     delete settings.certificate_signature_base64;
     delete settings.active_tab;
@@ -177,16 +208,17 @@ class SettingAdminService {
 
     if (nextLogoUrl && currentLogoUrl && currentLogoUrl !== nextLogoUrl) {
       const oldLogoPath = this.resolveLogoFilePath(currentLogoUrl);
-      if (oldLogoPath && fs.existsSync(oldLogoPath)) {
-        fs.unlinkSync(oldLogoPath);
-      }
+      this.removeFileIfExists(oldLogoPath, 'logo antigo');
+    }
+
+    if (nextAppIconUrl && currentAppIconUrl && currentAppIconUrl !== nextAppIconUrl) {
+      const oldAppIconPath = this.resolveAppIconFilePath(currentAppIconUrl);
+      this.removeFileIfExists(oldAppIconPath, 'ícone antigo');
     }
 
     if (nextSignatureUrl && currentSignatureUrl && currentSignatureUrl !== nextSignatureUrl) {
       const oldFilePath = this.resolveSignatureFilePath(currentSignatureUrl);
-      if (oldFilePath && fs.existsSync(oldFilePath)) {
-        fs.unlinkSync(oldFilePath);
-      }
+      this.removeFileIfExists(oldFilePath, 'assinatura antiga');
     }
 
     const currentBannerImagesSet = new Set(previousBannerImages);
@@ -195,9 +227,7 @@ class SettingAdminService {
     currentBannerImagesSet.forEach((imageUrl) => {
       if (!nextBannerImagesSet.has(imageUrl)) {
         const oldBannerPath = this.resolveBannerFilePath(imageUrl);
-        if (oldBannerPath && fs.existsSync(oldBannerPath)) {
-          fs.unlinkSync(oldBannerPath);
-        }
+        this.removeFileIfExists(oldBannerPath, 'banner antigo');
       }
     });
 

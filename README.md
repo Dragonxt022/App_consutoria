@@ -37,7 +37,9 @@ O projeto foi construido com Node.js e Express 5, EJS no frontend server-side e 
 .
 |-- docs/
 |-- images/
+|-- migrations/
 |-- scripts/
+|-- seeders/
 |-- src/
 |   |-- config/
 |   |-- handlers/
@@ -161,6 +163,7 @@ Ajuste principalmente:
 - `DB_NAME`
 - `DB_USER`
 - `DB_PASSWORD`
+- `DB_SYNC_ON_START`
 
 Para desenvolvimento local com SQLite, habilite:
 
@@ -171,6 +174,36 @@ DB_STORAGE=./database.sqlite
 
 Uploads mutaveis de usuario podem ficar fora de `src/public`. O padrao atual e `./storage/uploads`, mantendo a URL publica `/uploads/...`.
 Arquivos estaticos do sistema como `uploads/icons` e `uploads/templete-certificados` continuam dentro de `src/public/uploads`.
+
+### Migrations do Sequelize
+
+O projeto agora possui estrutura para migrations versionadas com `sequelize-cli`.
+
+Em banco novo, o fluxo recomendado e:
+
+```bash
+npm run db:migrate
+```
+
+Em banco existente, criado historicamente por `sequelize.sync()`, o primeiro passo seguro e registrar a migration inicial como baseline:
+
+```bash
+npm run db:migrate:baseline
+```
+
+Depois disso, as proximas alteracoes de schema devem ser feitas com migrations novas.
+
+Para impedir sincronizacao automatica no boot da aplicacao:
+
+```env
+DB_SYNC_ON_START=0
+```
+
+Se voce ainda quiser manter `sync` no desenvolvimento local:
+
+```env
+DB_SYNC_ON_START=1
+```
 
 ### Executar em desenvolvimento
 
@@ -191,6 +224,9 @@ npm start
 ```bash
 npm start
 npm run dev
+npm run db:migrate
+npm run db:migrate:status
+npm run db:migrate:baseline
 npm run build-css
 npm run build-css-once
 npm run seed

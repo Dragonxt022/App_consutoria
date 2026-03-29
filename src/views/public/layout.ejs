@@ -8,6 +8,8 @@
         const seoImagePath = (typeof pageSeo !== 'undefined' && pageSeo && pageSeo.image) || siteSettings.logo_url || '';
         const seoImageUrl = seoImagePath ? (seoImagePath.startsWith('http') ? seoImagePath : `${appBaseUrl}${seoImagePath.startsWith('/') ? '' : '/'}${seoImagePath}`) : '';
         const canonicalUrl = (typeof pageSeo !== 'undefined' && pageSeo && pageSeo.url) || currentUrl || appBaseUrl;
+        const faviconPath = siteSettings.app_icon_url || siteSettings.logo_url || '';
+        const faviconUrl = faviconPath ? (faviconPath.startsWith('http') ? faviconPath : `${appBaseUrl}${faviconPath.startsWith('/') ? '' : '/'}${faviconPath}`) : '';
     %>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,6 +28,7 @@
     <meta name="twitter:title" content="<%= seoTitle %>">
     <meta name="twitter:description" content="<%= seoDescription %>">
     <% if (seoImageUrl) { %><meta name="twitter:image" content="<%= seoImageUrl %>"><% } %>
+    <% if (faviconUrl) { %><link rel="icon" href="<%= faviconUrl %>"><% } %>
     <link rel="stylesheet" href="/css/output.css">
     <link rel="stylesheet" href="/css/theme-overrides.css">
     <link href="https://cdn.quilljs.com/1.3.7/quill.core.css" rel="stylesheet">

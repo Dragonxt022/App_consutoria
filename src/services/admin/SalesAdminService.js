@@ -3,6 +3,7 @@ const { Enrollment, Course, sequelize } = require('../../models');
 
 class SalesAdminService {
   async getDashboardData(query) {
+    const coursePerformanceLimit = 10;
     const { month, year } = query;
     const dateFilter = {};
     const currentYear = new Date().getFullYear();
@@ -45,7 +46,8 @@ class SalesAdminService {
       where: whereClause,
       include: [{ model: Course, attributes: ['title'] }],
       group: ['courseId', 'Course.id', 'Course.title'],
-      order: [[sequelize.literal('revenue'), 'DESC']]
+      order: [[sequelize.literal('revenue'), 'DESC']],
+      limit: coursePerformanceLimit
     });
 
     const recentSales = await Enrollment.findAll({

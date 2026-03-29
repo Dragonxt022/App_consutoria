@@ -15,6 +15,11 @@ function parseBoolean(value, fallback = false) {
   return ['1', 'true', 'yes', 'on'].includes(String(value).toLowerCase());
 }
 
+function shouldSyncOnStart() {
+  const isProduction = process.env.NODE_ENV === 'production';
+  return parseBoolean(process.env.DB_SYNC_ON_START, !isProduction);
+}
+
 const models = {
   User,
   Course,
@@ -50,6 +55,11 @@ Object.keys(models).forEach(key => {
 
 // 🔹 Sync centralizado
 const syncDatabase = async () => {
+  if (!shouldSyncOnStart()) {
+    console.log('Sincronizacao automatica desativada (DB_SYNC_ON_START=0). Use migrations para evolucao do schema.');
+    return;
+  }
+
   try {
     // Antes de tentar alterar tabelas no SQLite, removemos quaisquer
     // tables de backup residuais criadas por tentativas anteriores do
@@ -105,5 +115,6 @@ const syncDatabase = async () => {
 
 module.exports = {
   ...models,
-  syncDatabase
+  syncDatabase,
+  shouldSyncOnStart
 };

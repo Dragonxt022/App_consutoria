@@ -7,6 +7,7 @@ const defaultSettings = {
   seo_site_keywords: 'cursos, treinamentos, capacitação, certificações',
   use_logo: 'false',
   logo_url: '',
+  app_icon_url: '',
   show_course_store_offers: 'false',
   footer_email: 'contato@consultpro.com.br',
   footer_phone: '(11) 99999-9999',

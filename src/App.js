@@ -14,7 +14,8 @@ const {
   legacyUploadsRoot,
   mutableUploadsRoot,
   ensureDir,
-  getLegacyUploadPath
+  getLegacyUploadPath,
+  getMutableUploadPath
 } = require('./utils/UploadPaths');
 const { requestContext } = require('./middleware');
 const routes = require('./routes');
@@ -129,6 +130,14 @@ ensureDir(mutableUploadsRoot);
 
 app.use('/uploads/icons', express.static(getLegacyUploadPath('icons')));
 app.use('/uploads/templete-certificados', express.static(getLegacyUploadPath('templete-certificados')));
+app.use('/uploads/logos', express.static(getMutableUploadPath('logos')));
+app.use('/uploads/blog', express.static(getMutableUploadPath('blog')));
+app.use('/uploads/banners', express.static(getMutableUploadPath('banners')));
+app.use('/uploads/avatars', express.static(getMutableUploadPath('avatars')));
+app.use('/uploads/certificates', express.static(getMutableUploadPath('certificates')));
+app.use('/uploads/courses', express.static(getMutableUploadPath('courses')));
+app.use('/uploads/products', express.static(getMutableUploadPath('products')));
+app.use('/uploads/company-certificates', express.static(getMutableUploadPath('company-certificates')));
 app.use('/uploads', express.static(mutableUploadsRoot));
 app.use('/uploads', express.static(legacyUploadsRoot));
 app.use(express.static(publicRoot));

@@ -33,6 +33,8 @@ const storage = multer.diskStorage({
       cb(null, uploadPaths.productImages);
     } else if (file.fieldname === 'logo') {
       cb(null, uploadPaths.logos);
+    } else if (file.fieldname === 'app_icon') {
+      cb(null, uploadPaths.logos);
     } else if (file.fieldname.startsWith('banner_image_')) {
       cb(null, uploadPaths.banners);
     } else if (file.fieldname === 'avatar') {
@@ -61,7 +63,11 @@ const upload = multer({
     fileSize: 8 * 1024 * 1024
   },
   fileFilter: (req, file, cb) => {
-    if (file.fieldname === 'image' || file.fieldname === 'product_images' || file.fieldname === 'logo' || file.fieldname === 'cert_signature' || file.fieldname === 'avatar' || file.fieldname === 'coverImage' || file.fieldname === 'blog_image' || file.fieldname.startsWith('banner_image_')) {
+    if (file.fieldname === 'app_icon') {
+      if (!file.originalname.match(/\.(png|jpg|jpeg|webp)$/i)) {
+        return cb(new Error('O ícone da aplicação deve estar em PNG, JPG ou WEBP.'), false);
+      }
+    } else if (file.fieldname === 'image' || file.fieldname === 'product_images' || file.fieldname === 'logo' || file.fieldname === 'cert_signature' || file.fieldname === 'avatar' || file.fieldname === 'coverImage' || file.fieldname === 'blog_image' || file.fieldname.startsWith('banner_image_')) {
       if (!file.originalname.match(/\.(jpg|jpeg|png|webp|gif)$/i)) {
         return cb(new Error('Apenas arquivos de imagem sao permitidos!'), false);
       }
