@@ -72,7 +72,7 @@ class HomeService {
         where: { status: 'publicado' },
         include: [{ model: BlogCategory, as: 'category' }],
         order: [['publishedAt', 'DESC'], ['createdAt', 'DESC']],
-        limit: 4
+        limit: 3
       })
     ]);
 

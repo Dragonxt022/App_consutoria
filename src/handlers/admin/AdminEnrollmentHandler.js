@@ -41,7 +41,7 @@ const AdminEnrollmentHandler = {
   },
 
   async certificates(req, res) {
-    const data = await EnrollmentAdminService.getCertificatesPageData();
+    const data = await EnrollmentAdminService.getCertificatesPageData(req.query);
 
     res.render('admin/certificates/index', {
       title: 'Gerador de Certificados',

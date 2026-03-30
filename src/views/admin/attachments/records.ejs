@@ -1,19 +1,31 @@
 <div class="space-y-4" x-data="{ showFilters: <%= (filters.search || filters.visibilityType || filters.courseId || filters.userId) ? 'true' : 'false' %> }">
-    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <p class="text-sm text-slate-500">Total: <%= attachments.length %> anexo(s) encontrado(s).</p>
-        <div class="flex items-center gap-3">
-            <button type="button" @click="showFilters = !showFilters" class="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:bg-slate-50 hover:text-slate-900" :title="showFilters ? 'Ocultar filtros' : 'Mostrar filtros'">
-                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 01.8 1.6L15 12v5a1 1 0 01-.553.894l-4 2A1 1 0 019 19v-7L3.2 4.6A1 1 0 013 4z"/>
-                </svg>
-            </button>
-            <a href="/admin/anexos" class="inline-flex items-center justify-center rounded-xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-200 transition hover:bg-indigo-700">
-                Enviar novo anexo
-            </a>
+    <div class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+        <div class="border-b border-gray-100 bg-gray-50/50 p-6">
+            <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <div class="flex items-start gap-4">
+                    <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600 shadow-sm shadow-indigo-100">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h10M7 11h10M7 15h6m-6 6h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-[0.24em] text-slate-400">Histórico de anexos</p>
+                        <p class="mt-2 text-sm text-slate-500">Total: <%= attachments.length %> anexo(s) encontrado(s).</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button type="button" @click="showFilters = !showFilters" class="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:bg-slate-50 hover:text-slate-900" :title="showFilters ? 'Ocultar filtros' : 'Mostrar filtros'">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 01.8 1.6L15 12v5a1 1 0 01-.553.894l-4 2A1 1 0 019 19v-7L3.2 4.6A1 1 0 013 4z"/>
+                        </svg>
+                    </button>
+                    <a href="/admin/anexos" class="inline-flex items-center justify-center rounded-xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-200 transition hover:bg-indigo-700">
+                        Enviar novo anexo
+                    </a>
+                </div>
+            </div>
         </div>
-    </div>
 
-    <div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
         <form action="/admin/anexos/historico" method="GET" x-show="showFilters" x-cloak x-transition class="border-b border-slate-100 px-6 py-5">
             <div class="grid gap-4 lg:grid-cols-[1fr_220px_240px_240px_auto]">
                 <div>

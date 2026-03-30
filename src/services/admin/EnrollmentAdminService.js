@@ -49,8 +49,10 @@ class EnrollmentAdminService {
     }
   }
 
-  buildAdminFilters(search) {
-    const normalizedSearch = typeof search === 'string' ? search.trim() : '';
+  buildAdminFilters(query = {}) {
+    const normalizedSearch = typeof query.search === 'string' ? query.search.trim() : '';
+    const normalizedStatus = typeof query.status === 'string' ? query.status.trim() : '';
+    const normalizedCourseId = typeof query.courseId === 'string' ? query.courseId.trim() : '';
     const where = {};
 
     if (normalizedSearch) {
@@ -61,14 +63,27 @@ class EnrollmentAdminService {
       ];
     }
 
-    return { normalizedSearch, where };
+    if (normalizedStatus) {
+      where.status = normalizedStatus;
+    }
+
+    if (normalizedCourseId) {
+      where.courseId = normalizedCourseId;
+    }
+
+    return {
+      normalizedSearch,
+      normalizedStatus,
+      normalizedCourseId,
+      where
+    };
   }
 
   async getAdminListData(query) {
     const page = parseInt(query.page, 10) || 1;
     const limit = 10;
     const offset = (page - 1) * limit;
-    const { normalizedSearch, where } = this.buildAdminFilters(query.search);
+    const { normalizedSearch, normalizedStatus, normalizedCourseId, where } = this.buildAdminFilters(query);
 
     const { count, rows: enrollments } = await Enrollment.findAndCountAll({
       where,
@@ -86,12 +101,16 @@ class EnrollmentAdminService {
         totalPages: Math.ceil(count / limit),
         totalItems: count
       },
-      filters: { search: normalizedSearch }
+      filters: {
+        search: normalizedSearch,
+        status: normalizedStatus,
+        courseId: normalizedCourseId
+      }
     };
   }
 
   async exportAdminList(search) {
-    const { normalizedSearch, where } = this.buildAdminFilters(search);
+    const { normalizedSearch, where } = this.buildAdminFilters({ search });
     const enrollments = await Enrollment.findAll({
       where,
       include: [{ model: Course }],
@@ -159,16 +178,75 @@ class EnrollmentAdminService {
     return { notFound: false };
   }
 
-  async getCertificatesPageData() {
+  async getCertificatesPageData(query = {}) {
+    const filters = {
+      search: String(query.search || '').trim(),
+      operationalStatus: String(query.operationalStatus || '').trim()
+    };
+
+    const courseWhere = {};
+
+    if (filters.search) {
+      courseWhere[Op.or] = [
+        { title: { [Op.like]: `%${filters.search}%` } },
+        { location: { [Op.like]: `%${filters.search}%` } }
+      ];
+    }
+
     const courses = await Course.findAll({
+      where: courseWhere,
       include: [{
         model: Enrollment,
-        where: { status: 'completo' },
-        required: false
-      }]
+        required: false,
+        attributes: ['id', 'studentName', 'status', 'certificateCode']
+      }],
+      order: [['title', 'ASC']]
     });
 
-    return { courses };
+    const normalizedCourses = courses.map((course) => {
+      const enrollments = Array.isArray(course.Enrollments) ? course.Enrollments : [];
+      const completedCount = enrollments.filter((enrollment) => enrollment.status === 'completo').length;
+      const confirmedCount = enrollments.filter((enrollment) => enrollment.status === 'confirmado').length;
+      const certificateCount = enrollments.filter((enrollment) => enrollment.status === 'completo' && enrollment.certificateCode).length;
+      const pendingActionCount = Math.max(confirmedCount - certificateCount, 0);
+
+      let operationalStatus = 'sem-aptos';
+
+      if (completedCount > 0) {
+        operationalStatus = 'aptos';
+      } else if (confirmedCount > 0) {
+        operationalStatus = 'pendencias';
+      }
+
+      return {
+        ...course.toJSON(),
+        completedCount,
+        confirmedCount,
+        certificateCount,
+        pendingActionCount,
+        operationalStatus,
+        enrollmentPreview: enrollments.slice(0, 3)
+      };
+    }).filter((course) => {
+      if (filters.operationalStatus === 'aptos') {
+        return course.operationalStatus === 'aptos';
+      }
+
+      if (filters.operationalStatus === 'pendencias') {
+        return course.operationalStatus === 'pendencias';
+      }
+
+      if (filters.operationalStatus === 'sem-aptos') {
+        return course.operationalStatus === 'sem-aptos';
+      }
+
+      return true;
+    });
+
+    return {
+      courses: normalizedCourses,
+      filters
+    };
   }
 
   async generateCertificateJson(courseId) {
