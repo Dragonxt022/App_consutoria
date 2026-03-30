@@ -1,7 +1,10 @@
 const crypto = require('crypto');
+const fs = require('fs');
+const path = require('path');
 const { Op } = require('sequelize');
 const { Enrollment, Course } = require('../../models');
 const { parseMoneyValue } = require('../../utils/Money');
+const { getPrivateStoragePath } = require('../../utils/UploadPaths');
 const { buildAppUrl } = require('../../utils/Url');
 const { EmailService, SiteSettingsService } = require('../shared');
 
@@ -20,6 +23,26 @@ function buildCertificateJson(enrollment, course, verificationCode) {
 }
 
 class EnrollmentAdminService {
+  removeEnrollmentAttachmentIfNeeded(attachmentPath) {
+    if (!attachmentPath) {
+      return;
+    }
+
+    const absolutePath = path.isAbsolute(attachmentPath)
+      ? attachmentPath
+      : getPrivateStoragePath(attachmentPath);
+
+    if (!fs.existsSync(absolutePath)) {
+      return;
+    }
+
+    try {
+      fs.unlinkSync(absolutePath);
+    } catch (error) {
+      console.warn('Não foi possível remover documento da inscrição:', error.message || error);
+    }
+  }
+
   async handleEnrollmentStatusEmails({ previousStatus, nextStatus, enrollment, course, req }) {
     if (!req || previousStatus === nextStatus) {
       return;
@@ -309,7 +332,13 @@ class EnrollmentAdminService {
 
     return {
       enrollment,
-      courses: normalizedCourses
+      courses: normalizedCourses,
+      attachment: enrollment.enrollmentAttachmentPath ? {
+        originalName: enrollment.enrollmentAttachmentOriginalName,
+        uploadedAt: enrollment.enrollmentAttachmentUploadedAt,
+        size: enrollment.enrollmentAttachmentSize,
+        mimeType: enrollment.enrollmentAttachmentMimeType
+      } : null
     };
   }
 
@@ -415,8 +444,33 @@ class EnrollmentAdminService {
       return { notFound: true };
     }
 
+    if (enrollment.enrollmentAttachmentPath) {
+      this.removeEnrollmentAttachmentIfNeeded(enrollment.enrollmentAttachmentPath);
+    }
+
     await enrollment.destroy();
     return { notFound: false };
+  }
+
+  async getEnrollmentAttachmentForAdmin(id) {
+    const enrollment = await Enrollment.findByPk(id, {
+      include: [{ model: Course }]
+    });
+
+    if (!enrollment || !enrollment.enrollmentAttachmentPath) {
+      return null;
+    }
+
+    const absolutePath = getPrivateStoragePath(enrollment.enrollmentAttachmentPath);
+    if (!fs.existsSync(absolutePath)) {
+      return null;
+    }
+
+    return {
+      path: absolutePath,
+      filename: enrollment.enrollmentAttachmentOriginalName || path.basename(absolutePath),
+      enrollment
+    };
   }
 }
 

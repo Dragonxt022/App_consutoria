@@ -90,10 +90,27 @@ function uploadAttachmentFile(req, res, next) {
   });
 }
 
+function uploadEnrollmentAttachmentFile(req, res, next) {
+  upload.single('enrollmentAttachment')(req, res, (error) => {
+    if (!error) return next();
+
+    console.error('Erro no upload do documento da inscrição:', error);
+
+    let message = error.message || 'Erro ao processar upload do documento.';
+
+    if (error.code === 'LIMIT_FILE_SIZE') {
+      message = 'O documento excede o limite de 8MB.';
+    }
+
+    return res.redirect(`/meus-cursos/${req.params.id}/anexo?error=${encodeURIComponent(message)}`);
+  });
+}
+
 module.exports = {
   upload,
   courseFilesUpload,
   uploadSettingsFiles,
   uploadBlogImages,
-  uploadAttachmentFile
+  uploadAttachmentFile,
+  uploadEnrollmentAttachmentFile
 };

@@ -127,6 +127,32 @@
 
         <div class="space-y-6">
             <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-5">
+                <div class="mb-4">
+                    <h3 class="text-base font-bold text-slate-800">Anexos da Inscrição</h3>
+                    <p class="mt-1 text-sm text-slate-500">Aqui você acompanha o documento enviado pelo aluno para validação administrativa.</p>
+                </div>
+
+                <% if (attachment) { %>
+                    <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
+                        <p class="text-xs font-black uppercase tracking-[0.2em] text-emerald-700">Documento enviado</p>
+                        <p class="mt-3 text-sm font-bold text-slate-900"><%= attachment.originalName %></p>
+                        <div class="mt-3 space-y-2 text-xs text-slate-600">
+                            <p>Enviado em: <span class="font-semibold text-slate-900"><%= attachment.uploadedAt ? new Date(attachment.uploadedAt).toLocaleString('pt-BR') : 'Agora há pouco' %></span></p>
+                            <p>Tamanho: <span class="font-semibold text-slate-900"><%= attachment.size ? `${(attachment.size / 1024).toFixed(1)} KB` : 'Não informado' %></span></p>
+                            <p>Tipo: <span class="font-semibold text-slate-900"><%= attachment.mimeType || 'Documento' %></span></p>
+                        </div>
+                        <a href="/admin/inscricoes/<%= enrollment.id %>/anexo" target="_blank" class="mt-4 inline-flex items-center justify-center rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-emerald-700">
+                            Abrir documento enviado
+                        </a>
+                    </div>
+                <% } else { %>
+                    <div class="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-5 text-sm text-slate-500">
+                        Nenhum documento complementar foi enviado para esta inscrição até o momento.
+                    </div>
+                <% } %>
+            </div>
+
+            <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-5">
                 <div class="mb-5">
                     <h3 class="text-base font-bold text-slate-800">Curso e Valores</h3>
                     <p class="mt-1 text-sm text-slate-500">Ajuste curso, status e desconto sem tirar o foco do cadastro principal.</p>

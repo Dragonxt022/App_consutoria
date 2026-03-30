@@ -102,6 +102,26 @@ const Enrollment = sequelize.define('Enrollment', {
     type: DataTypes.STRING,
     allowNull: true,
     unique: true
+  },
+  enrollmentAttachmentPath: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  enrollmentAttachmentOriginalName: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  enrollmentAttachmentMimeType: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  enrollmentAttachmentSize: {
+    type: DataTypes.INTEGER,
+    allowNull: true
+  },
+  enrollmentAttachmentUploadedAt: {
+    type: DataTypes.DATE,
+    allowNull: true
   }
 }, {
   paranoid: true

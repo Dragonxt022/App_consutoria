@@ -90,6 +90,55 @@ const StudentProfileHandler = {
       layout: 'public/layout',
       currentStudentSection: 'certificates'
     });
+  },
+
+  async showEnrollmentAttachment(req, res) {
+    const data = await StudentProfileService.getEnrollmentAttachmentPageData(req.user.id, req.params.id);
+
+    if (!data) {
+      return res.redirect('/meus-cursos?error=Inscrição não encontrada');
+    }
+
+    return res.render('aluno/enrollment-attachment', {
+      title: 'Anexar Documento da Inscrição',
+      layout: 'public/layout',
+      currentStudentSection: 'courses',
+      ...data
+    });
+  },
+
+  async uploadEnrollmentAttachment(req, res) {
+    try {
+      const result = await StudentProfileService.uploadEnrollmentAttachment(req.user.id, req.params.id, req.file);
+
+      if (result.notFound) {
+        return res.redirect('/meus-cursos?error=Inscrição não encontrada');
+      }
+
+      if (result.error) {
+        return res.redirect(`/meus-cursos/${req.params.id}/anexo?error=${encodeURIComponent(result.error)}`);
+      }
+
+      return res.redirect(`/meus-cursos/${req.params.id}/anexo?success=${encodeURIComponent('Documento enviado com sucesso')}`);
+    } catch (error) {
+      console.error(error);
+      return res.redirect(`/meus-cursos/${req.params.id}/anexo?error=${encodeURIComponent('Erro ao enviar documento da inscrição')}`);
+    }
+  },
+
+  async downloadEnrollmentAttachment(req, res) {
+    try {
+      const data = await StudentProfileService.getEnrollmentAttachmentDownloadData(req.user.id, req.params.id);
+
+      if (!data) {
+        return res.redirect('/meus-cursos?error=Documento da inscrição não encontrado');
+      }
+
+      return res.download(data.path, data.filename);
+    } catch (error) {
+      console.error(error);
+      return res.redirect('/meus-cursos?error=Erro ao baixar documento da inscrição');
+    }
   }
 };
 

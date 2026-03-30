@@ -1,9 +1,30 @@
 const fs = require('fs');
+const path = require('path');
 const { User, Enrollment, Course } = require('../../models');
-const { resolveUploadUrlToPath } = require('../../utils/UploadPaths');
+const { resolveUploadUrlToPath, getPrivateStoragePath } = require('../../utils/UploadPaths');
 const { resolveCourseStatus } = require('../../utils/CourseStatus');
 
 class StudentProfileService {
+  removeEnrollmentAttachmentIfNeeded(attachmentPath) {
+    if (!attachmentPath) {
+      return;
+    }
+
+    const absolutePath = path.isAbsolute(attachmentPath)
+      ? attachmentPath
+      : getPrivateStoragePath(attachmentPath);
+
+    if (!fs.existsSync(absolutePath)) {
+      return;
+    }
+
+    try {
+      fs.unlinkSync(absolutePath);
+    } catch (error) {
+      console.warn('Não foi possível remover documento anterior da inscrição:', error.message || error);
+    }
+  }
+
   removeAvatarIfNeeded(avatarUrl) {
     if (!avatarUrl || !avatarUrl.startsWith('/uploads/avatars/')) {
       return;
@@ -41,6 +62,8 @@ class StudentProfileService {
         enrollment.Course.setDataValue('statusLabel', status.label);
         enrollment.Course.setDataValue('isExpired', status.isExpired);
       }
+
+      enrollment.setDataValue('hasEnrollmentAttachment', Boolean(enrollment.enrollmentAttachmentPath));
 
       return enrollment;
     });
@@ -115,6 +138,74 @@ class StudentProfileService {
     await user.save();
 
     return { notFound: false, user };
+  }
+
+  async getEnrollmentAttachmentPageData(userId, enrollmentId) {
+    const user = await this.getStudentUser(userId);
+    if (!user) return null;
+
+    const enrollment = await Enrollment.findOne({
+      where: { id: enrollmentId, userId },
+      include: [{ model: Course }]
+    });
+
+    if (!enrollment) {
+      return null;
+    }
+
+    return { user, enrollment };
+  }
+
+  async uploadEnrollmentAttachment(userId, enrollmentId, file) {
+    const enrollment = await Enrollment.findOne({
+      where: { id: enrollmentId, userId },
+      include: [{ model: Course }]
+    });
+
+    if (!enrollment) {
+      return { notFound: true };
+    }
+
+    if (!file) {
+      return { notFound: false, error: 'Selecione um arquivo para enviar.' };
+    }
+
+    const previousPath = enrollment.enrollmentAttachmentPath;
+    enrollment.enrollmentAttachmentPath = path.join('enrollment-documents', file.filename);
+    enrollment.enrollmentAttachmentOriginalName = file.originalname;
+    enrollment.enrollmentAttachmentMimeType = file.mimetype;
+    enrollment.enrollmentAttachmentSize = file.size;
+    enrollment.enrollmentAttachmentUploadedAt = new Date();
+
+    await enrollment.save();
+
+    if (previousPath && previousPath !== enrollment.enrollmentAttachmentPath) {
+      this.removeEnrollmentAttachmentIfNeeded(previousPath);
+    }
+
+    return { notFound: false, enrollment };
+  }
+
+  async getEnrollmentAttachmentDownloadData(userId, enrollmentId) {
+    const enrollment = await Enrollment.findOne({
+      where: { id: enrollmentId, userId },
+      include: [{ model: Course }]
+    });
+
+    if (!enrollment || !enrollment.enrollmentAttachmentPath) {
+      return null;
+    }
+
+    const absolutePath = getPrivateStoragePath(enrollment.enrollmentAttachmentPath);
+    if (!fs.existsSync(absolutePath)) {
+      return null;
+    }
+
+    return {
+      path: absolutePath,
+      filename: enrollment.enrollmentAttachmentOriginalName || path.basename(absolutePath),
+      enrollment
+    };
   }
 }
 

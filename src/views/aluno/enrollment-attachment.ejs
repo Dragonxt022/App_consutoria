@@ -1,0 +1,124 @@
+<%- include('./_hub-nav') %>
+
+<%
+    const formatFileSize = (size) => {
+        const value = Number(size || 0);
+        if (!value) return 'Arquivo ainda não enviado';
+        if (value < 1024) return `${value} B`;
+        if (value < 1024 * 1024) return `${(value / 1024).toFixed(1)} KB`;
+        return `${(value / (1024 * 1024)).toFixed(1)} MB`;
+    };
+%>
+
+<div class="mx-auto w-full max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+    <section class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+        <div class="border-b border-slate-100 px-6 py-6 md:px-8">
+            <a href="/meus-cursos" class="inline-flex items-center gap-2 text-sm font-bold text-orange-600 transition hover:text-orange-700">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+                Voltar para meus cursos
+            </a>
+            <div class="mt-8 flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+                <div class="max-w-3xl">
+                    <p class="text-xs font-black uppercase tracking-[0.24em] text-slate-400">Documento da inscrição</p>
+                    <h2 class="mt-3 text-3xl font-black tracking-tight text-slate-950"><%= enrollment.Course ? enrollment.Course.title : `Inscrição #${enrollment.id}` %></h2>
+                    <p class="mt-3 text-sm leading-6 text-slate-500">
+                        Envie aqui seu empenho, comprovante de pagamento ou outro documento solicitado para análise do administrativo.
+                        Sempre que necessário, você pode substituir o arquivo enviado.
+                    </p>
+                </div>
+                <div class="inline-flex w-fit items-center gap-3 rounded-2xl border <%= enrollment.enrollmentAttachmentPath ? 'border-emerald-200 bg-emerald-50 text-emerald-800' : 'border-amber-200 bg-amber-50 text-amber-800' %> px-5 py-4 text-sm shadow-sm">
+                    <div class="flex h-11 w-11 items-center justify-center rounded-2xl <%= enrollment.enrollmentAttachmentPath ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700' %>">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <% if (enrollment.enrollmentAttachmentPath) { %>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828L18 9.828M8 7h8a2 2 0 012 2v8a2 2 0 01-2 2H8a2 2 0 01-2-2V9a2 2 0 012-2z"></path>
+                            <% } else { %>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            <% } %>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-black uppercase tracking-[0.22em] opacity-70">Status atual</p>
+                        <p class="mt-1 font-bold"><%= enrollment.enrollmentAttachmentPath ? 'Documento enviado' : 'Aguardando envio' %></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid gap-6 p-6 md:px-8 lg:grid-cols-[1.15fr_0.85fr]">
+            <form action="/meus-cursos/<%= enrollment.id %>/anexo" method="POST" enctype="multipart/form-data" class="space-y-5">
+                <div class="rounded-3xl border border-slate-200 bg-slate-50 p-5 md:p-6">
+                    <div class="flex items-start gap-4">
+                        <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-100 text-indigo-700 shadow-sm">
+                            <svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828L18 9.828M8 7h8a2 2 0 012 2v8a2 2 0 01-2 2H8a2 2 0 01-2-2V9a2 2 0 012-2z"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-xs font-black uppercase tracking-[0.22em] text-slate-500">Selecionar arquivo</p>
+                            <p class="mt-2 text-sm leading-6 text-slate-500">Envie um único documento por vez. Caso já exista um arquivo salvo, o novo envio substitui automaticamente o anterior.</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-5 rounded-3xl border border-dashed border-slate-300 bg-white p-5 md:p-6">
+                        <input id="enrollmentAttachment" name="enrollmentAttachment" type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.webp" class="block w-full text-sm text-slate-600 file:mr-4 file:rounded-xl file:border-0 file:bg-indigo-100 file:px-4 file:py-2.5 file:text-sm file:font-bold file:text-indigo-700 hover:file:bg-indigo-200">
+                        <div class="mt-4 rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-500">
+                            Aceitamos PDF, DOC e imagens com até 8MB.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-3">
+                    <button type="submit" class="inline-flex items-center justify-center rounded-xl bg-indigo-600 px-6 py-3 text-sm font-bold text-white transition hover:bg-indigo-700">
+                        <%= enrollment.enrollmentAttachmentPath ? 'Atualizar documento' : 'Enviar documento' %>
+                    </button>
+                    <% if (enrollment.enrollmentAttachmentPath) { %>
+                        <a href="/meus-cursos/<%= enrollment.id %>/anexo/download" class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50">
+                            Baixar arquivo atual
+                        </a>
+                    <% } %>
+                </div>
+            </form>
+
+            <div class="space-y-5">
+                <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+                    <p class="text-xs font-black uppercase tracking-[0.22em] text-slate-400">Documento atual</p>
+                    <% if (enrollment.enrollmentAttachmentPath) { %>
+                        <div class="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                            <h3 class="break-all text-base font-black text-slate-900"><%= enrollment.enrollmentAttachmentOriginalName %></h3>
+                            <dl class="mt-4 grid gap-3 text-sm text-slate-600 sm:grid-cols-2">
+                                <div class="rounded-2xl bg-white px-4 py-3">
+                                    <dt class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Enviado em</dt>
+                                    <dd class="mt-2 font-semibold text-slate-900"><%= enrollment.enrollmentAttachmentUploadedAt ? new Date(enrollment.enrollmentAttachmentUploadedAt).toLocaleString('pt-BR') : 'Agora há pouco' %></dd>
+                                </div>
+                                <div class="rounded-2xl bg-white px-4 py-3">
+                                    <dt class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Tamanho</dt>
+                                    <dd class="mt-2 font-semibold text-slate-900"><%= formatFileSize(enrollment.enrollmentAttachmentSize) %></dd>
+                                </div>
+                                <div class="rounded-2xl bg-white px-4 py-3 sm:col-span-2">
+                                    <dt class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Tipo</dt>
+                                    <dd class="mt-2 font-semibold text-slate-900"><%= enrollment.enrollmentAttachmentMimeType || 'Documento' %></dd>
+                                </div>
+                            </dl>
+                            <a href="/meus-cursos/<%= enrollment.id %>/anexo/download" class="mt-4 inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 transition hover:bg-slate-50">
+                                Baixar este documento
+                            </a>
+                        </div>
+                    <% } else { %>
+                        <div class="mt-4 rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-5 text-sm leading-6 text-slate-500">
+                            Nenhum documento foi enviado ainda para esta inscrição.
+                        </div>
+                    <% } %>
+                </div>
+
+                <div class="rounded-3xl border border-amber-200 bg-amber-50 p-5 text-sm text-amber-900">
+                    <p class="font-bold">Quando usar este envio?</p>
+                    <p class="mt-2 leading-6">
+                        Use este espaço para anexar empenho, comprovante de pagamento ou qualquer documento complementar solicitado pela equipe administrativa para validar sua inscrição.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

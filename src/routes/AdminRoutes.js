@@ -42,6 +42,7 @@ router.get('/admin/inscricoes/:id/json', authMiddleware('admin'), routeHandler(A
 router.get('/admin/inscricoes/:id/editar', authMiddleware('admin'), routeHandler(AdminEnrollmentHandler, 'showEdit'));
 router.post('/admin/inscricoes/:id/edit', authMiddleware('admin'), routeHandler(AdminEnrollmentHandler, 'update'));
 router.get('/admin/inscricoes/:id/comprovante', authMiddleware('admin'), routeHandler(AdminEnrollmentHandler, 'receipt'));
+router.get('/admin/inscricoes/:id/anexo', authMiddleware('admin'), routeHandler(AdminEnrollmentHandler, 'downloadAttachment'));
 
 router.get('/admin/certificados', authMiddleware('admin'), routeHandler(AdminEnrollmentHandler, 'certificates'));
 router.get('/admin/certificados/json/:courseId', authMiddleware('admin'), routeHandler(AdminEnrollmentHandler, 'generateJson'));

@@ -167,6 +167,21 @@ const AdminEnrollmentHandler = {
       console.error(error);
       return res.redirect('/admin/inscricoes?error=Erro ao excluir inscrição');
     }
+  },
+
+  async downloadAttachment(req, res) {
+    try {
+      const data = await EnrollmentAdminService.getEnrollmentAttachmentForAdmin(req.params.id);
+
+      if (!data) {
+        return res.redirect('/admin/inscricoes?error=Documento da inscrição não encontrado');
+      }
+
+      return res.download(data.path, data.filename);
+    } catch (error) {
+      console.error(error);
+      return res.redirect('/admin/inscricoes?error=Erro ao baixar documento da inscrição');
+    }
   }
 };
 

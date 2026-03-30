@@ -4,6 +4,7 @@ const path = require('path');
 const projectRoot = path.resolve(__dirname, '..', '..');
 const publicRoot = path.join(__dirname, '..', 'public');
 const legacyUploadsRoot = path.join(publicRoot, 'uploads');
+const privateStorageRoot = path.join(projectRoot, 'storage', 'private');
 const configuredUploadsDir = process.env.UPLOADS_DIR;
 const mutableUploadsRoot = configuredUploadsDir
   ? path.isAbsolute(configuredUploadsDir)
@@ -46,6 +47,10 @@ function getMutableUploadPath(...segments) {
   return path.join(mutableUploadsRoot, ...segments);
 }
 
+function getPrivateStoragePath(...segments) {
+  return path.join(privateStorageRoot, ...segments);
+}
+
 function resolveUploadUrlToPath(fileUrl) {
   const relativeUploadPath = toRelativeUploadPath(fileUrl);
 
@@ -75,11 +80,13 @@ module.exports = {
   publicRoot,
   legacyUploadsRoot,
   mutableUploadsRoot,
+  privateStorageRoot,
   ensureDir,
   isUploadUrl,
   isStaticSystemUpload,
   toRelativeUploadPath,
   getLegacyUploadPath,
   getMutableUploadPath,
+  getPrivateStoragePath,
   resolveUploadUrlToPath
 };

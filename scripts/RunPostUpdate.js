@@ -12,6 +12,8 @@ const uploadsRoot = process.env.UPLOADS_DIR
 
 const mutableDirectories = [
   uploadsRoot,
+  path.join(storageRoot, 'private'),
+  path.join(storageRoot, 'private', 'enrollment-documents'),
   path.join(uploadsRoot, 'attachments'),
   path.join(uploadsRoot, 'avatars'),
   path.join(uploadsRoot, 'banners'),

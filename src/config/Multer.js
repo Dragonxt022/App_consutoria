@@ -2,7 +2,8 @@ const multer = require('multer');
 const path = require('path');
 const {
   ensureDir,
-  getMutableUploadPath
+  getMutableUploadPath,
+  getPrivateStoragePath
 } = require('../utils/UploadPaths');
 
 const uploadPaths = {
@@ -16,7 +17,8 @@ const uploadPaths = {
   companyCertificates: getMutableUploadPath('company-certificates'),
   blogCovers: getMutableUploadPath('blog', 'covers'),
   blogContent: getMutableUploadPath('blog', 'content'),
-  attachments: getMutableUploadPath('attachments')
+  attachments: getMutableUploadPath('attachments'),
+  enrollmentDocuments: getPrivateStoragePath('enrollment-documents')
 };
 
 // Ensure upload directories exist
@@ -50,6 +52,8 @@ const storage = multer.diskStorage({
       cb(null, uploadPaths.blogContent);
     } else if (file.fieldname === 'attachmentFile') {
       cb(null, uploadPaths.attachments);
+    } else if (file.fieldname === 'enrollmentAttachment') {
+      cb(null, uploadPaths.enrollmentDocuments);
     } else {
       cb(null, uploadPaths.courseDocuments);
     }
@@ -86,6 +90,10 @@ const upload = multer({
     } else if (file.fieldname === 'attachmentFile') {
       if (!file.originalname.match(/\.(pdf|doc|docx|xls|xlsx|ppt|pptx|zip|rar|jpg|jpeg|png|webp)$/i)) {
         return cb(new Error('O anexo deve estar em PDF, DOC, XLS, PPT, ZIP ou imagem.'), false);
+      }
+    } else if (file.fieldname === 'enrollmentAttachment') {
+      if (!file.originalname.match(/\.(pdf|doc|docx|jpg|jpeg|png|webp)$/i)) {
+        return cb(new Error('O documento da inscrição deve estar em PDF, DOC ou imagem.'), false);
       }
     }
 
