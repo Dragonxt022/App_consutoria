@@ -4,6 +4,7 @@ const { formatCurrency } = require('../../utils/CurrencyFormatter');
 const { parseMoneyValue } = require('../../utils/Money');
 const { resolveCourseStatus } = require('../../utils/CourseStatus');
 const { ProductFormatter } = require('../shared');
+const StudentAttachmentService = require('../student/StudentAttachmentService');
 const { formatProduct } = ProductFormatter;
 
 function stripHtml(value) {
@@ -141,11 +142,14 @@ class HomeService {
   }
 
   async getStudentDashboardData(userId) {
-    const enrollments = await Enrollment.findAll({
-      where: { userId },
-      include: [{ model: Course }],
-      order: [['createdAt', 'DESC']]
-    });
+    const [enrollments, attachmentData] = await Promise.all([
+      Enrollment.findAll({
+        where: { userId },
+        include: [{ model: Course }],
+        order: [['createdAt', 'DESC']]
+      }),
+      StudentAttachmentService.getVisibleAttachments(userId)
+    ]);
 
     const now = new Date();
     const normalizedEnrollments = enrollments.map((enrollment) => {
@@ -156,6 +160,8 @@ class HomeService {
         enrollment.Course.setDataValue('isExpired', status.isExpired);
       }
 
+      enrollment.setDataValue('hasEnrollmentAttachment', Boolean(enrollment.enrollmentAttachmentPath));
+
       return enrollment;
     });
 
@@ -163,10 +169,22 @@ class HomeService {
     const certificateCount = normalizedEnrollments.filter((item) => item.status === 'completo').length;
     const inProgressCount = normalizedEnrollments.filter((item) => ['pendente', 'confirmado'].includes(item.status)).length;
     const confirmedCount = normalizedEnrollments.filter((item) => item.Course?.statusCode === 'confirmado').length;
+    const recentAttachmentWindow = 14 * 24 * 60 * 60 * 1000;
+    const recentAttachments = (attachmentData?.attachments || []).filter((attachment) => {
+      const createdAt = new Date(attachment.createdAt).getTime();
+      return Number.isFinite(createdAt) && (Date.now() - createdAt) <= recentAttachmentWindow;
+    });
+    const latestAttachment = recentAttachments[0] || null;
 
     return {
       enrollments: normalizedEnrollments,
       certificateCount,
+      attachmentNotice: latestAttachment ? {
+        latestId: latestAttachment.id,
+        count: recentAttachments.length,
+        latestTitle: latestAttachment.title,
+        latestUrl: `/meus-arquivos/${latestAttachment.id}`
+      } : null,
       stats: {
         totalCourses,
         certificateCount,

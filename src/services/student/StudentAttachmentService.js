@@ -6,6 +6,7 @@ const STATUS_LABELS = {
   completo: 'Curso concluído',
   cancelado: 'Inscrição cancelada'
 };
+const RECENT_ATTACHMENT_WINDOW_MS = 14 * 24 * 60 * 60 * 1000;
 
 function formatBytes(size) {
   if (!size || size <= 0) return 'Arquivo';
@@ -34,6 +35,13 @@ function getAttachmentFiles(attachment) {
   }
 
   return [];
+}
+
+function isRecentAttachment(dateValue) {
+  if (!dateValue) return false;
+  const timestamp = new Date(dateValue).getTime();
+  if (Number.isNaN(timestamp)) return false;
+  return (Date.now() - timestamp) <= RECENT_ATTACHMENT_WINDOW_MS;
 }
 
 class StudentAttachmentService {
@@ -87,6 +95,7 @@ class StudentAttachmentService {
           ...file,
           fileSizeLabel: formatBytes(file.fileSize)
         })),
+        isRecent: isRecentAttachment(attachment.createdAt),
         audienceLabel: 'Disponibilizado diretamente para você',
         requiredEnrollmentStatusLabel: 'Sem requisito',
         fileSizeLabel: formatBytes(attachment.fileSize),
@@ -104,6 +113,7 @@ class StudentAttachmentService {
           ...file,
           fileSizeLabel: formatBytes(file.fileSize)
         })),
+        isRecent: isRecentAttachment(attachment.createdAt),
         audienceLabel: `Liberado no curso ${attachment.Course?.title || 'curso'}`,
         requiredEnrollmentStatusLabel: STATUS_LABELS[attachment.requiredEnrollmentStatus] || 'Sem requisito',
         fileSizeLabel: formatBytes(attachment.fileSize),

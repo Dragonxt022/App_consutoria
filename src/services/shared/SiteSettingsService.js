@@ -26,10 +26,12 @@ const defaultSettings = {
   smtp_pass: '',
   smtp_from: 'noreply@consultpro.com.br',
   email_notify_admin_new_enrollment: 'true',
+  email_notify_admin_enrollment_attachment_received: 'true',
   email_notify_students_course_confirmed: 'true',
   email_notify_student_enrollment_confirmed: 'true',
   email_notify_student_enrollment_cancelled: 'true',
   email_notify_student_course_reminder_24h: 'true',
+  email_notify_student_new_attachment_available: 'true',
   certificate_signature_url: '',
   home_banners: []
 };

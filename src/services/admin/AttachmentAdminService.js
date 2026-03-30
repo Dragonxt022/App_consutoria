@@ -1,7 +1,9 @@
 const fs = require('fs');
 const { Op } = require('sequelize');
-const { Attachment, Course, User } = require('../../models');
+const { Attachment, Course, User, Enrollment } = require('../../models');
 const { resolveUploadUrlToPath } = require('../../utils/UploadPaths');
+const { buildAppUrl } = require('../../utils/Url');
+const { EmailService, SiteSettingsService } = require('../shared');
 
 const STATUS_LABELS = {
   pendente: 'Inscrição pendente',
@@ -230,7 +232,43 @@ class AttachmentAdminService {
       }
     }
 
-    await Attachment.create(payload);
+    const attachment = await Attachment.create(payload);
+
+    try {
+      const settings = await SiteSettingsService.getSettings();
+      const shouldNotifyStudents = String(settings.email_notify_student_new_attachment_available || 'false') === 'true';
+
+      if (shouldNotifyStudents) {
+        let recipients = [];
+
+        if (payload.userId) {
+          const targetUser = await User.findByPk(payload.userId, { attributes: ['email'] });
+          recipients = targetUser?.email ? [targetUser.email] : [];
+        } else if (payload.courseId && payload.requiredEnrollmentStatus) {
+          const matchingEnrollments = await Enrollment.findAll({
+            where: {
+              courseId: payload.courseId,
+              status: payload.requiredEnrollmentStatus
+            },
+            include: [{ model: User, as: 'student', attributes: ['email'] }]
+          });
+
+          recipients = matchingEnrollments
+            .map((enrollment) => enrollment.student?.email || enrollment.studentEmail)
+            .filter(Boolean);
+        }
+
+        await EmailService.sendNewAttachmentAvailableToStudents({
+          recipients,
+          attachmentTitle: payload.title,
+          dashboardUrl: buildAppUrl(req, '/aluno/dashboard'),
+          detailsUrl: buildAppUrl(req, `/meus-arquivos/${attachment.id}`)
+        });
+      }
+    } catch (error) {
+      console.error('Erro ao enviar aviso de novo anexo para alunos:', error);
+    }
+
     return { success: true };
   }
 

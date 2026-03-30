@@ -415,6 +415,18 @@
 
                     <label class="flex items-start justify-between gap-4 rounded-2xl border border-slate-200 bg-white px-4 py-4">
                         <div class="pr-4">
+                            <span class="block text-sm font-bold text-slate-800">Avisar administradores quando o aluno enviar nota de empenho ou documento</span>
+                            <span class="mt-1 block text-xs text-slate-500">Sempre que um aluno anexar um documento na própria inscrição, os administradores recebem um e-mail com link direto para análise.</span>
+                        </div>
+                        <span class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+                            <input type="hidden" name="email_notify_admin_enrollment_attachment_received" value="false">
+                            <input type="checkbox" name="email_notify_admin_enrollment_attachment_received" value="true" <%= settings.email_notify_admin_enrollment_attachment_received === 'true' ? 'checked' : '' %> class="sr-only peer">
+                            <span class="w-14 h-7 bg-slate-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-indigo-600"></span>
+                        </span>
+                    </label>
+
+                    <label class="flex items-start justify-between gap-4 rounded-2xl border border-slate-200 bg-white px-4 py-4">
+                        <div class="pr-4">
                             <span class="block text-sm font-bold text-slate-800">Avisar todos os inscritos quando a turma for confirmada</span>
                             <span class="mt-1 block text-xs text-slate-500">Ao mudar o status manual do curso para <strong>Confirmado</strong>, todos os inscritos não cancelados recebem a confirmação da turma.</span>
                         </div>
@@ -457,6 +469,18 @@
                         <span class="relative inline-flex items-center cursor-pointer flex-shrink-0">
                             <input type="hidden" name="email_notify_student_course_reminder_24h" value="false">
                             <input type="checkbox" name="email_notify_student_course_reminder_24h" value="true" <%= settings.email_notify_student_course_reminder_24h === 'true' ? 'checked' : '' %> class="sr-only peer">
+                            <span class="w-14 h-7 bg-slate-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-indigo-600"></span>
+                        </span>
+                    </label>
+
+                    <label class="flex items-start justify-between gap-4 rounded-2xl border border-slate-200 bg-white px-4 py-4">
+                        <div class="pr-4">
+                            <span class="block text-sm font-bold text-slate-800">Avisar o aluno por e-mail quando receber um novo anexo</span>
+                            <span class="mt-1 block text-xs text-slate-500">Quando a equipe disponibilizar um novo material pela ferramenta de anexos, o destinatário recebe um e-mail com link direto para abrir o conteúdo.</span>
+                        </div>
+                        <span class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+                            <input type="hidden" name="email_notify_student_new_attachment_available" value="false">
+                            <input type="checkbox" name="email_notify_student_new_attachment_available" value="true" <%= settings.email_notify_student_new_attachment_available === 'true' ? 'checked' : '' %> class="sr-only peer">
                             <span class="w-14 h-7 bg-slate-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-indigo-600"></span>
                         </span>
                     </label>

@@ -96,6 +96,58 @@
             </article>
         </section>
 
+        <% if (attachmentNotice) { %>
+            <section
+                x-data="{
+                    storageKey: 'student-attachment-notice-<%= attachmentNotice.latestId %>',
+                    visible: true,
+                    init() {
+                        this.visible = localStorage.getItem(this.storageKey) !== 'hidden';
+                    },
+                    dismiss() {
+                        this.visible = false;
+                        localStorage.setItem(this.storageKey, 'hidden');
+                    }
+                }"
+                x-show="visible"
+                x-cloak
+                class="rounded-[2rem] border border-emerald-200 bg-gradient-to-r from-emerald-50 via-white to-teal-50 p-5 shadow-sm"
+            >
+                <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                    <div class="flex items-start gap-4">
+                        <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white text-emerald-600 shadow-sm">
+                            <svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-black uppercase tracking-[0.24em] text-emerald-600">Novo anexo disponível</p>
+                            <h3 class="mt-2 text-xl font-black text-slate-950"><%= attachmentNotice.latestTitle %></h3>
+                            <p class="mt-2 text-sm leading-6 text-slate-600">
+                                Você recebeu <strong><%= attachmentNotice.count %> anexo(s)</strong> recentemente. Abra o material para visualizar ou baixar os arquivos liberados.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-3">
+                        <button
+                            type="button"
+                            @click="dismiss()"
+                            class="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-emerald-200 bg-white text-emerald-700 transition hover:bg-emerald-50"
+                            aria-label="Dispensar aviso de novo anexo"
+                        >
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                        <a href="<%= attachmentNotice.latestUrl %>" @click="dismiss()" class="inline-flex items-center justify-center rounded-2xl bg-emerald-600 px-5 py-3 text-sm font-black text-white transition hover:bg-emerald-700">
+                            Abrir anexo
+                        </a>
+                        <a href="/meus-arquivos" class="inline-flex items-center justify-center rounded-2xl border border-emerald-200 bg-white px-5 py-3 text-sm font-black text-emerald-700 transition hover:bg-emerald-50">
+                            Ver todos os arquivos
+                        </a>
+                    </div>
+                </div>
+            </section>
+        <% } %>
+
         <section class="rounded-[2rem] border border-slate-200 bg-white shadow-sm">
             <div class="flex flex-col gap-3 border-b border-slate-100 px-6 py-5 md:flex-row md:items-end md:justify-between">
                 <div>
@@ -124,6 +176,7 @@
                     <% enrollments.forEach((enroll) => { %>
                         <% 
                             const course = enroll.Course;
+                            const hasEnrollmentAttachment = Boolean(enroll.hasEnrollmentAttachment || enroll.enrollmentAttachmentPath);
                             const enrollmentStatusMap = {
                                 pendente: {
                                     label: 'Inscrição pendente',
@@ -206,9 +259,9 @@
                                             Comprovante
                                         </a>
 
-                                        <a href="/meus-cursos/<%= enroll.id %>/anexo" class="inline-flex items-center justify-center rounded-xl <%= enroll.hasEnrollmentAttachment ? 'border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100' : 'border border-amber-200 bg-amber-50 text-amber-800 hover:bg-amber-100' %> px-4 py-2.5 text-xs font-black transition">
+                                        <a href="/meus-cursos/<%= enroll.id %>/anexo" class="inline-flex items-center justify-center rounded-xl <%= hasEnrollmentAttachment ? 'border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100' : 'border border-amber-200 bg-amber-50 text-amber-800 hover:bg-amber-100' %> px-4 py-2.5 text-xs font-black transition">
                                             <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828L18 9.828M8 7h8a2 2 0 012 2v8a2 2 0 01-2 2H8a2 2 0 01-2-2V9a2 2 0 012-2z" /></svg>
-                                            <%= enroll.hasEnrollmentAttachment ? 'Anexo enviado' : 'Anexar documento' %>
+                                            <%= hasEnrollmentAttachment ? 'Anexo enviado' : 'Anexar documento' %>
                                         </a>
 
                                         <% if (course && course.proposalDoc) { %>
@@ -250,7 +303,7 @@
                                         <p class="mt-2 text-sm font-semibold text-slate-800">
                                             <% if (enroll.status === 'completo') { %>
                                                 Baixar certificado
-                                            <% } else if (!enroll.hasEnrollmentAttachment) { %>
+                                            <% } else if (!hasEnrollmentAttachment) { %>
                                                 Enviar documento
                                             <% } else if (enroll.status === 'confirmado') { %>
                                                 Acompanhar detalhes

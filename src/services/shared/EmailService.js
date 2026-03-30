@@ -267,6 +267,46 @@ class EmailService {
       </div>
     `);
   }
+
+  async sendEnrollmentAttachmentReceivedToAdmins({ adminRecipients, enrollment, course, manageUrl }) {
+    const subject = `Documento recebido na inscrição: ${course.title}`;
+
+    return this.sendBulkEmails(adminRecipients, subject, () => `
+      <div style="font-family: Arial, sans-serif; max-width: 640px; margin: 0 auto; color: #0f172a;">
+        <h2 style="margin-bottom: 12px; color: #059669;">Documento da inscrição recebido</h2>
+        <p>Um aluno enviou um documento complementar para análise administrativa.</p>
+
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:14px; padding:20px; margin:24px 0;">
+          <p style="margin:0 0 8px;"><strong>Curso:</strong> ${course.title}</p>
+          <p style="margin:0 0 8px;"><strong>Aluno:</strong> ${enrollment.studentName}</p>
+          <p style="margin:0 0 8px;"><strong>E-mail:</strong> ${enrollment.studentEmail}</p>
+          <p style="margin:0;"><strong>Status da inscrição:</strong> ${enrollment.status}</p>
+        </div>
+
+        <a href="${manageUrl}" style="display:inline-block; background:#059669; color:#fff; padding:14px 24px; text-decoration:none; border-radius:10px; font-weight:700;">Abrir inscrição no painel</a>
+      </div>
+    `);
+  }
+
+  async sendNewAttachmentAvailableToStudents({ recipients, attachmentTitle, dashboardUrl, detailsUrl }) {
+    const subject = `Novo anexo disponível: ${attachmentTitle}`;
+
+    return this.sendBulkEmails(recipients, subject, () => `
+      <div style="font-family: Arial, sans-serif; max-width: 640px; margin: 0 auto; color: #0f172a;">
+        <h2 style="margin-bottom: 12px; color: #2563eb;">Você recebeu um novo anexo</h2>
+        <p>Um novo material foi disponibilizado para você na área do aluno.</p>
+
+        <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:14px; padding:20px; margin:24px 0;">
+          <p style="margin:0;"><strong>Anexo:</strong> ${attachmentTitle}</p>
+        </div>
+
+        <div style="margin-top: 24px;">
+          <a href="${detailsUrl}" style="display:inline-block; background:#2563eb; color:#fff; padding:14px 24px; text-decoration:none; border-radius:10px; font-weight:700; margin-right:12px;">Abrir anexo</a>
+          <a href="${dashboardUrl}" style="display:inline-block; background:#e2e8f0; color:#0f172a; padding:14px 24px; text-decoration:none; border-radius:10px; font-weight:700;">Ir para a área do aluno</a>
+        </div>
+      </div>
+    `);
+  }
 }
 
 module.exports = new EmailService();

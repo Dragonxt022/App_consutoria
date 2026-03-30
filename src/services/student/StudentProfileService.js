@@ -3,6 +3,8 @@ const path = require('path');
 const { User, Enrollment, Course } = require('../../models');
 const { resolveUploadUrlToPath, getPrivateStoragePath } = require('../../utils/UploadPaths');
 const { resolveCourseStatus } = require('../../utils/CourseStatus');
+const { buildAppUrl } = require('../../utils/Url');
+const { EmailService, NotificationService, SiteSettingsService } = require('../shared');
 
 class StudentProfileService {
   removeEnrollmentAttachmentIfNeeded(attachmentPath) {
@@ -156,7 +158,7 @@ class StudentProfileService {
     return { user, enrollment };
   }
 
-  async uploadEnrollmentAttachment(userId, enrollmentId, file) {
+  async uploadEnrollmentAttachment(userId, enrollmentId, file, req) {
     const enrollment = await Enrollment.findOne({
       where: { id: enrollmentId, userId },
       include: [{ model: Course }]
@@ -181,6 +183,41 @@ class StudentProfileService {
 
     if (previousPath && previousPath !== enrollment.enrollmentAttachmentPath) {
       this.removeEnrollmentAttachmentIfNeeded(previousPath);
+    }
+
+    try {
+      await NotificationService.createEnrollmentAttachmentReceivedNotification({
+        enrollment,
+        course: enrollment.Course
+      });
+    } catch (error) {
+      console.error('Erro ao criar notificação de documento da inscrição recebido:', error);
+    }
+
+    try {
+      const settings = await SiteSettingsService.getSettings();
+      const notifyAdmins = String(settings.email_notify_admin_enrollment_attachment_received || 'false') === 'true';
+
+      if (notifyAdmins) {
+        const adminUsers = await User.findAll({
+          where: {
+            role: 'admin',
+            active: true
+          },
+          attributes: ['email']
+        });
+
+        const adminRecipients = adminUsers.map((admin) => admin.email).filter(Boolean);
+
+        await EmailService.sendEnrollmentAttachmentReceivedToAdmins({
+          adminRecipients,
+          enrollment,
+          course: enrollment.Course,
+          manageUrl: req ? buildAppUrl(req, `/admin/inscricoes/${enrollment.id}/editar`) : `/admin/inscricoes/${enrollment.id}/editar`
+        });
+      }
+    } catch (error) {
+      console.error('Erro ao enviar e-mail de documento da inscrição para administradores:', error);
     }
 
     return { notFound: false, enrollment };

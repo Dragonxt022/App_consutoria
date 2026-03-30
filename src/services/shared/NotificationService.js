@@ -51,6 +51,13 @@ class NotificationService {
           badgeClass: 'bg-sky-50 text-sky-700',
           label: 'Lembrete 24h'
         };
+      case 'enrollment_attachment_received':
+        return {
+          iconBgClass: 'bg-emerald-50',
+          iconTextClass: 'text-emerald-600',
+          badgeClass: 'bg-emerald-50 text-emerald-700',
+          label: 'Documento recebido'
+        };
       default:
         return {
           iconBgClass: 'bg-slate-100',
@@ -186,6 +193,19 @@ class NotificationService {
         attemptedRecipients,
         sentRecipients,
         startDate: course.startDate
+      }
+    });
+  }
+
+  async createEnrollmentAttachmentReceivedNotification({ enrollment, course }) {
+    return this.createNotification({
+      type: 'enrollment_attachment_received',
+      title: 'Documento da inscrição recebido',
+      message: `${enrollment.studentName} enviou um documento para a inscrição de ${course.title}.`,
+      link: `/admin/inscricoes/${enrollment.id}/editar`,
+      metadata: {
+        enrollmentId: enrollment.id,
+        courseId: course.id
       }
     });
   }

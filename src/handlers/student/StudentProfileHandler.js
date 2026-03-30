@@ -109,7 +109,7 @@ const StudentProfileHandler = {
 
   async uploadEnrollmentAttachment(req, res) {
     try {
-      const result = await StudentProfileService.uploadEnrollmentAttachment(req.user.id, req.params.id, req.file);
+      const result = await StudentProfileService.uploadEnrollmentAttachment(req.user.id, req.params.id, req.file, req);
 
       if (result.notFound) {
         return res.redirect('/meus-cursos?error=Inscrição não encontrada');
