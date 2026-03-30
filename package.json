@@ -19,7 +19,8 @@
     "seed": "node scripts/SeedCourses.js",
     "seed:notifications": "node scripts/SeedNotifications.js",
     "migrate:course-prices-decimal": "node scripts/migrateCoursePricesToDecimal.js",
-    "test": "node --test tests/**/*.test.js"
+    "test": "node --test tests/**/*.test.js",
+    "test:coverage": "node --test --experimental-test-coverage tests/**/*.test.js"
   },
   "keywords": [],
   "author": "",
