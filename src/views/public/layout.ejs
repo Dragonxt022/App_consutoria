@@ -77,6 +77,20 @@
             transform: translateX(-100%);
             transition: opacity 0.3s, transform 0.3s;
         }
+        .mobile-menu-overlay-base {
+            opacity: 0;
+            transition: opacity 0.28s ease;
+        }
+        .mobile-menu-overlay-open {
+            opacity: 1;
+        }
+        .mobile-menu-panel-base {
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+        .mobile-menu-panel-open {
+            transform: translateX(0);
+        }
         .user-avatar {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
@@ -475,10 +489,10 @@
     <!-- Mobile Menu -->
     <div id="mobile-menu" class="fixed inset-0 z-50 hidden">
         <!-- Overlay -->
-        <div id="mobile-menu-overlay" class="fixed inset-0 bg-black bg-opacity-50"></div>
+        <div id="mobile-menu-overlay" class="mobile-menu-overlay-base fixed inset-0 bg-slate-950/55 backdrop-blur-[1px]"></div>
         
         <!-- Menu Content -->
-        <div class="fixed inset-y-0 right-0 w-80 max-w-full bg-white shadow-xl">
+        <div id="mobile-menu-panel" class="mobile-menu-panel-base fixed inset-y-0 right-0 w-full max-w-full bg-white shadow-2xl sm:w-80 sm:max-w-[20rem]">
             <div class="h-full flex flex-col">
                 <!-- Header do Menu Mobile -->
                 <div class="p-6 border-b border-slate-100 bg-slate-50">
@@ -554,20 +568,41 @@
                             </svg>
                             Certid&otilde;es
                         </a>
-                        <a href="/blog" class="flex items-center px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-lg transition-colors">
-                            <svg class="w-5 h-5 mr-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21H8a2 2 0 01-2-2V5a2 2 0 012-2h11m0 18a2 2 0 002-2V7m-2 14V7m0 0L15 3m4 4h-4a2 2 0 01-2-2V3m-5 6h5m-5 4h8m-8 4h8" />
-                            </svg>
-                            Blog
-                        </a>
                         <% if (blogNavCategories.length) { %>
-                            <div class="ml-12 space-y-1 border-l border-slate-200 pl-4">
-                                <% blogNavCategories.forEach((category) => { %>
-                                    <a href="/blog?categoria=<%= category.slug %>" class="block py-2 text-sm text-slate-500 transition hover:text-indigo-600">
-                                        <%= category.name %>
+                            <div x-data="{ open: false }" class="rounded-xl border border-slate-200/80 bg-white">
+                                <div class="flex items-center">
+                                    <a href="/blog" class="flex min-w-0 flex-1 items-center px-4 py-3 text-slate-700 hover:bg-slate-50 rounded-l-xl transition-colors">
+                                        <svg class="w-5 h-5 mr-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21H8a2 2 0 01-2-2V5a2 2 0 012-2h11m0 18a2 2 0 002-2V7m-2 14V7m0 0L15 3m4 4h-4a2 2 0 01-2-2V3m-5 6h5m-5 4h8m-8 4h8" />
+                                        </svg>
+                                        Blog
                                     </a>
-                                <% }) %>
+                                    <button type="button"
+                                            @click="open = !open"
+                                            :aria-expanded="open.toString()"
+                                            class="flex items-center justify-center self-stretch px-4 text-slate-400 transition hover:bg-slate-50 hover:text-slate-600 rounded-r-xl">
+                                        <svg class="h-5 w-5 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div x-show="open" x-transition.opacity.duration.200ms class="border-t border-slate-100 px-4 py-3">
+                                    <div class="ml-8 space-y-1 border-l border-slate-200 pl-4">
+                                        <% blogNavCategories.forEach((category) => { %>
+                                            <a href="/blog?categoria=<%= category.slug %>" class="block py-2 text-sm font-medium text-slate-500 transition hover:text-indigo-600">
+                                                <%= category.name %>
+                                            </a>
+                                        <% }) %>
+                                    </div>
+                                </div>
                             </div>
+                        <% } else { %>
+                            <a href="/blog" class="flex items-center px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-lg transition-colors">
+                                <svg class="w-5 h-5 mr-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21H8a2 2 0 01-2-2V5a2 2 0 012-2h11m0 18a2 2 0 002-2V7m-2 14V7m0 0L15 3m4 4h-4a2 2 0 01-2-2V3m-5 6h5m-5 4h8m-8 4h8" />
+                                </svg>
+                                Blog
+                            </a>
                         <% } %>
                         <a href="/validar-certificado" class="flex items-center px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-lg transition-colors">
                             <svg class="w-5 h-5 mr-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -817,6 +852,8 @@
             const mobileMenu = document.getElementById('mobile-menu');
             const closeMobileMenu = document.getElementById('close-mobile-menu');
             const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+            const mobileMenuPanel = document.getElementById('mobile-menu-panel');
+            let mobileMenuCloseTimer = null;
 
             function isMobileMenuOpen() {
                 return mobileMenu && !mobileMenu.classList.contains('hidden');
@@ -824,16 +861,28 @@
 
             function openMobileMenu() {
                 if (!mobileMenu) return;
+                if (mobileMenuCloseTimer) {
+                    clearTimeout(mobileMenuCloseTimer);
+                    mobileMenuCloseTimer = null;
+                }
                 mobileMenu.classList.remove('hidden');
                 document.body.style.overflow = 'hidden';
                 if (mobileMenuBtn) mobileMenuBtn.setAttribute('aria-expanded', 'true');
+                requestAnimationFrame(() => {
+                    if (mobileMenuOverlay) mobileMenuOverlay.classList.add('mobile-menu-overlay-open');
+                    if (mobileMenuPanel) mobileMenuPanel.classList.add('mobile-menu-panel-open');
+                });
             }
 
             function closeMobileMenuFunc() {
                 if (!mobileMenu) return;
-                mobileMenu.classList.add('hidden');
+                if (mobileMenuOverlay) mobileMenuOverlay.classList.remove('mobile-menu-overlay-open');
+                if (mobileMenuPanel) mobileMenuPanel.classList.remove('mobile-menu-panel-open');
                 document.body.style.overflow = '';
                 if (mobileMenuBtn) mobileMenuBtn.setAttribute('aria-expanded', 'false');
+                mobileMenuCloseTimer = setTimeout(() => {
+                    mobileMenu.classList.add('hidden');
+                }, 300);
             }
 
             function toggleMobileMenu() {
