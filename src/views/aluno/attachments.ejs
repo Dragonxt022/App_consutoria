@@ -2,13 +2,13 @@
 
 <div class="mx-auto w-full max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
     <section class="rounded-[2rem] border border-slate-200 bg-white shadow-sm">
-        <div class="flex flex-col gap-3 border-b border-slate-100 px-6 py-5 md:flex-row md:items-end md:justify-between">
+        <div class="flex flex-col gap-3 border-b border-slate-100 px-5 py-5 md:flex-row md:items-end md:justify-between md:px-6">
             <div>
                 <p class="text-[10px] font-black uppercase tracking-[0.24em] text-indigo-500">Centro de arquivos</p>
                 <h2 class="mt-2 text-2xl font-black tracking-tight text-slate-950">Arquivos recebidos</h2>
                 <p class="mt-2 text-sm leading-6 text-slate-500">Aqui aparecem materiais enviados diretamente para você ou liberados conforme o status da sua inscrição nos cursos.</p>
             </div>
-            <div class="inline-flex items-center rounded-full bg-slate-100 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-slate-500">
+            <div class="inline-flex w-fit items-center rounded-full bg-slate-100 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-slate-500">
                 <%= attachments.length %> arquivo(s)
             </div>
         </div>
@@ -24,7 +24,7 @@
                 <p class="mt-2 text-sm text-slate-500">Quando um administrador disponibilizar algum material para você, ele aparecerá aqui com detalhes e botão de download.</p>
             </div>
         <% } else { %>
-            <div class="grid gap-5 p-5 md:grid-cols-2 md:p-6 xl:grid-cols-3">
+            <div class="grid gap-4 p-4 sm:gap-5 sm:p-5 md:grid-cols-2 md:p-6 xl:grid-cols-3">
                 <% attachments.forEach((attachment) => { %>
                     <article class="rounded-3xl border <%= attachment.isRecent ? 'border-emerald-200 bg-emerald-50/70 shadow-[0_20px_50px_-30px_rgba(16,185,129,0.45)]' : 'border-slate-200 bg-slate-50/70' %> p-5 transition hover:border-slate-300 hover:bg-white hover:shadow-sm">
                         <div class="flex items-start justify-between gap-4">
@@ -47,7 +47,7 @@
 
                         <div class="mt-5">
                             <p class="text-xs font-black uppercase tracking-[0.22em] <%= attachment.isRecent ? 'text-emerald-600' : 'text-slate-400' %>"><%= attachment.audienceLabel %></p>
-                            <h3 class="mt-3 text-xl font-black leading-tight text-slate-950"><%= attachment.title %></h3>
+                            <h3 class="mt-3 text-lg font-black leading-tight text-slate-950 sm:text-xl"><%= attachment.title %></h3>
                             <p class="mt-3 text-sm leading-6 text-slate-500"><%= attachment.description || 'Arquivo disponibilizado para consulta e download.' %></p>
                         </div>
 
