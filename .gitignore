@@ -17,7 +17,6 @@ pids
 lib-cov
 docs
 test
-scripts
 test-support
 # Coverage directory used by tools like istanbul
 coverage

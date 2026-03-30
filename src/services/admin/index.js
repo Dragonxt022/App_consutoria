@@ -9,5 +9,6 @@ module.exports = {
   ProfileAdminService: require('./ProfileAdminService'),
   SalesAdminService: require('./SalesAdminService'),
   SettingAdminService: require('./SettingAdminService'),
+  UpdateAdminService: require('./UpdateAdminService'),
   UserAdminService: require('./UserAdminService')
 };

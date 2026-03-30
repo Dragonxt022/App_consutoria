@@ -13,6 +13,7 @@
     "db:migrate:undo:all": "sequelize-cli db:migrate:undo:all",
     "db:migrate:create": "sequelize-cli migration:generate --name",
     "db:migrate:baseline": "node scripts/BaselineInitialMigration.js",
+    "app:update:prepare": "node scripts/RunPostUpdate.js",
     "build-css": "postcss src/public/css/input.css -o src/public/css/output.css --watch",
     "build-css-once": "postcss src/public/css/input.css -o src/public/css/output.css",
     "seed": "node scripts/SeedCourses.js",

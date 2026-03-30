@@ -2,8 +2,16 @@
         <form id="settings-form" action="/admin/configuracoes" method="POST" enctype="multipart/form-data" class="space-y-8">
             <input type="hidden" name="active_tab" :value="activeConfigTab">
             <section class="sticky top-4 z-20 rounded-2xl border border-slate-200 bg-white/95 p-3 shadow-sm backdrop-blur">
-                <div class="mb-3">
+                <div class="mb-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                    <div>
                     <p class="text-xs font-black uppercase tracking-[0.24em] text-slate-400">Submenu de Configurações</p>
+                    </div>
+                    <a href="/admin/atualizacoes" class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-bold text-slate-700 transition hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700">
+                        <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                        Atualizações
+                    </a>
                 </div>
                 <div class="grid grid-cols-2 gap-2 md:grid-cols-3 xl:grid-cols-7">
                     <a href="/admin/configuracoes?tab=identidade" @click.prevent="activeConfigTab = 'identidade'; window.history.replaceState({}, '', '/admin/configuracoes?tab=identidade')" :class="activeConfigTab === 'identidade' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" class="rounded-xl px-4 py-3 text-center text-sm font-semibold transition-all">

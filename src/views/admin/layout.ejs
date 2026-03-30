@@ -250,6 +250,13 @@
                         <span x-show="!sidebarCollapsed">Configurações</span>
                     </a>
 
+                    <a href="/admin/atualizacoes" class="group flex items-center rounded-lg px-3 py-3 text-sm font-medium transition-colors hover:bg-slate-100 hover:text-slate-900 <%= title === 'Atualizações da Aplicação' ? 'sidebar-link-active' : '' %>" :class="sidebarCollapsed ? 'justify-center' : ''" :title="sidebarCollapsed ? 'Atualizações' : ''">
+                        <svg class="h-6 w-6 <%= title === 'Atualizações da Aplicação' ? 'text-indigo-600' : 'text-slate-400 group-hover:text-indigo-600' %>" :class="sidebarCollapsed ? '' : 'mr-3'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                        <span x-show="!sidebarCollapsed">Atualizações</span>
+                    </a>
+
                     <a href="/admin/perfil" class="group flex items-center rounded-lg px-3 py-3 text-sm font-medium transition-colors hover:bg-slate-100 hover:text-slate-900 <%= title === 'Perfil do Administrador' ? 'sidebar-link-active' : '' %>" :class="sidebarCollapsed ? 'justify-center' : ''" :title="sidebarCollapsed ? 'Meu Perfil' : ''">
                         <svg class="h-6 w-6 <%= title === 'Perfil do Administrador' ? 'text-indigo-600' : 'text-slate-400 group-hover:text-indigo-600' %>" :class="sidebarCollapsed ? '' : 'mr-3'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A9 9 0 1118.88 17.8M15 11a3 3 0 11-6 0 3 3 0 016 0z" />

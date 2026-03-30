@@ -12,6 +12,7 @@ const {
   AdminProfileHandler,
   AdminSalesHandler,
   AdminSettingHandler,
+  AdminUpdateHandler,
   AdminUserHandler
 } = require('../handlers');
 const { authMiddleware, publicMiddleware, uploads } = require('../middleware');
@@ -72,6 +73,7 @@ router.post('/admin/loja/:id/deletar', authMiddleware('admin'), routeHandler(Adm
 
 router.get('/admin/configuracoes', authMiddleware('admin'), routeHandler(AdminSettingHandler, 'show'));
 router.post('/admin/configuracoes', authMiddleware('admin'), uploadSettingsFiles, routeHandler(AdminSettingHandler, 'update'));
+router.get('/admin/atualizacoes', authMiddleware('admin'), routeHandler(AdminUpdateHandler, 'show'));
 
 router.get('/admin/cursos', authMiddleware('admin'), routeHandler(AdminCourseHandler, 'list'));
 router.get('/admin/cursos/criar', authMiddleware('admin'), routeHandler(AdminCourseHandler, 'showCreate'));

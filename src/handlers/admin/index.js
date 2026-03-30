@@ -10,5 +10,6 @@ module.exports = {
   AdminProfileHandler: require('./AdminProfileHandler'),
   AdminSalesHandler: require('./AdminSalesHandler'),
   AdminSettingHandler: require('./AdminSettingHandler'),
+  AdminUpdateHandler: require('./AdminUpdateHandler'),
   AdminUserHandler: require('./AdminUserHandler')
 };

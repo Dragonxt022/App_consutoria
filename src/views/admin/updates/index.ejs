@@ -1,0 +1,194 @@
+<div class="w-full max-w-6xl space-y-8">
+    <section class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+        <div class="flex flex-col gap-5 border-b border-slate-100 px-6 py-6 md:flex-row md:items-start md:justify-between">
+            <div class="flex items-start gap-4">
+                <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600 shadow-sm">
+                    <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2m5-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-xs font-black uppercase tracking-[0.24em] text-slate-400">Central de Atualizações</p>
+                    <h2 class="mt-2 text-3xl font-black tracking-tight text-slate-950">Acompanhe o estado atual da aplicação</h2>
+                    <p class="mt-3 max-w-3xl text-sm leading-6 text-slate-500">
+                        Esta tela é somente leitura. Ela mostra a versão atual, os commits disponíveis no repositório, o estado do banco,
+                        a situação dos arquivos persistentes e o comando recomendado para aplicar a atualização manual com segurança.
+                    </p>
+                </div>
+            </div>
+
+            <div class="rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 text-right">
+                <p class="text-[10px] font-black uppercase tracking-[0.24em] text-slate-400">Comando recomendado</p>
+                <code class="mt-2 block text-sm font-black text-slate-900"><%= recommendedCommand %></code>
+            </div>
+        </div>
+
+        <div class="grid gap-4 p-6 md:grid-cols-2 xl:grid-cols-4">
+            <div class="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                <p class="text-[10px] font-black uppercase tracking-[0.22em] text-slate-400">Versão atual</p>
+                <p class="mt-2 text-2xl font-black text-slate-950">v<%= version %></p>
+                <p class="mt-2 text-sm text-slate-500">Commit atual: <span class="font-semibold text-slate-700"><%= currentShortCommit || 'indisponível' %></span></p>
+            </div>
+
+            <div class="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                <p class="text-[10px] font-black uppercase tracking-[0.22em] text-slate-400">Branch</p>
+                <p class="mt-2 text-2xl font-black text-slate-950"><%= branch %></p>
+                <p class="mt-2 text-sm text-slate-500">Upstream: <span class="font-semibold text-slate-700"><%= upstream || (gitAvailable ? 'não configurado' : 'indisponível') %></span></p>
+            </div>
+
+            <div class="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                <p class="text-[10px] font-black uppercase tracking-[0.22em] text-slate-400">Atualização</p>
+                <p class="mt-2 text-2xl font-black <%= !gitAvailable ? 'text-slate-700' : (updateAvailable ? 'text-amber-600' : 'text-emerald-600') %>">
+                    <%= !gitAvailable ? 'Verificação pendente' : (updateAvailable ? `${behindCount} commit(s)` : 'Em dia') %>
+                </p>
+                <p class="mt-2 text-sm text-slate-500">
+                    <% if (!gitAvailable) { %>
+                        O Git ainda precisa ser liberado para leitura nesta pasta.
+                    <% } else if (updateAvailable) { %>
+                        Novo commit remoto: <span class="font-semibold text-slate-700"><%= remoteShortCommit %></span>
+                    <% } else { %>
+                        Nenhuma atualização pendente no upstream.
+                    <% } %>
+                </p>
+            </div>
+
+            <div class="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                <p class="text-[10px] font-black uppercase tracking-[0.22em] text-slate-400">Migrations</p>
+                <p class="mt-2 text-2xl font-black <%= migrations.pending ? 'text-amber-600' : 'text-emerald-600' %>">
+                    <%= migrations.pending ? `${migrations.pending} pendente(s)` : 'Tudo aplicado' %>
+                </p>
+                <p class="mt-2 text-sm text-slate-500"><span class="font-semibold text-slate-700"><%= migrations.applied %></span> de <span class="font-semibold text-slate-700"><%= migrations.total %></span> migrations já aplicadas.</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="grid gap-8 xl:grid-cols-[1.3fr_0.9fr]">
+        <section class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+            <div class="border-b border-slate-100 px-6 py-5">
+                <p class="text-xs font-black uppercase tracking-[0.24em] text-slate-400">Atualizações disponíveis</p>
+                <h3 class="mt-2 text-2xl font-black text-slate-950">Commits prontos para entrar na produção</h3>
+                <p class="mt-2 text-sm text-slate-500">A lista abaixo compara seu commit atual com o upstream configurado.</p>
+            </div>
+
+            <div class="p-6">
+                <% if (gitIssueType === 'safe-directory') { %>
+                    <div class="mb-5 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-4 text-sm text-amber-900">
+                        <p class="font-semibold">O servidor ainda não liberou este repositório para consulta do Git.</p>
+                        <p class="mt-2"><%= gitIssueMessage %></p>
+                        <p class="mt-3">Rode este comando no servidor para normalizar a leitura:</p>
+                        <code class="mt-2 block rounded-xl bg-white px-3 py-3 text-sm font-black text-amber-900"><%= safeDirectoryCommand %></code>
+                    </div>
+                <% } else if (fetchError) { %>
+                    <div class="mb-5 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                        Não foi possível atualizar as referências remotas agora. A tela está usando as informações disponíveis localmente.
+                        <div class="mt-2 font-semibold"><%= fetchError %></div>
+                    </div>
+                <% } %>
+
+                <% if (updateCommits.length) { %>
+                    <div class="space-y-3">
+                        <% updateCommits.forEach((commit) => { %>
+                            <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
+                                <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+                                    <p class="font-semibold text-slate-900"><%= commit.message %></p>
+                                    <span class="inline-flex w-fit items-center rounded-full bg-white px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-500"><%= commit.hash %></span>
+                                </div>
+                            </div>
+                        <% }) %>
+                    </div>
+                <% } else if (gitAvailable) { %>
+                    <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-5 text-sm text-emerald-800">
+                        Nenhum commit novo aguardando atualização. O código local já está alinhado com o upstream configurado.
+                    </div>
+                <% } else { %>
+                    <div class="rounded-2xl border border-slate-200 bg-slate-50 px-5 py-5 text-sm text-slate-600">
+                        Assim que o Git for liberado nesta pasta, a lista de commits prontos para produção aparecerá aqui.
+                    </div>
+                <% } %>
+            </div>
+        </section>
+
+        <section class="space-y-8">
+            <div class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+                <div class="border-b border-slate-100 px-6 py-5">
+                    <p class="text-xs font-black uppercase tracking-[0.24em] text-slate-400">Ambiente</p>
+                    <h3 class="mt-2 text-xl font-black text-slate-950">Diagnóstico rápido</h3>
+                </div>
+                <div class="space-y-4 p-6">
+                    <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
+                        <p class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Node / npm</p>
+                        <p class="mt-2 text-sm font-semibold text-slate-900"><%= nodeVersion %> • npm <%= npmVersion %></p>
+                    </div>
+                    <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
+                        <p class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Sincronização automática</p>
+                        <p class="mt-2 text-sm font-semibold <%= dbSyncOnStart ? 'text-amber-700' : 'text-emerald-700' %>">
+                            <%= dbSyncOnStart ? 'Ativada no boot' : 'Desativada no boot' %>
+                        </p>
+                    </div>
+                    <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
+                        <p class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Worktree</p>
+                        <p class="mt-2 text-sm font-semibold <%= worktreeDirty ? 'text-amber-700' : 'text-emerald-700' %>">
+                            <%= worktreeDirty ? 'Existem alterações locais' : 'Repositório limpo' %>
+                        </p>
+                    </div>
+                    <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
+                        <p class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Testes</p>
+                        <p class="mt-2 text-sm font-semibold <%= testsStatus.ok ? 'text-emerald-700' : 'text-rose-700' %>">
+                            <%= testsStatus.label %>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+                <div class="border-b border-slate-100 px-6 py-5">
+                    <p class="text-xs font-black uppercase tracking-[0.24em] text-slate-400">Arquivos persistentes</p>
+                    <h3 class="mt-2 text-xl font-black text-slate-950">Storage e uploads</h3>
+                </div>
+                <div class="space-y-4 p-6 text-sm">
+                    <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
+                        <p class="font-black text-slate-900">Storage</p>
+                        <p class="mt-2 break-all text-slate-500"><%= storage.storageDir %></p>
+                        <p class="mt-2 font-semibold <%= storage.storageExists && storage.storageWritable ? 'text-emerald-700' : 'text-rose-700' %>">
+                            <%= storage.storageExists ? 'Pasta encontrada' : 'Pasta ausente' %> • <%= storage.storageWritable ? 'gravável' : 'sem permissão de escrita' %>
+                        </p>
+                    </div>
+                    <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
+                        <p class="font-black text-slate-900">Uploads mutáveis</p>
+                        <p class="mt-2 break-all text-slate-500"><%= storage.uploadsDir %></p>
+                        <p class="mt-2 font-semibold <%= storage.uploadsExists && storage.uploadsWritable ? 'text-emerald-700' : 'text-rose-700' %>">
+                            <%= storage.uploadsExists ? 'Pasta encontrada' : 'Pasta ausente' %> • <%= storage.uploadsWritable ? 'gravável' : 'sem permissão de escrita' %>
+                        </p>
+                    </div>
+                    <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
+                        <p class="font-black text-slate-900">Uploads legados do sistema</p>
+                        <p class="mt-2 break-all text-slate-500"><%= storage.legacyUploadsDir %></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <section class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+        <div class="border-b border-slate-100 px-6 py-5">
+            <p class="text-xs font-black uppercase tracking-[0.24em] text-slate-400">Aplicação manual</p>
+            <h3 class="mt-2 text-2xl font-black text-slate-950">Fluxo recomendado de atualização</h3>
+        </div>
+        <div class="grid gap-6 p-6 lg:grid-cols-[1.1fr_0.9fr]">
+            <div class="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                <ol class="space-y-4 text-sm text-slate-600">
+                    <li><span class="font-black text-slate-900">1.</span> Execute o <code class="font-black text-slate-900">git pull</code> manualmente no servidor.</li>
+                    <li><span class="font-black text-slate-900">2.</span> Rode <code class="font-black text-slate-900"><%= recommendedCommand %></code> para instalar dependências, garantir pastas, compilar CSS, aplicar migrations e executar testes.</li>
+                    <li><span class="font-black text-slate-900">3.</span> Se tudo passar, finalize com <code class="font-black text-slate-900">pm2 restart app-consutoria</code>.</li>
+                </ol>
+            </div>
+            <div class="rounded-2xl border border-slate-200 bg-slate-950 p-5 text-slate-100">
+                <p class="text-[10px] font-black uppercase tracking-[0.22em] text-slate-400">Comandos</p>
+                <pre class="mt-4 overflow-x-auto whitespace-pre-wrap break-words text-sm leading-7 text-slate-100"><code class="font-mono text-slate-100 text-white">git pull
+npm install
+<%= recommendedCommand %>
+pm2 restart app-consutoria</code></pre>
+            </div>
+        </div>
+    </section>
+</div>
