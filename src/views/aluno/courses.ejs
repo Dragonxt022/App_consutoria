@@ -103,8 +103,8 @@
                                     <a href="/meu-comprovante/<%= enroll.id %>" target="_blank" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-xs font-bold shadow-lg shadow-green-100 transition-all flex items-center whitespace-nowrap">
                                         Comprovante
                                     </a>
-                                    <a href="/meus-cursos/<%= enroll.id %>/anexo" class="<%= enroll.hasEnrollmentAttachment ? 'bg-indigo-100 hover:bg-indigo-200 text-indigo-700' : 'bg-amber-100 hover:bg-amber-200 text-amber-800' %> px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center whitespace-nowrap">
-                                        <%= enroll.hasEnrollmentAttachment ? 'Atualizar anexo' : 'Anexar documento' %>
+                                    <a href="/meus-cursos/<%= enroll.id %>/anexo" class="<%= enroll.hasEnrollmentAttachment ? 'bg-emerald-100 hover:bg-emerald-200 text-emerald-700 border border-emerald-200' : 'bg-amber-100 hover:bg-amber-200 text-amber-800 border border-amber-200' %> px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center whitespace-nowrap">
+                                        <%= enroll.hasEnrollmentAttachment ? 'Anexo enviado' : 'Anexar documento' %>
                                     </a>
                                     <% if(enroll.Course && enroll.Course.proposalDoc) { %>
                                         <a href="<%= enroll.Course.proposalDoc %>" download target="_blank" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center whitespace-nowrap">

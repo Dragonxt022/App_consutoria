@@ -814,32 +814,64 @@
             const mobileMenu = document.getElementById('mobile-menu');
             const closeMobileMenu = document.getElementById('close-mobile-menu');
             const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
-            
+
+            function isMobileMenuOpen() {
+                return mobileMenu && !mobileMenu.classList.contains('hidden');
+            }
+
             function openMobileMenu() {
+                if (!mobileMenu) return;
                 mobileMenu.classList.remove('hidden');
                 document.body.style.overflow = 'hidden';
+                if (mobileMenuBtn) mobileMenuBtn.setAttribute('aria-expanded', 'true');
             }
-            
+
             function closeMobileMenuFunc() {
+                if (!mobileMenu) return;
                 mobileMenu.classList.add('hidden');
                 document.body.style.overflow = '';
+                if (mobileMenuBtn) mobileMenuBtn.setAttribute('aria-expanded', 'false');
             }
-            
+
+            function toggleMobileMenu() {
+                if (isMobileMenuOpen()) {
+                    closeMobileMenuFunc();
+                    return;
+                }
+                openMobileMenu();
+            }
+
+            closeMobileMenuFunc();
+
             if (mobileMenuBtn) {
-                mobileMenuBtn.addEventListener('click', openMobileMenu);
+                mobileMenuBtn.setAttribute('aria-expanded', 'false');
+                mobileMenuBtn.addEventListener('click', toggleMobileMenu);
             }
-            
+
             if (closeMobileMenu) {
                 closeMobileMenu.addEventListener('click', closeMobileMenuFunc);
             }
-            
+
             if (mobileMenuOverlay) {
                 mobileMenuOverlay.addEventListener('click', closeMobileMenuFunc);
             }
-            
-            // Fechar menu ao clicar em um link
-            mobileMenu.querySelectorAll('a').forEach(link => {
-                link.addEventListener('click', closeMobileMenuFunc);
+
+            if (mobileMenu) {
+                mobileMenu.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', closeMobileMenuFunc);
+                });
+            }
+
+            window.addEventListener('resize', () => {
+                if (window.innerWidth >= 768) {
+                    closeMobileMenuFunc();
+                }
+            });
+
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape') {
+                    closeMobileMenuFunc();
+                }
             });
             
             // Melhorar a experiência de toque
