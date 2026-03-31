@@ -31,6 +31,10 @@ const Notification = sequelize.define('Notification', {
     type: DataTypes.JSON,
     allowNull: true
   },
+  adminUserId: {
+    type: DataTypes.INTEGER,
+    allowNull: false
+  },
   isRead: {
     type: DataTypes.BOOLEAN,
     allowNull: false,

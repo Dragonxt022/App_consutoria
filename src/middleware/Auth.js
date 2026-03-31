@@ -70,7 +70,7 @@ const authMiddleware = (requiredRole = null) => {
       if (normalizeRole(user.role) === 'admin') {
         try {
           await NotificationService.syncExpiredCertificateNotifications();
-          const notificationSummary = await NotificationService.getNavbarNotifications();
+          const notificationSummary = await NotificationService.getNavbarNotifications(sessionUser.id);
           res.locals.adminNotificationUnreadCount = notificationSummary.unreadCount;
           res.locals.adminNotificationsTray = notificationSummary.latest;
         } catch (notificationError) {

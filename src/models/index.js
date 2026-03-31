@@ -51,6 +51,9 @@ User.hasMany(Attachment, { foreignKey: 'userId', as: 'receivedAttachments' });
 Attachment.belongsTo(User, { foreignKey: 'createdBy', as: 'creator' });
 User.hasMany(Attachment, { foreignKey: 'createdBy', as: 'createdAttachments' });
 
+Notification.belongsTo(User, { foreignKey: 'adminUserId', as: 'adminRecipient' });
+User.hasMany(Notification, { foreignKey: 'adminUserId', as: 'adminNotifications' });
+
 BlogPost.belongsTo(BlogCategory, { foreignKey: 'categoryId', as: 'category' });
 BlogCategory.hasMany(BlogPost, { foreignKey: 'categoryId', as: 'posts' });
 

@@ -1,5 +1,5 @@
 const { Op } = require('sequelize');
-const { Notification, CompanyCertificate } = require('../../models');
+const { Notification, CompanyCertificate, User } = require('../../models');
 const { normalizeHasExpiration, isCertificateExpired, formatCertificateExpiration } = require('../../utils/CompanyCertificate');
 
 class NotificationService {
@@ -76,27 +76,75 @@ class NotificationService {
     };
   }
 
-  async createNotification(payload) {
-    if (payload.dedupeKey) {
-      const existingNotification = await Notification.findOne({
-        where: { dedupeKey: payload.dedupeKey }
-      });
+  async getActiveAdminIds() {
+    const admins = await User.findAll({
+      where: {
+        role: 'admin',
+        active: true
+      },
+      attributes: ['id']
+    });
 
-      if (existingNotification) {
-        return existingNotification;
-      }
+    return admins.map((admin) => admin.id);
+  }
+
+  async resolveAdminUserIds(payload) {
+    const rawIds = Array.isArray(payload.adminUserIds) ? payload.adminUserIds : [];
+    const normalizedIds = [...new Set(rawIds.map((value) => Number(value)).filter((value) => Number.isInteger(value) && value > 0))];
+
+    if (normalizedIds.length) {
+      return normalizedIds;
     }
 
-    return Notification.create({
+    return this.getActiveAdminIds();
+  }
+
+  buildAdminNotificationPayload(payload, adminUserId) {
+    return {
       type: payload.type,
       title: payload.title,
       message: payload.message,
       link: payload.link || null,
       dedupeKey: payload.dedupeKey || null,
       metadata: payload.metadata || null,
+      adminUserId,
       isRead: false,
       readAt: null
-    });
+    };
+  }
+
+  async createNotification(payload) {
+    const adminUserIds = await this.resolveAdminUserIds(payload);
+
+    if (!adminUserIds.length) {
+      return [];
+    }
+
+    const notifications = [];
+
+    for (const adminUserId of adminUserIds) {
+      if (payload.dedupeKey) {
+        const existingNotification = await Notification.findOne({
+          where: {
+            dedupeKey: payload.dedupeKey,
+            adminUserId
+          }
+        });
+
+        if (existingNotification) {
+          notifications.push(existingNotification);
+          continue;
+        }
+      }
+
+      const createdNotification = await Notification.create(
+        this.buildAdminNotificationPayload(payload, adminUserId)
+      );
+
+      notifications.push(createdNotification);
+    }
+
+    return notifications;
   }
 
   async createEnrollmentNotification(enrollment, course) {
@@ -212,10 +260,27 @@ class NotificationService {
     }
   }
 
-  async getNavbarNotifications() {
+  async getNavbarNotifications(adminUserId) {
+    const normalizedAdminUserId = Number(adminUserId);
+
+    if (!Number.isInteger(normalizedAdminUserId) || normalizedAdminUserId <= 0) {
+      return {
+        unreadCount: 0,
+        latest: []
+      };
+    }
+
     const [unreadCount, latestNotifications] = await Promise.all([
-      Notification.count({ where: { isRead: false } }),
+      Notification.count({
+        where: {
+          adminUserId: normalizedAdminUserId,
+          isRead: false
+        }
+      }),
       Notification.findAll({
+        where: {
+          adminUserId: normalizedAdminUserId
+        },
         order: [['createdAt', 'DESC']],
         limit: 5
       })
@@ -227,12 +292,17 @@ class NotificationService {
     };
   }
 
-  async getNotificationsPageData(query) {
+  async getNotificationsPageData(query, adminUserId) {
+    const normalizedAdminUserId = Number(adminUserId);
     const page = Math.max(parseInt(query.page, 10) || 1, 1);
     const limit = 20;
     const offset = (page - 1) * limit;
+    const where = {
+      adminUserId: normalizedAdminUserId
+    };
 
     const { count, rows } = await Notification.findAndCountAll({
+      where,
       order: [['createdAt', 'DESC']],
       limit,
       offset
@@ -240,7 +310,12 @@ class NotificationService {
 
     return {
       notifications: rows.map((notification) => this.formatNotification(notification)),
-      unreadCount: await Notification.count({ where: { isRead: false } }),
+      unreadCount: await Notification.count({
+        where: {
+          adminUserId: normalizedAdminUserId,
+          isRead: false
+        }
+      }),
       pagination: {
         currentPage: page,
         totalPages: Math.max(1, Math.ceil(count / limit)),
@@ -249,8 +324,13 @@ class NotificationService {
     };
   }
 
-  async markAsRead(id) {
-    const notification = await Notification.findByPk(id);
+  async markAsRead(id, adminUserId) {
+    const notification = await Notification.findOne({
+      where: {
+        id,
+        adminUserId
+      }
+    });
 
     if (!notification) {
       return { notFound: true };
@@ -265,8 +345,8 @@ class NotificationService {
     return { notFound: false, notification };
   }
 
-  async openNotification(id) {
-    const result = await this.markAsRead(id);
+  async openNotification(id, adminUserId) {
+    const result = await this.markAsRead(id, adminUserId);
 
     if (result.notFound) {
       return { notFound: true, redirectTo: '/admin/notificacoes?error=Notificação não encontrada' };
@@ -278,14 +358,19 @@ class NotificationService {
     };
   }
 
-  async markAllAsRead() {
+  async markAllAsRead(adminUserId) {
     await Notification.update(
       { isRead: true, readAt: new Date() },
-      { where: { isRead: false } }
+      {
+        where: {
+          adminUserId,
+          isRead: false
+        }
+      }
     );
   }
 
-  async deleteSelected(ids) {
+  async deleteSelected(ids, adminUserId) {
     const normalizedIds = (Array.isArray(ids) ? ids : [ids])
       .map((value) => Number(value))
       .filter((value) => Number.isInteger(value) && value > 0);
@@ -295,15 +380,20 @@ class NotificationService {
     }
 
     const deletedCount = await Notification.destroy({
-      where: { id: normalizedIds }
+      where: {
+        id: normalizedIds,
+        adminUserId
+      }
     });
 
     return { deletedCount };
   }
 
-  async deleteAll() {
+  async deleteAll(adminUserId) {
     return Notification.destroy({
-      where: {}
+      where: {
+        adminUserId
+      }
     });
   }
 }
