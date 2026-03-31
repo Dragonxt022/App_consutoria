@@ -477,6 +477,7 @@
             const current = editor.getFormat(range || undefined).link || '';
             const url = await window.appModal.prompt('Informe a URL do link:', {
                 title: 'Inserir link',
+                variant: 'info',
                 defaultValue: current || 'https://',
                 placeholder: 'https://',
                 confirmText: 'Aplicar'

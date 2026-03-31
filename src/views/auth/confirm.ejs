@@ -63,7 +63,7 @@
         const confirm = document.getElementById('password_confirm').value;
         if (pass !== confirm) {
             e.preventDefault();
-            window.appModal.alert('As senhas não coincidem!', { title: 'Senha inválida' });
+            window.appModal.alert('As senhas não coincidem!', { title: 'Senha inválida', variant: 'warning' });
         }
         <% } %>
     });

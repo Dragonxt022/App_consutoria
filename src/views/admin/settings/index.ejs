@@ -865,7 +865,7 @@
         const file = evt.target.files && evt.target.files[0];
         if (!file) return;
         if (!file.type.startsWith('image/')) {
-            window.appModal.alert('Selecione um arquivo de imagem válido.', { title: 'Arquivo inválido' });
+            window.appModal.alert('Selecione um arquivo de imagem válido.', { title: 'Arquivo inválido', variant: 'warning' });
             fileInput.value = '';
             return;
         }

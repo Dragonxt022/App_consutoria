@@ -404,9 +404,9 @@
                             x-cloak
                             x-show="notificationsOpen"
                             x-transition.opacity.scale.origin.top.right
-                            class="absolute right-0 top-full z-50 mt-3 h-[30rem] w-[min(22rem,calc(100vw-1.5rem))] overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl"
+                            class="absolute right-0 top-full z-50 mt-3 h-[30rem] w-[min(25rem,calc(100vw-2rem))] overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl"
                         >
-                            <div class="border-b border-slate-100 px-4 py-4">
+                            <div class="border-b border-slate-100 px-5 py-4 sm:px-6">
                                 <div class="flex items-center justify-between gap-3">
                                     <div>
                                         <p class="text-[13px] font-bold text-slate-900">Notificações</p>
@@ -423,7 +423,7 @@
                             </div>
 
                             <% if (!adminNotificationsTray.length) { %>
-                                <div class="flex h-[calc(30rem-5.5rem)] items-center justify-center px-4 py-9 text-center">
+                                <div class="flex h-[calc(30rem-5.5rem)] items-center justify-center px-5 py-9 text-center sm:px-6">
                                     <div>
                                     <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
                                         <svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -436,7 +436,7 @@
                             <% } else { %>
                                 <div class="h-[calc(30rem-5.5rem-3.75rem)] overflow-y-auto scrollbar-hide">
                                     <% adminNotificationsTray.forEach((notification) => { %>
-                                        <a href="/admin/notificacoes/<%= notification.id %>/abrir" class="flex gap-3 border-b border-slate-100 px-4 py-3 transition hover:bg-slate-50">
+                                        <a href="/admin/notificacoes/<%= notification.id %>/abrir" class="flex gap-3 border-b border-slate-100 px-5 py-3 transition hover:bg-slate-50 sm:px-6">
                                             <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-2xl <%= notification.iconBgClass %> <%= notification.iconTextClass %>">
                                                 <% if (notification.type === 'new_enrollment') { %>
                                                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
@@ -465,8 +465,8 @@
                                 </div>
                             <% } %>
 
-                            <div class="flex justify-center border-t border-slate-100 px-4 py-3.5">
-                                <a href="/admin/notificacoes" class="inline-flex items-center text-[13px] font-bold text-indigo-600 transition hover:text-indigo-700">
+                            <div class="flex justify-center border-t border-slate-100 px-5 py-3.5 sm:px-6">
+                                <a href="/admin/notificacoes" class="inline-flex items-center text-[11px] font-semibold text-indigo-600/90 transition hover:text-indigo-700 p-3">
                                     Visualizar todas
                                 </a>
                             </div>

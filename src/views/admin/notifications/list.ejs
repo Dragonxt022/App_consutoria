@@ -161,7 +161,8 @@
 
         const confirmed = await window.appModal.confirm(message, {
             title: 'Excluir notificações',
-            confirmText: 'Excluir'
+            confirmText: 'Excluir',
+            variant: 'danger'
         });
 
         if (!confirmed) return;
