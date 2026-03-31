@@ -72,7 +72,7 @@
         
         if (pass !== confirm) {
             e.preventDefault();
-            alert('As senhas não conferem!');
+            window.appModal.alert('As senhas não conferem!', { title: 'Senha inválida' });
         }
     });
 </script>

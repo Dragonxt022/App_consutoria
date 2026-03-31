@@ -467,7 +467,7 @@
         contextMenu.classList.remove('is-open');
     }
 
-    function applyFormat(action, value = true) {
+    async function applyFormat(action, value = true) {
         const range = editor.getSelection(true);
         if (!range) {
             editor.focus();
@@ -475,7 +475,12 @@
 
         if (action === 'link') {
             const current = editor.getFormat(range || undefined).link || '';
-            const url = window.prompt('Informe a URL do link:', current || 'https://');
+            const url = await window.appModal.prompt('Informe a URL do link:', {
+                title: 'Inserir link',
+                defaultValue: current || 'https://',
+                placeholder: 'https://',
+                confirmText: 'Aplicar'
+            });
             if (url) {
                 editor.format('link', url);
             }

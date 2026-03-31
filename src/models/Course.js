@@ -73,6 +73,8 @@ const Course = sequelize.define('Course', {
     type: DataTypes.BOOLEAN,
     defaultValue: true
   }
+}, {
+  paranoid: true
 });
 
 module.exports = Course;

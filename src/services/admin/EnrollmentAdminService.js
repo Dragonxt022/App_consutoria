@@ -23,6 +23,19 @@ function buildCertificateJson(enrollment, course, verificationCode) {
 }
 
 class EnrollmentAdminService {
+  logEnrollmentDeletion(actor, enrollment) {
+    console.warn('[AUDIT] admin_enrollment_delete', {
+      actorId: actor?.id || null,
+      actorEmail: actor?.email || null,
+      enrollmentId: enrollment.id,
+      studentEmail: enrollment.studentEmail,
+      courseId: enrollment.courseId,
+      userId: enrollment.userId || null,
+      status: enrollment.status,
+      occurredAt: new Date().toISOString()
+    });
+  }
+
   removeEnrollmentAttachmentIfNeeded(attachmentPath) {
     if (!attachmentPath) {
       return;
@@ -438,7 +451,7 @@ class EnrollmentAdminService {
     };
   }
 
-  async deleteEnrollment(id) {
+  async deleteEnrollment(id, actor = null) {
     const enrollment = await Enrollment.findByPk(id);
     if (!enrollment) {
       return { notFound: true };
@@ -448,6 +461,7 @@ class EnrollmentAdminService {
       this.removeEnrollmentAttachmentIfNeeded(enrollment.enrollmentAttachmentPath);
     }
 
+    this.logEnrollmentDeletion(actor, enrollment);
     await enrollment.destroy();
     return { notFound: false };
   }

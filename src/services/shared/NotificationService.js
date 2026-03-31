@@ -23,13 +23,6 @@ class NotificationService {
           badgeClass: 'bg-amber-50 text-amber-700',
           label: 'Certidão vencida'
         };
-      case 'auto_closed':
-        return {
-          iconBgClass: 'bg-rose-50',
-          iconTextClass: 'text-rose-600',
-          badgeClass: 'bg-rose-50 text-rose-700',
-          label: 'Encerrado automaticamente'
-        };
       case 'blog_published':
         return {
           iconBgClass: 'bg-violet-50',
@@ -134,23 +127,6 @@ class NotificationService {
       dedupeKey: `expired-certificate:${certificate.id}:${certificate.expirationDate || 'sem-data'}`,
       metadata: {
         certificateId: certificate.id
-      }
-    });
-  }
-
-  async createAutoClosedNotification({ removedUsers, removedEnrollments }) {
-    if (!removedUsers && !removedEnrollments) {
-      return null;
-    }
-
-    return this.createNotification({
-      type: 'auto_closed',
-      title: 'Encerrado automaticamente',
-      message: `O sistema encerrou ${removedUsers} cadastro(s) pendente(s) e removeu ${removedEnrollments} inscrição(ões) expiradas automaticamente.`,
-      link: '/admin/inscricoes',
-      metadata: {
-        removedUsers,
-        removedEnrollments
       }
     });
   }

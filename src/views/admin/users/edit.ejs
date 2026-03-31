@@ -125,7 +125,7 @@
                 <h3 class="text-base font-bold text-slate-800">Ações de Acesso</h3>
                 <p class="mt-1 text-sm text-slate-500">Use o reenvio quando o usuário não recebeu o email inicial ou esqueceu de concluir a ativação.</p>
 
-                <form action="/admin/usuarios/<%= managedUser.id %>/reenviar-acesso" method="POST" class="mt-5" onsubmit="return confirm('Deseja reenviar o email de acesso para este usuario?')">
+                <form action="/admin/usuarios/<%= managedUser.id %>/reenviar-acesso" method="POST" class="mt-5" data-confirm-message="Deseja reenviar o email de acesso para este usuario?" data-confirm-title="Reenviar acesso" data-confirm-button="Reenviar">
                     <button type="submit" class="w-full rounded-xl border border-indigo-200 bg-indigo-50 px-4 py-3 text-sm font-bold text-indigo-700 transition-colors hover:bg-indigo-100">
                         <%= managedUser.active ? 'Reenviar email de redefinicao' : 'Reenviar link de ativacao' %>
                     </button>

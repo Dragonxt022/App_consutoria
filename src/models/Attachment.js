@@ -43,6 +43,8 @@ const Attachment = sequelize.define('Attachment', {
     type: DataTypes.ENUM('pendente', 'confirmado', 'completo', 'cancelado'),
     allowNull: true
   }
+}, {
+  paranoid: true
 });
 
 module.exports = Attachment;

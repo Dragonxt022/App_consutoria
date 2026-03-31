@@ -101,7 +101,7 @@ class AuthService {
     const emailSent = await EmailService.sendRegistrationConfirmation(user, confirmationUrl);
 
     if (!emailSent) {
-      await user.destroy();
+      await user.destroy({ force: true });
 
       return {
         error: 'Não foi possível enviar o e-mail de confirmação. Verifique as configurações de envio e tente novamente.',

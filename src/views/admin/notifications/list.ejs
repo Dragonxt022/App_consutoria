@@ -146,15 +146,28 @@
         }
     };
 
-    bulkForm.addEventListener('submit', (event) => {
+    bulkForm.addEventListener('submit', async (event) => {
+        if (bulkForm.dataset.modalConfirmed === 'true') {
+            delete bulkForm.dataset.modalConfirmed;
+            return;
+        }
+
+        event.preventDefault();
+
         const selectedCount = checkboxes.filter((item) => item.checked).length;
         const message = selectedCount > 0
             ? `Deseja excluir ${selectedCount} notificação(ões) selecionada(s)?`
             : 'Deseja excluir todas as notificações?';
 
-        if (!window.confirm(message)) {
-            event.preventDefault();
-        }
+        const confirmed = await window.appModal.confirm(message, {
+            title: 'Excluir notificações',
+            confirmText: 'Excluir'
+        });
+
+        if (!confirmed) return;
+
+        bulkForm.dataset.modalConfirmed = 'true';
+        bulkForm.submit();
     });
 
     selectAll.addEventListener('change', () => {

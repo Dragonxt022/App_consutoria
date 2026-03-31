@@ -106,6 +106,7 @@ const User = sequelize.define('User', {
     allowNull: true
   }
 }, {
+  paranoid: true,
   hooks: {
     beforeCreate: async (user) => {
       user.password = await bcrypt.hash(user.password, 10);

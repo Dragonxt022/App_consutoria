@@ -104,7 +104,7 @@ class CourseAdminService {
         where.id = { [Op.ne]: excludeId };
       }
 
-      const existingCourse = await Course.findOne({ where });
+      const existingCourse = await Course.findOne({ where, paranoid: false });
 
       if (!existingCourse) {
         return candidateSlug;

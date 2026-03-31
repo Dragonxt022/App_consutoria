@@ -5,7 +5,6 @@ const path = require('path');
 require('dotenv').config();
 
 const { syncDatabase } = require('./models');
-const cleanupUnconfirmed = require('./utils/Cleanup');
 
 const expressLayouts = require('express-ejs-layouts');
 const { getSafeImage, imgTag, bgImage } = require('./utils/ImageHelper');
@@ -189,9 +188,6 @@ const PORT = process.env.PORT || 3000;
 async function startServer() {
   try {
     await syncDatabase();
-
-    await cleanupUnconfirmed();
-    setInterval(cleanupUnconfirmed, 60 * 60 * 1000);
 
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);

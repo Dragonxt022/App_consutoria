@@ -459,11 +459,11 @@ async function seedDemoData() {
   console.log('Limpando dados anteriores de demonstracao...');
   await Enrollment.destroy({ where: {}, force: true });
   await BlogPost.destroy({ where: {}, force: true });
-  await BlogCategory.destroy({ where: {} });
-  await CompanyCertificate.destroy({ where: {} });
-  await Product.destroy({ where: {} });
-  await Course.destroy({ where: {} });
-  await User.destroy({ where: {} });
+  await BlogCategory.destroy({ where: {}, force: true });
+  await CompanyCertificate.destroy({ where: {}, force: true });
+  await Product.destroy({ where: {}, force: true });
+  await Course.destroy({ where: {}, force: true });
+  await User.destroy({ where: {}, force: true });
   await Setting.destroy({ where: {} });
 
   console.log('Criando cursos...');

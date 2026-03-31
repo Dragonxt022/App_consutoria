@@ -47,21 +47,6 @@ function buildNotifications() {
       updatedAt: hoursAgo(2)
     },
     {
-      type: 'auto_closed',
-      title: 'Encerrado automaticamente',
-      message: 'O sistema encerrou 2 cadastro(s) pendente(s) e removeu 1 inscrição expirada automaticamente.',
-      link: '/admin/inscricoes',
-      dedupeKey: 'seed:auto-closed:1',
-      metadata: {
-        removedUsers: 2,
-        removedEnrollments: 1
-      },
-      isRead: false,
-      readAt: null,
-      createdAt: hoursAgo(6),
-      updatedAt: hoursAgo(6)
-    },
-    {
       type: 'blog_published',
       title: 'Novo post publicado',
       message: 'O post "Como estruturar um plano anual de capacitação sem improviso" foi publicado com sucesso.',
@@ -128,9 +113,10 @@ async function ensureNotificationTypeEnum() {
     type: DataTypes.ENUM(
       'new_enrollment',
       'expired_certificate',
-      'auto_closed',
       'blog_published',
-      'smtp_failure'
+      'smtp_failure',
+      'course_reminder_24h',
+      'enrollment_attachment_received'
     ),
     allowNull: false
   });
@@ -142,6 +128,7 @@ async function seedNotifications() {
 
   await Notification.destroy({
     where: {},
+    force: true,
     truncate: true
   });
 

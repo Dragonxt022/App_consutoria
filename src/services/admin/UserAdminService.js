@@ -8,6 +8,17 @@ async function getCryptoRandomString() {
 }
 
 class UserAdminService {
+  logUserDeletion(actor, managedUser) {
+    console.warn('[AUDIT] admin_user_delete', {
+      actorId: actor?.id || null,
+      actorEmail: actor?.email || null,
+      targetUserId: managedUser.id,
+      targetUserEmail: managedUser.email,
+      targetUserRole: managedUser.role,
+      occurredAt: new Date().toISOString()
+    });
+  }
+
   async buildUserFormData(managedUser) {
     const latestEnrollment = await Enrollment.findOne({
       where: { userId: managedUser.id },
@@ -121,7 +132,7 @@ class UserAdminService {
       return { error: 'A senha deve ter no minimo 6 caracteres' };
     }
 
-    const existingUser = await User.findOne({ where: { email } });
+    const existingUser = await User.findOne({ where: { email }, paranoid: false });
     if (existingUser) {
       return { error: 'Este email ja esta em uso' };
     }
@@ -172,7 +183,8 @@ class UserAdminService {
       where: {
         email,
         id: { [Op.ne]: managedUser.id }
-      }
+      },
+      paranoid: false
     });
 
     if (emailInUse) {
@@ -267,6 +279,7 @@ class UserAdminService {
       };
     }
 
+    this.logUserDeletion(actor, managedUser);
     await managedUser.destroy();
     return { error: null };
   }

@@ -313,12 +313,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const file = e.target.files[0];
         if (file) {
             if (!file.type.match('image.*')) {
-                alert('Por favor, selecione apenas arquivos de imagem.');
+                window.appModal.alert('Por favor, selecione apenas arquivos de imagem.', { title: 'Arquivo inválido' });
                 imageInput.value = '';
                 return;
             }
             if (file.size > 5 * 1024 * 1024) {
-                alert('A imagem não pode ter mais de 5MB.');
+                window.appModal.alert('A imagem não pode ter mais de 5MB.', { title: 'Imagem muito grande' });
                 imageInput.value = '';
                 return;
             }
@@ -346,12 +346,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const fileName = file.name.toLowerCase();
             const isValid = validExtensions.some((ext) => fileName.endsWith(ext));
             if (!isValid) {
-                alert('Por favor, selecione apenas arquivos PDF, DOC ou DOCX.');
+                window.appModal.alert('Por favor, selecione apenas arquivos PDF, DOC ou DOCX.', { title: 'Arquivo inválido' });
                 pdfInput.value = '';
                 return;
             }
             if (file.size > 8 * 1024 * 1024) {
-                alert('O documento não pode ter mais de 8MB.');
+                window.appModal.alert('O documento não pode ter mais de 8MB.', { title: 'Documento muito grande' });
                 pdfInput.value = '';
                 return;
             }

@@ -25,6 +25,8 @@ const BlogCategory = sequelize.define('BlogCategory', {
     type: DataTypes.BOOLEAN,
     defaultValue: true
   }
+}, {
+  paranoid: true
 });
 
 module.exports = BlogCategory;

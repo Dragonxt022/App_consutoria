@@ -87,7 +87,7 @@ class ProductAdminService {
   }
 
   async ensureUniqueSlug(payload, currentId = null) {
-    const existing = await Product.findOne({ where: { slug: payload.slug } });
+    const existing = await Product.findOne({ where: { slug: payload.slug }, paranoid: false });
     if (!existing) return null;
     if (currentId && existing.id === currentId) return null;
     return 'Ja existe um produto com este nome/slug.';

@@ -8,7 +8,7 @@ const Notification = sequelize.define('Notification', {
     autoIncrement: true
   },
   type: {
-    type: DataTypes.ENUM('new_enrollment', 'expired_certificate', 'auto_closed', 'blog_published', 'smtp_failure', 'course_reminder_24h', 'enrollment_attachment_received'),
+    type: DataTypes.ENUM('new_enrollment', 'expired_certificate', 'blog_published', 'smtp_failure', 'course_reminder_24h', 'enrollment_attachment_received'),
     allowNull: false
   },
   title: {
@@ -40,6 +40,8 @@ const Notification = sequelize.define('Notification', {
     type: DataTypes.DATE,
     allowNull: true
   }
+}, {
+  paranoid: true
 });
 
 module.exports = Notification;

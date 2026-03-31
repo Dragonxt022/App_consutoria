@@ -79,7 +79,7 @@ class BlogAdminService {
   }
 
   async ensureDefaultCategory() {
-    const existing = await BlogCategory.findOne({ where: { slug: 'outros' } });
+    const existing = await BlogCategory.findOne({ where: { slug: 'outros' }, paranoid: false });
     if (existing) {
       return existing;
     }
@@ -103,7 +103,7 @@ class BlogAdminService {
         where.id = { [Op.ne]: excludeId };
       }
 
-      const existing = await model.findOne({ where });
+      const existing = await model.findOne({ where, paranoid: false });
       if (!existing) {
         return candidateSlug;
       }

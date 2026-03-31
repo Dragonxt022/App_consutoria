@@ -156,7 +156,7 @@ const AdminEnrollmentHandler = {
 
   async remove(req, res) {
     try {
-      const result = await EnrollmentAdminService.deleteEnrollment(req.params.id);
+      const result = await EnrollmentAdminService.deleteEnrollment(req.params.id, req.user);
 
       if (result.notFound) {
         return res.redirect('/admin/inscricoes?error=Inscrição não encontrada');

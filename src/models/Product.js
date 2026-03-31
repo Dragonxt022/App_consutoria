@@ -62,6 +62,8 @@ const Product = sequelize.define('Product', {
     type: DataTypes.INTEGER,
     defaultValue: 0
   }
+}, {
+  paranoid: true
 });
 
 module.exports = Product;

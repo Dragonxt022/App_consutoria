@@ -24,6 +24,8 @@ const CompanyCertificate = sequelize.define('CompanyCertificate', {
     type: DataTypes.DATEONLY,
     allowNull: true
   }
+}, {
+  paranoid: true
 });
 
 module.exports = CompanyCertificate;
