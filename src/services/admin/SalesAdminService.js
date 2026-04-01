@@ -8,23 +8,23 @@ class SalesAdminService {
     const dateFilter = {};
     const currentYear = new Date().getFullYear();
     const selectedYear = parseInt(year, 10) || currentYear;
-    const currentMonth = new Date().getMonth() + 1;
-    const selectedMonth = parseInt(month, 10) || currentMonth;
+    const normalizedMonth = typeof month === 'string' ? month.trim() : '';
+    const selectedMonth = normalizedMonth ? parseInt(normalizedMonth, 10) : '';
 
     let startDate;
     let endDate;
 
-    if (month && year) {
+    if (normalizedMonth && year) {
       startDate = new Date(selectedYear, selectedMonth - 1, 1);
       endDate = new Date(selectedYear, selectedMonth, 0, 23, 59, 59);
       dateFilter.createdAt = { [Op.between]: [startDate, endDate] };
-    } else if (year && !month) {
+    } else if (year && !normalizedMonth) {
       startDate = new Date(selectedYear, 0, 1);
       endDate = new Date(selectedYear, 11, 31, 23, 59, 59);
       dateFilter.createdAt = { [Op.between]: [startDate, endDate] };
     } else {
-      startDate = new Date(selectedYear, selectedMonth - 1, 1);
-      endDate = new Date(selectedYear, selectedMonth, 0, 23, 59, 59);
+      startDate = new Date(selectedYear, 0, 1);
+      endDate = new Date(selectedYear, 11, 31, 23, 59, 59);
       dateFilter.createdAt = { [Op.between]: [startDate, endDate] };
     }
 

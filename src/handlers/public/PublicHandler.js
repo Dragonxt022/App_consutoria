@@ -80,7 +80,7 @@ const PublicHandler = {
   },
 
   async adminDashboard(req, res) {
-    const data = await HomeService.getAdminDashboardData();
+    const data = await HomeService.getAdminDashboardData(req.query);
 
     res.render('admin/dashboard', {
       title: 'Dashboard Administrativo',

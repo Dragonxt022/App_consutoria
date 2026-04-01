@@ -87,10 +87,33 @@ class HomeService {
     };
   }
 
-  async getAdminDashboardData() {
+  async getAdminDashboardData(query = {}) {
     const now = new Date();
-    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-    const nextMonthStart = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    const currentYear = now.getFullYear();
+    const { month, year } = query;
+    const normalizedMonth = typeof month === 'string' ? month.trim() : '';
+    const selectedYear = parseInt(year, 10) || currentYear;
+    const selectedMonth = normalizedMonth ? parseInt(normalizedMonth, 10) : '';
+    const revenueWhere = {
+      status: ['confirmado', 'completo']
+    };
+
+    if (selectedMonth) {
+      revenueWhere.createdAt = {
+        [Op.gte]: new Date(selectedYear, selectedMonth - 1, 1),
+        [Op.lt]: new Date(selectedYear, selectedMonth, 1)
+      };
+    } else {
+      revenueWhere.createdAt = {
+        [Op.gte]: new Date(selectedYear, 0, 1),
+        [Op.lt]: new Date(selectedYear + 1, 0, 1)
+      };
+    }
+
+    const years = [];
+    for (let y = 2024; y <= currentYear + 1; y += 1) {
+      years.push(y);
+    }
 
     const [
       courseCount,
@@ -111,13 +134,7 @@ class HomeService {
       Product.count({ where: { active: true } }),
       Product.count({ where: { active: true, featured: true } }),
       Enrollment.sum('finalPrice', {
-        where: {
-          status: ['confirmado', 'completo'],
-          createdAt: {
-            [Op.gte]: monthStart,
-            [Op.lt]: nextMonthStart
-          }
-        }
+        where: revenueWhere
       }),
       Enrollment.findAll({
         include: [{ model: Course, attributes: ['title'] }],
@@ -137,7 +154,12 @@ class HomeService {
         featuredProducts: featuredProductCount,
         monthlyRevenue: monthlyRevenue || 0
       },
-      recentEnrollments
+      recentEnrollments,
+      filters: {
+        month: selectedMonth,
+        year: selectedYear,
+        years
+      }
     };
   }
 
